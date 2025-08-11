@@ -1,0 +1,1268 @@
+{
+  "master": {
+    "tasks": [
+      {
+        "id": 1,
+        "title": "Django Project Setup and Configuration",
+        "description": "Initialize Django project with proper structure, settings, and dependencies for offres.mr payroll system",
+        "details": "Create Django project structure with apps for core, employees, payroll, attendance, reports, and compliance. Configure PostgreSQL database, install required packages: Django REST framework, Celery for async tasks, django-extensions, psycopg2, openpyxl for Excel processing, reportlab for PDF generation, and Pillow for image handling. Set up proper settings modules for development/production, configure static files handling, and implement proper logging configuration. Create requirements.txt with all dependencies including specific versions for payroll calculation libraries.",
+        "testStrategy": "Verify project starts successfully, database connection works, all apps are properly registered, static files serve correctly, and admin interface is accessible",
+        "priority": "high",
+        "dependencies": [],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Django Project Structure with Core Apps",
+            "description": "Initialize Django project and create core, employees, payroll, attendance, reports, and compliance apps with proper directory structure",
+            "dependencies": [],
+            "details": "Use django-admin startproject to create offres.mr project, then create six main apps (core, employees, payroll, attendance, reports, compliance) using python manage.py startapp. Set up proper directory structure with __init__.py files and basic app configurations in each app's apps.py file.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Configure PostgreSQL Database Settings",
+            "description": "Set up PostgreSQL database connection and configure database settings for development and production environments",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Install psycopg2 package, configure DATABASES setting in settings.py with PostgreSQL connection parameters, create separate database configurations for development/production, and test database connectivity. Set up proper database naming conventions and connection pooling settings.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Install and Configure Django REST Framework",
+            "description": "Set up Django REST framework with proper configuration for API endpoints and serialization",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Install djangorestframework, add to INSTALLED_APPS, configure REST_FRAMEWORK settings with authentication classes, permission classes, and pagination. Set up API routing structure and configure serializers for future model integration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Set Up Celery for Async Task Processing",
+            "description": "Configure Celery for handling asynchronous tasks like payroll processing and report generation",
+            "dependencies": [
+              "1.2"
+            ],
+            "details": "Install Celery and Redis/RabbitMQ broker, create celery.py configuration file, set up task discovery, configure CELERY settings in Django settings, and create basic task structure for payroll processing and report generation tasks.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Configure Static Files and Media Handling",
+            "description": "Set up proper static files and media file handling for development and production environments",
+            "dependencies": [
+              "1.1"
+            ],
+            "details": "Configure STATIC_URL, STATIC_ROOT, MEDIA_URL, and MEDIA_ROOT settings. Set up staticfiles app configuration, create proper directory structure for static assets, and configure whitenoise or similar for production static file serving.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Development and Production Settings Modules",
+            "description": "Create separate settings modules for development and production environments with proper configuration management",
+            "dependencies": [
+              "1.2",
+              "1.5"
+            ],
+            "details": "Split settings.py into base.py, development.py, and production.py modules. Configure environment-specific settings like DEBUG, ALLOWED_HOSTS, database configurations, and security settings. Set up environment variable management for sensitive configuration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Set Up Comprehensive Logging Configuration",
+            "description": "Implement proper logging configuration for debugging, error tracking, and audit trails",
+            "dependencies": [
+              "1.6"
+            ],
+            "details": "Configure LOGGING setting with multiple loggers, handlers, and formatters. Set up file-based logging for errors and debug information, configure log rotation, and implement audit logging for payroll operations and user actions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create Requirements.txt with All Dependencies",
+            "description": "Generate comprehensive requirements.txt file with all necessary packages and specific versions for payroll system",
+            "dependencies": [
+              "1.3",
+              "1.4"
+            ],
+            "details": "Create requirements.txt including Django, djangorestframework, psycopg2, celery, django-extensions, openpyxl, reportlab, Pillow, and other necessary packages with specific version numbers. Include payroll-specific calculation libraries and ensure compatibility between all packages.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "title": "Core Django Models Implementation",
+        "description": "Implement comprehensive Django models equivalent to the 37+ Java entities with proper relationships and validation",
+        "details": "Create Django models based on Java entities: Employee (72 fields), Payroll, PayrollElement, Department, Position, Direction, GeneralDirection, SalaryGrade, Bank, PayrollMotif, SystemParameters, User (with 22 permission flags), TimeClockData, DailyWorkRecord, WeeklyOvertime, Leave, Child, InstallmentDeduction, Activity, Origin, EmployeeStatus, CNSSDeclaration, CNAMDeclaration. Implement proper field types (DecimalField for currency, DateField/DateTimeField for dates, BooleanField for flags), foreign key relationships, unique constraints, and model Meta classes with appropriate table names and ordering. Add audit fields (created_at, updated_at, created_by, updated_by) to all models.",
+        "testStrategy": "Run migrations successfully, verify all model relationships work correctly, test model validation rules, confirm audit fields populate automatically, and ensure data integrity constraints are enforced",
+        "priority": "high",
+        "dependencies": [
+          1
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Employee Model with 72 Fields",
+            "description": "Implement the core Employee model with all 72 fields including personal info, employment details, salary components, and audit fields",
+            "dependencies": [],
+            "details": "Create Employee model with fields for personal information (name, ID numbers, contact details), employment data (hire date, contract type, status), salary components (basic salary, allowances, deductions), and audit fields (created_at, updated_at, created_by, updated_by). Use appropriate Django field types: DecimalField for currency, DateField/DateTimeField for dates, BooleanField for flags, CharField with max_length for text fields.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Organizational Structure Models",
+            "description": "Create Department, Position, Direction, and GeneralDirection models with proper hierarchical relationships",
+            "dependencies": [],
+            "details": "Implement organizational models: Department (code, name, description, parent_department), Position (title, grade, description, department), Direction (name, code, head), GeneralDirection (name, code, director). Establish proper foreign key relationships and hierarchical structures with self-referencing foreign keys where needed.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build Payroll Core Models",
+            "description": "Create Payroll, PayrollElement, and SalaryGrade models for payroll processing foundation",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement Payroll model (employee, period, status, amounts), PayrollElement model (payroll, element_type, amount, formula), and SalaryGrade model (grade, min_salary, max_salary, step_increment). Establish relationships between Employee and Payroll, and between Payroll and PayrollElements.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create Banking and Financial Models",
+            "description": "Implement Bank and PayrollMotif models for payment processing and financial operations",
+            "dependencies": [],
+            "details": "Create Bank model (name, code, swift_code, address, contact_info) and PayrollMotif model (code, description, type, calculation_rules). These models support payment processing and different types of payroll calculations (regular salary, bonuses, deductions, etc.).",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement User Model with Permission Flags",
+            "description": "Create custom User model extending AbstractUser with 22 module-specific permission flags",
+            "dependencies": [],
+            "details": "Extend Django's AbstractUser to create custom User model with 22 boolean permission flags: can_access_personnel, can_access_payroll, can_access_attendance, can_access_reports, can_modify_employees, can_process_payroll, can_view_salary_details, can_generate_reports, can_manage_users, can_configure_system, etc. Include audit fields and proper Meta configuration.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Build Time Tracking Models",
+            "description": "Create TimeClockData, DailyWorkRecord, and WeeklyOvertime models for attendance management",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement TimeClockData model (employee, clock_in, clock_out, location, device_id), DailyWorkRecord model (employee, date, hours_worked, overtime_hours, status), and WeeklyOvertime model (employee, week_start, regular_hours, overtime_hours, approved_by). Establish proper relationships with Employee model.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create Leave Management Models",
+            "description": "Implement Leave model and related entities for managing employee leave requests and balances",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Create Leave model (employee, leave_type, start_date, end_date, days_requested, days_approved, status, reason, approved_by) and supporting models for leave types, balances, and policies. Include validation rules for leave eligibility and balance calculations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Child and Dependent Models",
+            "description": "Create Child model and related dependent management entities for family allowance calculations",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement Child model (employee, name, birth_date, gender, dependency_status, allowance_eligible) and related dependent models. Include validation for age limits, dependency status, and automatic allowance eligibility calculations based on child age and status.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Build Deduction and Installment Models",
+            "description": "Create InstallmentDeduction model and related entities for managing employee deductions and installment payments",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Implement InstallmentDeduction model (employee, deduction_type, total_amount, installment_amount, remaining_balance, start_date, end_date, status) and supporting deduction type models. Include automatic balance calculations and payment scheduling logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Create Activity and Status Models",
+            "description": "Implement Activity, Origin, and EmployeeStatus models for tracking employee activities and status changes",
+            "dependencies": [
+              "2.1"
+            ],
+            "details": "Create Activity model (employee, activity_type, date, description, created_by), Origin model (code, description, type), and EmployeeStatus model (status_code, description, active). These models track employee activities, data origins, and status transitions throughout employment lifecycle.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Implement Declaration Models for Compliance",
+            "description": "Create CNSSDeclaration and CNAMDeclaration models for regulatory compliance reporting",
+            "dependencies": [
+              "2.1",
+              "2.3"
+            ],
+            "details": "Implement CNSSDeclaration model (employee, period, salary_base, contribution_amount, declaration_date, status) and CNAMDeclaration model (employee, period, salary_base, contribution_amount, declaration_date, status). Include validation rules for contribution calculations and regulatory compliance requirements.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 12,
+            "title": "Create Migrations and Test Model Relationships",
+            "description": "Generate Django migrations for all models and validate all relationships work correctly",
+            "dependencies": [
+              "2.1",
+              "2.2",
+              "2.3",
+              "2.4",
+              "2.5",
+              "2.6",
+              "2.7",
+              "2.8",
+              "2.9",
+              "2.10",
+              "2.11"
+            ],
+            "details": "Generate and run Django migrations for all implemented models. Test all foreign key relationships, unique constraints, and model validations. Verify that audit fields populate automatically, cascade delete behaviors work correctly, and all model Meta configurations are properly applied. Run comprehensive relationship tests to ensure data integrity.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "title": "Authentication and User Management System",
+        "description": "Implement secure authentication system with role-based access control and proper password security",
+        "details": "Extend Django's AbstractUser to create custom User model with 22 module-specific permission flags (can_access_personnel, can_access_payroll, can_access_attendance, etc.). Implement secure password hashing using Django's default PBKDF2, add login/logout views with proper session management, create role-based access control decorators, and implement user management interface for creating/modifying user accounts. Add password complexity requirements and account lockout after failed attempts. Remove any hardcoded credentials and implement proper authentication flow.",
+        "testStrategy": "Test user creation, login/logout functionality, verify permission system restricts access correctly, confirm password security meets standards, test session management, and validate role-based access control works across all modules",
+        "priority": "high",
+        "dependencies": [
+          2
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Extend Django AbstractUser with Custom User Model",
+            "description": "Create custom User model extending AbstractUser with 22 module-specific permission flags",
+            "dependencies": [],
+            "details": "Extend Django's AbstractUser to create custom User model with boolean fields for 22 permission flags (can_access_personnel, can_access_payroll, can_access_attendance, etc.). Configure AUTH_USER_MODEL setting and create initial migration. Include proper field definitions and model metadata.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement Password Security and Validation",
+            "description": "Set up secure password hashing, complexity requirements, and validation rules",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Configure Django's PBKDF2 password hashing (default), implement password complexity validators (minimum length, character requirements, common password checks), create custom password validation logic, and ensure secure password storage practices.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Authentication Views and Templates",
+            "description": "Build login/logout views with proper session management and user interface",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Create login and logout views using Django's authentication system, implement proper session management, design login templates with security features, handle authentication success/failure redirects, and ensure CSRF protection is properly configured.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Role-Based Access Control Decorators",
+            "description": "Create permission decorators and middleware for role-based access control",
+            "dependencies": [
+              "3.1"
+            ],
+            "details": "Build custom decorators that check user permissions based on the 22 permission flags, create middleware for automatic permission checking, implement view-level access control, and ensure proper permission inheritance and validation across all modules.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Build User Management Interface",
+            "description": "Create administrative interface for user account creation and modification",
+            "dependencies": [
+              "3.1",
+              "3.4"
+            ],
+            "details": "Develop user management views for creating, editing, and deleting user accounts, build forms for user permission management, implement user search and filtering capabilities, create user role assignment interface, and ensure proper validation and security checks.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement Account Lockout Mechanisms",
+            "description": "Add account lockout functionality after failed login attempts",
+            "dependencies": [
+              "3.3"
+            ],
+            "details": "Create login attempt tracking system, implement automatic account lockout after configurable failed attempts, add account unlock functionality for administrators, create lockout notification system, and implement progressive delay mechanisms for failed attempts.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create Permission-Based Menu System",
+            "description": "Build dynamic menu system that shows options based on user permissions",
+            "dependencies": [
+              "3.4"
+            ],
+            "details": "Develop template tags and context processors for permission-based menu rendering, create navigation templates that dynamically show/hide menu items based on user permissions, implement breadcrumb system with permission awareness, and ensure consistent navigation experience across all modules.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Remove Hardcoded Credentials and Implement Security Audit",
+            "description": "Eliminate hardcoded credentials and conduct comprehensive security review",
+            "dependencies": [
+              "3.2",
+              "3.3",
+              "3.5",
+              "3.6"
+            ],
+            "details": "Scan codebase for hardcoded credentials and remove them, implement proper environment variable configuration for sensitive settings, create security audit checklist, test authentication flow end-to-end, verify all security measures are working correctly, and document security procedures.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 4,
+        "title": "Employee Management Module",
+        "description": "Build comprehensive employee lifecycle management with 72-field employee records, document management, and organizational structure",
+        "details": "Create employee management views for CRUD operations on employee records with proper form validation. Implement employee search and filtering capabilities with advanced query options. Build organizational structure management (departments, directions, positions) with hierarchical relationships. Create document management system for employee files with upload capabilities and expiration tracking. Implement employee termination workflow with automatic calculations for severance and final pay. Add bulk import functionality for Excel/CSV employee data with validation and error reporting. Create employee profile pages with comprehensive information display and edit capabilities.",
+        "testStrategy": "Test employee creation with all 72 fields, verify document upload and management, confirm organizational hierarchy works correctly, test bulk import with sample data, validate termination workflow calculations, and ensure search/filter functionality performs well",
+        "priority": "medium",
+        "dependencies": [
+          3
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Create Employee CRUD Views with 72-Field Form Validation",
+            "description": "Implement comprehensive employee create, read, update, delete views with proper form validation for all 72 employee fields",
+            "dependencies": [],
+            "details": "Build Django views and forms for employee management with field validation, error handling, and proper form rendering for all employee attributes including personal info, employment details, salary data, and system flags",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Build Advanced Search and Filtering System",
+            "description": "Implement sophisticated employee search with multiple filter criteria and query optimization",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Create search functionality with filters for name, employee ID, department, position, employment status, hire date ranges, and custom field combinations with proper database indexing",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement Organizational Structure Management",
+            "description": "Build hierarchical management system for departments, directions, and positions with proper relationships",
+            "dependencies": [],
+            "details": "Create CRUD interfaces for organizational entities with tree-like hierarchy support, position assignment workflows, and department relationship management",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Create Document Management System",
+            "description": "Build employee document upload, storage, and expiration tracking system",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Implement file upload handling with validation, document categorization, expiration date tracking, automated notifications, and secure file storage with access controls",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Build Employee Termination Workflow",
+            "description": "Implement termination process with automatic severance and final pay calculations",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Create termination workflow with calculation engine for final settlements, severance pay, unused leave compensation, and proper status updates with audit trails",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Add Bulk Import from Excel/CSV",
+            "description": "Implement bulk employee data import with validation and error reporting",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Build Excel/CSV import functionality with field mapping, data validation, duplicate detection, error reporting, and batch processing with progress tracking",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Create Comprehensive Employee Profile Pages",
+            "description": "Build detailed employee profile views with complete information display and edit capabilities",
+            "dependencies": [
+              "4.1",
+              "4.3",
+              "4.4"
+            ],
+            "details": "Design and implement employee profile interface showing all employee data, organizational relationships, document history, and providing inline editing capabilities",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Employee Photo and Document Storage",
+            "description": "Build secure photo upload and document storage system with proper access controls",
+            "dependencies": [
+              "4.4"
+            ],
+            "details": "Create photo upload functionality with image processing, document storage system with categorization, access permissions, and integration with employee profiles",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Add Employee History Tracking",
+            "description": "Implement comprehensive audit trail and change history for employee records",
+            "dependencies": [
+              "4.1"
+            ],
+            "details": "Build change tracking system recording all employee data modifications with timestamps, user attribution, field-level change detection, and history viewing interfaces",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Build Employee Reporting and Export Features",
+            "description": "Create employee data reporting system with various export formats and custom report generation",
+            "dependencies": [
+              "4.2",
+              "4.7"
+            ],
+            "details": "Implement reporting engine with predefined employee reports, custom report builder, Excel/PDF export capabilities, and scheduled report generation with email delivery",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 5,
+        "title": "Time Clock Integration and Attendance Processing",
+        "description": "Implement multi-device time tracking integration with HIKVISION, ZKTecho support and sophisticated attendance calculations",
+        "details": "Build time clock data import system supporting HIKVISION CSV format and ZKTecho database connections. Implement attendance processing engine with progressive overtime calculations (115%→140%→150%→200% rates), night shift premiums after 22:00, holiday premium processing (50% and 100% rates), and working days calculation for salary prorating. Create 21-field work schedule matrix management for individual employee patterns. Build leave management system with accrual tracking and approval workflows. Implement real-time attendance monitoring dashboard with exception reporting for missing punches and anomalies.",
+        "testStrategy": "Test time clock import from sample CSV files, verify overtime calculations match business rules, confirm night shift and holiday premiums calculate correctly, test leave request workflow, validate work schedule patterns affect calculations properly, and ensure attendance exception reports identify issues accurately",
+        "priority": "medium",
+        "dependencies": [
+          4
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement HIKVISION CSV Import Processing",
+            "description": "Build CSV parser for HIKVISION time clock data format with field validation and error handling",
+            "dependencies": [],
+            "details": "Create CSV import module that processes HIKVISION time clock export files. Include field mapping, data validation, duplicate detection, and error reporting. Handle various CSV formats and encoding issues.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Add ZKTecho Database Integration",
+            "description": "Implement direct database connection and data synchronization with ZKTecho time clock systems",
+            "dependencies": [
+              "5.1"
+            ],
+            "details": "Build database connector for ZKTecho systems with real-time data sync capabilities. Include connection pooling, retry logic, and data transformation to match internal format.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Create Attendance Calculation Engine with Progressive Overtime",
+            "description": "Implement overtime calculation system with progressive rates (115%→140%→150%→200%)",
+            "dependencies": [
+              "5.2"
+            ],
+            "details": "Build calculation engine that processes daily work hours and applies progressive overtime rates based on total hours worked. Include configurable thresholds and rate multipliers matching Mauritanian labor law.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Night Shift Premium Calculations",
+            "description": "Add night shift premium processing for work performed after 22:00",
+            "dependencies": [
+              "5.3"
+            ],
+            "details": "Create night shift detection logic that identifies work hours after 22:00 and applies appropriate premium rates. Include configuration for night shift start/end times and premium percentages.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Build Holiday Premium Processing System",
+            "description": "Implement holiday premium calculations with 50% and 100% rates",
+            "dependencies": [
+              "5.4"
+            ],
+            "details": "Create holiday calendar management and premium calculation system. Include different premium rates for regular holidays (50%) and special holidays (100%), with configurable holiday definitions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create 21-Field Work Schedule Matrix Management",
+            "description": "Build comprehensive work schedule management system for individual employee patterns",
+            "dependencies": [
+              "5.5"
+            ],
+            "details": "Implement work schedule matrix supporting 21 configurable fields per employee. Include schedule templates, shift patterns, rotation management, and schedule validation rules.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Leave Management with Accrual Tracking",
+            "description": "Build leave management system with automatic accrual calculations and approval workflows",
+            "dependencies": [
+              "5.6"
+            ],
+            "details": "Create comprehensive leave management including leave types, accrual rules, balance tracking, approval workflows, and leave calendar integration. Include carry-forward rules and expiration handling.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Build Attendance Monitoring Dashboard",
+            "description": "Create real-time attendance monitoring dashboard with visual analytics",
+            "dependencies": [
+              "5.7"
+            ],
+            "details": "Develop interactive dashboard showing real-time attendance status, daily/weekly summaries, overtime tracking, and visual attendance patterns. Include filtering and drill-down capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Exception Reporting for Missing Punches",
+            "description": "Implement automated detection and reporting of attendance anomalies",
+            "dependencies": [
+              "5.8"
+            ],
+            "details": "Build exception reporting system that identifies missing clock-in/out entries, unusual patterns, and attendance anomalies. Include automated alerts and exception resolution workflows.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Add Attendance Validation and Correction Tools",
+            "description": "Create tools for attendance data validation and manual corrections",
+            "dependencies": [
+              "5.9"
+            ],
+            "details": "Implement attendance validation engine with business rule checks and manual correction interface. Include approval workflows for corrections, audit trails, and batch correction capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 6,
+        "title": "Advanced Payroll Calculation Engine",
+        "description": "Implement sophisticated payroll processing with 25+ built-in functions, tax calculations, and multi-motif processing",
+        "details": "Build payroll calculation engine with 25+ built-in functions (F01-F25) including seniority calculations, daily/hourly salary computations, severance calculations, and regional minimum wage functions. Implement progressive ITS tax calculations with three tranches (15%/20%/25% for nationals, 7.5%/20%/25% for expatriates), CNSS calculations with 15,000 MRU ceiling, and CNAM calculations (uncapped). Create multi-motif payroll processing supporting different payment types (regular salary, leave pay, bonuses). Implement formula evaluation engine with mathematical expression parsing and cross-references to other payroll elements. Add payroll validation rules for minimum wage compliance and social security ceilings.",
+        "testStrategy": "Test all 25+ payroll functions with sample data, verify tax calculations match Mauritanian regulations, confirm multi-motif processing handles different payment types correctly, validate formula engine evaluates expressions accurately, and ensure payroll validation prevents compliance violations",
+        "priority": "high",
+        "dependencies": [
+          5
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement F01-F10 Basic Payroll Functions",
+            "description": "Build first 10 basic payroll calculation functions from Java FonctionsPaie analysis",
+            "dependencies": [],
+            "details": "Implement F01-F10 functions including basic salary calculations, allowances, and standard deductions. Create function registry and base calculation framework.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Implement F11-F20 Advanced Payroll Functions",
+            "description": "Build advanced payroll calculation functions F11-F20 including seniority and service calculations",
+            "dependencies": [
+              "6.1"
+            ],
+            "details": "Implement F11-F20 functions covering seniority calculations, service-based benefits, and advanced allowance computations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Implement F21-F25 Specialized Payroll Functions",
+            "description": "Complete remaining payroll functions F21-F25 including severance and regional calculations",
+            "dependencies": [
+              "6.2"
+            ],
+            "details": "Implement final specialized functions including severance calculations, regional minimum wage adjustments, and specialized deductions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Build Progressive ITS Tax Calculation Engine",
+            "description": "Implement Mauritanian progressive income tax calculations with different rates for nationals and expatriates",
+            "dependencies": [
+              "6.3"
+            ],
+            "details": "Create ITS tax engine with three tranches: 15%/20%/25% for nationals and 7.5%/20%/25% for expatriates. Include tax brackets and progressive calculation logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement CNSS Calculations with Ceiling",
+            "description": "Create CNSS social security calculations with 15,000 MRU ceiling",
+            "dependencies": [
+              "6.4"
+            ],
+            "details": "Build CNSS calculation engine with proper ceiling enforcement at 15,000 MRU, including employer and employee contribution calculations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Implement CNAM Calculations (Uncapped)",
+            "description": "Create CNAM health insurance calculations without ceiling limits",
+            "dependencies": [
+              "6.5"
+            ],
+            "details": "Implement CNAM calculation system with uncapped contributions, including proper rate application and calculation logic.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Build Multi-Motif Payroll Processing Engine",
+            "description": "Create system to handle different payment types and motifs in payroll processing",
+            "dependencies": [
+              "6.6"
+            ],
+            "details": "Implement multi-motif processing supporting regular salary, leave pay, bonuses, and other payment types with proper segregation and calculation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create Formula Evaluation Engine",
+            "description": "Build mathematical expression parser and evaluator for payroll formulas",
+            "dependencies": [
+              "6.7"
+            ],
+            "details": "Implement formula evaluation engine capable of parsing and evaluating mathematical expressions with variables and functions.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Implement Cross-Reference Calculation System",
+            "description": "Build system for cross-references between different payroll elements",
+            "dependencies": [
+              "6.8"
+            ],
+            "details": "Create cross-reference calculation system allowing payroll elements to reference and depend on other elements in calculations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Build Daily and Hourly Salary Computation System",
+            "description": "Implement calculations for daily and hourly salary computations",
+            "dependencies": [
+              "6.9"
+            ],
+            "details": "Create daily and hourly salary computation system with proper pro-rating, overtime calculations, and time-based adjustments.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Implement Regional Minimum Wage Functions",
+            "description": "Create regional minimum wage enforcement and calculation functions",
+            "dependencies": [
+              "6.10"
+            ],
+            "details": "Build regional minimum wage system with location-based wage floors and automatic compliance checking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 12,
+            "title": "Create Payroll Validation Rules Engine",
+            "description": "Implement comprehensive validation rules for payroll compliance",
+            "dependencies": [
+              "6.11"
+            ],
+            "details": "Build validation engine ensuring minimum wage compliance, social security ceiling enforcement, and regulatory requirement validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 13,
+            "title": "Implement Payroll Approval Workflows",
+            "description": "Create approval workflow system for payroll processing and validation",
+            "dependencies": [
+              "6.12"
+            ],
+            "details": "Build multi-stage approval workflow for payroll processing with proper authorization levels and audit trail.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 14,
+            "title": "Build Payroll Calculation Testing Framework",
+            "description": "Create comprehensive testing framework for all payroll calculations",
+            "dependencies": [
+              "6.13"
+            ],
+            "details": "Implement testing framework with test data sets, validation scenarios, and automated testing for all 25+ payroll functions and calculations.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 7,
+        "title": "Banking Integration and Payment Processing",
+        "description": "Build multi-bank payment processing with UNL file generation and financial integration capabilities",
+        "details": "Implement bank transfer file generation supporting multiple bank formats with UNL file structure (58 fields). Create banking integration module for employee salary payments with account validation and transfer amount verification. Build cost center analysis system for departmental payroll allocation and budget tracking. Implement accounting integration with double-entry journal generation (master/detail structure) and chart of accounts mapping. Add payment reconciliation features and financial reporting for management analysis. Create bank account management for employees with validation rules.",
+        "testStrategy": "Test UNL file generation with sample payroll data, verify bank transfer amounts match net pay calculations, confirm cost center allocations sum correctly, validate accounting entries balance, test payment reconciliation process, and ensure financial reports generate accurate data",
+        "priority": "medium",
+        "dependencies": [
+          6
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement UNL File Generation with 58-Field Structure",
+            "description": "Create UNL file generator supporting the 58-field structure identified from Java analysis for bank transfer processing",
+            "dependencies": [],
+            "details": "Build UNL file generation system that creates properly formatted files with all 58 required fields including employee details, payment amounts, bank account information, and transfer metadata. Implement field validation and formatting according to banking standards.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Multi-Bank Format Support System",
+            "description": "Develop banking format abstraction layer to support multiple bank file formats and protocols",
+            "dependencies": [
+              "7.1"
+            ],
+            "details": "Create pluggable architecture for different bank file formats, implement format converters for major Mauritanian banks, and build configuration system for bank-specific requirements and field mappings.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build Employee Salary Payment Processing Module",
+            "description": "Implement salary payment processing with account validation and transfer amount verification",
+            "dependencies": [
+              "7.2"
+            ],
+            "details": "Create payment processing engine that validates employee bank accounts, verifies transfer amounts against payroll calculations, handles payment batching, and implements error handling for failed transfers.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Cost Center Analysis System",
+            "description": "Build departmental payroll allocation and budget tracking system for cost center management",
+            "dependencies": [],
+            "details": "Create cost center management interface, implement payroll allocation algorithms by department/project, build budget tracking and variance analysis, and generate cost center reports for management review.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Accounting Integration with Double-Entry System",
+            "description": "Implement accounting integration with double-entry journal generation and chart of accounts mapping",
+            "dependencies": [
+              "7.4"
+            ],
+            "details": "Build double-entry bookkeeping system with master/detail journal structure, create chart of accounts mapping for payroll transactions, implement automatic journal entry generation, and ensure accounting equation balance validation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Build Payment Reconciliation Features",
+            "description": "Implement payment reconciliation system to match bank confirmations with payroll payments",
+            "dependencies": [
+              "7.3"
+            ],
+            "details": "Create reconciliation engine that matches bank confirmations with payment batches, handles partial payments and failed transfers, implements exception handling for unmatched transactions, and generates reconciliation reports.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Add Financial Reporting for Management Analysis",
+            "description": "Create comprehensive financial reporting system for payroll and payment analysis",
+            "dependencies": [
+              "7.5",
+              "7.6"
+            ],
+            "details": "Build financial dashboard with payment summaries, cost center analysis reports, budget variance reports, cash flow analysis for payroll payments, and executive summary reports for management decision-making.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Bank Account Management for Employees",
+            "description": "Create employee bank account management system with validation rules and account verification",
+            "dependencies": [],
+            "details": "Build employee bank account management interface, implement bank account validation rules (IBAN, account number format), create account verification workflows, and handle multiple accounts per employee with primary account designation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Payment Status Tracking and Error Handling",
+            "description": "Implement comprehensive payment status tracking system with error handling and retry mechanisms",
+            "dependencies": [
+              "7.3",
+              "7.6"
+            ],
+            "details": "Create payment status tracking system with real-time updates, implement error handling for failed payments, build retry mechanisms for temporary failures, create notification system for payment issues, and generate payment status reports.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 8,
+        "title": "Regulatory Compliance and Declaration System",
+        "description": "Implement automated CNSS, CNAM, and ITS declaration generation with regulatory compliance validation",
+        "details": "Build automated declaration generation system for CNSS, CNAM, and ITS regulatory reporting with proper data aggregation and validation. Implement compliance monitoring with deadline tracking and automated alerts. Create regulatory report templates matching official government formats with data validation against submission requirements. Build year-end processing for annual tax calculations and employee tax documentation. Implement audit trail system for all compliance-related activities with user tracking and timestamps. Add regulatory parameter management for tax rates, ceilings, and calculation rules with version control.",
+        "testStrategy": "Test declaration generation against sample payroll data, verify compliance with official government formats, confirm deadline alerts trigger correctly, validate year-end calculations produce accurate results, test audit trail captures all regulatory activities, and ensure parameter changes maintain historical accuracy",
+        "priority": "high",
+        "dependencies": [
+          7
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement CNSS Declaration Generation System",
+            "description": "Build automated CNSS (Caisse Nationale de Sécurité Sociale) declaration generation with proper payroll data aggregation and validation",
+            "dependencies": [],
+            "details": "Create CNSS declaration module that aggregates employee social security contributions, validates data against CNSS requirements, and generates declarations in the official format. Include employee registration data, contribution calculations, and monthly reporting capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create CNAM Declaration Processing System",
+            "description": "Implement CNAM (Caisse Nationale d'Assurance Maladie) health insurance declaration generation and processing",
+            "dependencies": [],
+            "details": "Build CNAM declaration system for health insurance contributions with employee eligibility validation, contribution rate calculations, and official format compliance. Include family member coverage tracking and medical insurance reporting.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Build ITS Declaration System",
+            "description": "Develop ITS (Impôt sur les Traitements et Salaires) tax declaration generation with accurate tax calculations",
+            "dependencies": [],
+            "details": "Implement ITS tax declaration system with progressive tax rate calculations, deduction management, and official government format compliance. Include monthly and annual tax reporting capabilities with proper withholding calculations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Implement Compliance Monitoring with Deadline Tracking",
+            "description": "Create compliance monitoring system to track regulatory submission deadlines and requirements",
+            "dependencies": [
+              "8.1",
+              "8.2",
+              "8.3"
+            ],
+            "details": "Build deadline tracking system for all regulatory submissions with calendar integration, status monitoring, and compliance checklist management. Include submission history tracking and regulatory requirement updates.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Create Automated Regulatory Alert System",
+            "description": "Build automated alert system for regulatory deadlines, compliance issues, and submission reminders",
+            "dependencies": [
+              "8.4"
+            ],
+            "details": "Implement notification system with email alerts, dashboard notifications, and escalation procedures for missed deadlines. Include customizable alert schedules and multi-user notification management.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Build Official Government Format Report Templates",
+            "description": "Create report templates that match official government formats for all regulatory declarations",
+            "dependencies": [
+              "8.1",
+              "8.2",
+              "8.3"
+            ],
+            "details": "Develop template system that generates reports matching exact government formats for CNSS, CNAM, and ITS submissions. Include data validation against official requirements and format compliance checking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Implement Year-End Tax Processing System",
+            "description": "Build year-end processing capabilities for annual tax calculations and regulatory summaries",
+            "dependencies": [
+              "8.3",
+              "8.6"
+            ],
+            "details": "Create year-end processing module for annual tax calculations, tax certificate generation, and regulatory summary reports. Include tax reconciliation, annual adjustments, and compliance verification.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Create Employee Tax Documentation System",
+            "description": "Generate individual employee tax documents and certificates for regulatory compliance",
+            "dependencies": [
+              "8.7"
+            ],
+            "details": "Build system to generate individual employee tax certificates, annual tax summaries, and compliance documentation. Include multi-language support and official government format compliance for employee documents.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Build Comprehensive Audit Trail System",
+            "description": "Implement audit trail system for all compliance-related activities with user tracking and timestamps",
+            "dependencies": [],
+            "details": "Create comprehensive audit logging for all regulatory activities including declaration generation, submissions, modifications, and user actions. Include timestamp tracking, user identification, and audit report generation capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Implement Regulatory Parameter Management",
+            "description": "Build parameter management system for tax rates, ceilings, and calculation rules with version control",
+            "dependencies": [
+              "8.9"
+            ],
+            "details": "Create administrative interface for managing regulatory parameters including tax rates, contribution ceilings, and calculation rules. Include version control, effective date management, and historical parameter tracking.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Add Compliance Validation and Submission Tracking",
+            "description": "Implement validation system and submission tracking for all regulatory declarations",
+            "dependencies": [
+              "8.4",
+              "8.5",
+              "8.6"
+            ],
+            "details": "Build validation engine to verify declaration accuracy before submission and tracking system to monitor submission status. Include error reporting, resubmission capabilities, and compliance verification workflows.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 9,
+        "title": "Professional Reporting and Document Generation",
+        "description": "Build comprehensive reporting system with JasperReports equivalent, payslip generation, and business intelligence dashboards",
+        "details": "Implement professional document generation system equivalent to JasperReports functionality using Django's PDF generation capabilities. Create payslip generation with professional formatting, company branding, and multi-language support (French/Arabic). Build management reporting with analytical capabilities including workforce analytics, trend analysis, and comparative payroll reporting. Implement interactive dashboards with real-time workforce metrics, departmental cost analysis, and performance tracking. Add export capabilities for multiple formats (PDF, Excel, CSV, UNL for accounting). Create report scheduling and automated email distribution for regular management reports.",
+        "testStrategy": "Test payslip generation matches professional formatting requirements, verify management reports provide accurate analytics, confirm dashboard displays real-time data correctly, validate export functions produce proper file formats, test report scheduling delivers reports on time, and ensure multi-language support works correctly",
+        "priority": "medium",
+        "dependencies": [
+          8
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "Implement PDF Generation Engine",
+            "description": "Build Django PDF generation system equivalent to JasperReports functionality using existing .jrxml templates",
+            "dependencies": [],
+            "details": "Create PDF generation engine using reportlab or weasyprint to replicate JasperReports functionality. Parse existing .jrxml files from /report directory and convert to Django templates. Implement dynamic data binding and formatting capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Create Professional Payslip Generation",
+            "description": "Develop payslip generation system with professional formatting and company branding",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Build payslip templates with professional layout, company logos, and branding elements. Include all salary components, deductions, and net pay calculations. Ensure proper formatting for legal requirements and professional appearance.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "Add Multi-Language Support",
+            "description": "Implement French and Arabic language support for all reports and documents",
+            "dependencies": [
+              "9.2"
+            ],
+            "details": "Add internationalization support for French and Arabic languages. Create translated templates for payslips and reports. Implement proper text direction handling for Arabic RTL layout. Add language selection functionality.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Build Management Analytics System",
+            "description": "Create comprehensive management reporting with analytical capabilities",
+            "dependencies": [
+              "9.1"
+            ],
+            "details": "Develop management reporting module with workforce analytics, cost analysis, and performance metrics. Include departmental breakdowns, trend analysis, and comparative reporting features. Build report generation engine for management insights.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Implement Workforce Analytics Dashboards",
+            "description": "Create interactive dashboards with real-time workforce metrics",
+            "dependencies": [
+              "9.4"
+            ],
+            "details": "Build interactive dashboard interface using charts and graphs for workforce data visualization. Include employee count trends, salary distributions, departmental costs, and attendance metrics. Implement real-time data updates and filtering capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Create Trend Analysis and Comparative Reporting",
+            "description": "Develop advanced analytics for payroll trends and comparative analysis",
+            "dependencies": [
+              "9.4"
+            ],
+            "details": "Implement trend analysis algorithms for salary progression, cost variations, and workforce changes over time. Create comparative reporting between departments, periods, and employee categories. Add forecasting capabilities for budget planning.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "Add Interactive Real-time Metrics Dashboard",
+            "description": "Build responsive dashboard with live data updates and departmental analysis",
+            "dependencies": [
+              "9.5"
+            ],
+            "details": "Create responsive dashboard interface with real-time data updates using WebSocket or AJAX polling. Include departmental cost analysis, performance tracking widgets, and customizable dashboard layouts. Implement user-specific dashboard preferences.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Implement Multi-format Export Capabilities",
+            "description": "Add export functionality for PDF, Excel, CSV, and UNL formats",
+            "dependencies": [
+              "9.6"
+            ],
+            "details": "Build export engine supporting multiple file formats including PDF reports, Excel spreadsheets, CSV data files, and UNL files for accounting integration. Implement format-specific optimizations and proper data formatting for each export type.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "Create Report Scheduling System",
+            "description": "Build automated report generation and scheduling functionality",
+            "dependencies": [
+              "9.8"
+            ],
+            "details": "Implement report scheduling system using Django Celery for automated report generation. Create scheduling interface for recurring reports (daily, weekly, monthly). Add job queue management and error handling for scheduled tasks.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "Build Automated Email Distribution",
+            "description": "Implement automated email system for report delivery to management",
+            "dependencies": [
+              "9.9"
+            ],
+            "details": "Create email distribution system for automatic report delivery to designated recipients. Implement email templates, attachment handling, and delivery confirmation. Add recipient management and email scheduling coordination with report generation.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 11,
+            "title": "Add Report Template Management",
+            "description": "Create system for managing and customizing report templates",
+            "dependencies": [
+              "9.3",
+              "9.10"
+            ],
+            "details": "Build template management interface for creating, editing, and organizing report templates. Include template versioning, preview functionality, and template sharing capabilities. Add drag-and-drop template builder for non-technical users.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      },
+      {
+        "id": 10,
+        "title": "System Administration and Advanced Features",
+        "description": "Implement comprehensive system configuration, bulk operations, license management, and performance optimization",
+        "details": "Build system administration interface for configuring 81+ payroll parameters including tax rates, overtime rules, allowance scales, and automation settings. Implement bulk operations system for mass employee updates, salary adjustments, and data corrections with progress tracking and rollback capabilities. Create license management system with employee count limits and feature restrictions based on license type. Add performance optimization including database indexing, query optimization, and caching strategies. Implement data backup and recovery procedures with automated scheduling. Build system monitoring dashboard with performance metrics and health checks. Add multi-language localization support with currency formatting for MRU (Mauritanian Ouguiya).",
+        "testStrategy": "Test system parameter configuration affects calculations correctly, verify bulk operations process large datasets efficiently, confirm license restrictions enforce properly, validate performance optimizations improve response times, test backup and recovery procedures work reliably, ensure monitoring dashboard shows accurate system health, and verify localization displays proper currency and date formats",
+        "priority": "medium",
+        "dependencies": [
+          9
+        ],
+        "status": "pending",
+        "subtasks": [
+          {
+            "id": 1,
+            "title": "System Parameter Configuration Interface",
+            "description": "Create comprehensive system administration interface for configuring 81+ payroll parameters including tax rates, overtime rules, allowance scales, and automation settings",
+            "dependencies": [],
+            "details": "Build Django admin interface extension with organized parameter categories, validation rules, audit logging, and hierarchical parameter organization. Implement parameter versioning and rollback capabilities.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 2,
+            "title": "Bulk Operations System with Progress Tracking",
+            "description": "Implement bulk operations system for mass employee updates, salary adjustments, and data corrections with progress tracking and rollback capabilities",
+            "dependencies": [
+              "10.1"
+            ],
+            "details": "Create bulk update interface with CSV import/export, progress bars, error handling, batch processing, and complete rollback functionality for failed operations.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 3,
+            "title": "License Management System",
+            "description": "Create license management system with employee count limits and feature restrictions based on license type",
+            "dependencies": [],
+            "details": "Implement license validation middleware, employee count enforcement, feature flags based on license type, license expiration warnings, and upgrade/downgrade handling.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 4,
+            "title": "Database Performance Optimization and Indexing",
+            "description": "Add performance optimization including database indexing strategies for payroll calculations and employee data queries",
+            "dependencies": [],
+            "details": "Analyze query performance, create strategic database indexes, optimize foreign key relationships, and implement database connection pooling for improved response times.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 5,
+            "title": "Query Optimization and Caching Implementation",
+            "description": "Implement query optimization and caching strategies for frequently accessed payroll data and calculations",
+            "dependencies": [
+              "10.4"
+            ],
+            "details": "Add Django caching framework, implement Redis caching for calculation results, optimize ORM queries, and create cache invalidation strategies for data consistency.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 6,
+            "title": "Data Backup and Recovery Procedures",
+            "description": "Create automated data backup and recovery procedures with scheduled backups and restore capabilities",
+            "dependencies": [],
+            "details": "Implement automated database backup scheduling, create backup verification procedures, build restore functionality, and add backup storage management with retention policies.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 7,
+            "title": "System Monitoring Dashboard and Health Checks",
+            "description": "Build comprehensive system monitoring dashboard with performance metrics, health checks, and alert system",
+            "dependencies": [
+              "10.4",
+              "10.5"
+            ],
+            "details": "Create real-time dashboard showing system performance, database health, user activity metrics, error tracking, and automated alert notifications for system issues.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 8,
+            "title": "Multi-language Localization Support",
+            "description": "Add multi-language localization support for French and Arabic languages with proper text direction handling",
+            "dependencies": [],
+            "details": "Implement Django internationalization framework, create translation files for French/Arabic, add RTL support for Arabic, and build language switching interface.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 9,
+            "title": "MRU Currency Formatting Implementation",
+            "description": "Implement Mauritanian Ouguiya (MRU) currency formatting with proper localization and calculation precision",
+            "dependencies": [
+              "10.8"
+            ],
+            "details": "Add MRU currency formatting functions, implement proper decimal precision handling, create localized number formatting, and ensure currency calculations maintain accuracy.",
+            "status": "pending",
+            "testStrategy": ""
+          },
+          {
+            "id": 10,
+            "title": "System Maintenance and Cleanup Tools",
+            "description": "Create system maintenance tools for data cleanup, performance optimization, and routine system maintenance tasks",
+            "dependencies": [
+              "10.6",
+              "10.7"
+            ],
+            "details": "Build automated cleanup scripts for old data, create performance tuning utilities, implement log rotation, and add system maintenance scheduling with status reporting.",
+            "status": "pending",
+            "testStrategy": ""
+          }
+        ]
+      }
+    ],
+    "metadata": {
+      "created": "2025-08-11T21:33:42.024Z",
+      "updated": "2025-08-11T21:33:42.024Z",
+      "description": "Tasks for master context"
+    }
+  }
+}

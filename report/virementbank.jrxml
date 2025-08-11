@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="virements" pageWidth="595" pageHeight="842" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0e3c1d37-c724-47b9-ab52-eeaf5527d74e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<parameter name="PERIODE" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="BANQUE" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[SELECT
+     SUM(paie.NET) AS salaire,
+     paramgen.nomEntreprise AS paramgen_nomEntreprise,
+     paie.noCompteBanque AS paie_noCompteBanque,
+     employe.nni AS employe_nni,
+     employe.nom AS employe_nom,
+     employe.id AS employe_id,
+     paramgen.logoSociete AS paramgen_logoSociete,
+     paramgen.bankvirement AS paramgen_bankvirement,
+     paramgen.comptevirement AS paramgen_comptevirement,
+     employe.prenom AS employe_prenom
+FROM
+     paie paie INNER JOIN paramgen paramgen ON paie.paramgen = paramgen.id
+     INNER JOIN employe employe ON paie.employe = employe.id
+WHERE
+     paie.periode = $P{PERIODE}
+ AND paie.banque = $P{BANQUE}
+GROUP BY
+     paie.employe,
+     paie.noCompteBanque
+ORDER BY
+     paie.employe ASC]]>
+	</queryString>
+	<field name="salaire" class="java.lang.Double"/>
+	<field name="paramgen_nomEntreprise" class="java.lang.String"/>
+	<field name="paie_noCompteBanque" class="java.lang.String"/>
+	<field name="employe_nni" class="java.lang.String"/>
+	<field name="employe_nom" class="java.lang.String"/>
+	<field name="employe_id" class="java.lang.Integer"/>
+	<field name="paramgen_logoSociete" class="java.lang.String"/>
+	<field name="paramgen_bankvirement" class="java.lang.String"/>
+	<field name="paramgen_comptevirement" class="java.lang.String"/>
+	<field name="employe_prenom" class="java.lang.String"/>
+	<variable name="TOTAL" class="java.lang.Double" calculation="Sum">
+		<variableExpression><![CDATA[$F{salaire}]]></variableExpression>
+	</variable>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="297" splitType="Stretch">
+			<textField pattern="MMMM yyyy">
+				<reportElement x="2" y="0" width="384" height="34" uuid="1b4f2ed1-3183-4796-8c03-6b0fdac6390f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="14" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paramgen_nomEntreprise}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="348" y="75" width="162" height="20" uuid="b9387d89-93b9-489d-9f60-1dafbb3e4716"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PERIODE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="225" width="550" height="18" uuid="5b8fc2f5-c49d-4a19-a674-f71bb2dc53bb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[dans vos livres, pour un virement vers les comptes de  notre personnel dont les numéros de comptes et bnques]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="207" width="405" height="18" uuid="ffb3e672-e9f5-4893-a0a9-39345f793e6d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nous avons l'honneur de vous demander de bien vouloir débiter notre compte N° :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="162" width="224" height="18" uuid="555b837d-3cb3-45e7-9ad5-87c62c711e40"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Objet : Virement de salaires]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="271" width="55" height="18" uuid="f98e74d1-b219-4288-aba1-f3b612795b2a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Banque:]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="407" y="207" width="145" height="18" uuid="eb8a384f-40d3-449a-bb51-95af1af4939b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paramgen_comptevirement}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="34" width="285" height="20" uuid="7bf29eb1-5e12-4caa-bcfd-c4c4b86e1460"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIRECTION DES RESSOURCES HUMAINES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="311" y="126" width="227" height="18" uuid="6c26028e-b0b3-48f8-b7c5-f3ab3ff7eb0f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ Le Responsable Clientèle et Commercial]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="243" width="550" height="18" uuid="82869091-6369-4d12-ac0d-d9f4b6150d8c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[sont les suivants:]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="311" y="142" width="227" height="20" uuid="c4fd1639-01e9-43a8-958b-084cea373df7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paramgen_bankvirement}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="311" y="108" width="227" height="18" uuid="170aa828-71fa-46c1-8e78-7ed34d3a8c23"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[A Monsieur,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="189" width="224" height="18" uuid="258e19c5-d0c1-4d72-a3c7-aa87aabe4ea8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Monsieur,]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="75" width="339" height="20" uuid="469c4a52-ad2d-45c0-bf3e-7e1d3538c105"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ETAT DE VIREMENTS BANCAIRES MOIS DE]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="56" y="271" width="379" height="18" uuid="22f54957-ccc3-410a-91af-a83a10ed98ba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{BANQUE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="555" y="174" width="12" height="123" uuid="d6aa91fc-fe9a-4ee6-bc34-d6dd45825784"/>
+				<textElement verticalAlignment="Bottom" rotation="Right">
+					<font fontName="Tahoma" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ELIYA Paie - www.mccmr.com]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="34" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="226" y="0" width="115" height="34" backcolor="#CCCCCC" uuid="e8aae4fd-9f02-4cf0-9f28-165fcee433ef"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NNI]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="456" y="0" width="99" height="34" backcolor="#CCCCCC" uuid="b9651907-a678-4326-9074-a1a8ef06972c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MONTANT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="0" width="45" height="34" backcolor="#CCCCCC" uuid="d44f8cf2-8471-4bc3-b6ad-39f9c25bde16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[#SAL.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="341" y="0" width="115" height="34" backcolor="#CCCCCC" uuid="4aedf705-103a-47bf-9df9-37f0717c2f97"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° COMPTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="45" y="0" width="181" height="34" backcolor="#CCCCCC" uuid="42f78c82-471f-4a4f-8613-e11bf8aa0b93"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOM ET PRENOM]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="31" splitType="Stretch">
+			<textField pattern="">
+				<reportElement x="2" y="0" width="40" height="30" uuid="7cf62c18-8a29-4a0e-9f77-dbc66d38077f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{employe_id}]]></textFieldExpression>
+			</textField>
+			<textField isStretchWithOverflow="true" pattern="">
+				<reportElement x="48" y="0" width="175" height="30" uuid="d3da075f-28d3-49fd-bef8-9a4e7cf5ebf5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{employe_prenom}+" "+$F{employe_nom}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="226" y="0" width="115" height="30" uuid="95a9b723-d68a-4d8a-b6e8-3c7f3dd52e47"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{employe_nni}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement x="341" y="0" width="115" height="30" uuid="5f1b7062-7810-4c45-afa3-f498aa6d5c69"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{paie_noCompteBanque}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="456" y="0" width="96" height="30" uuid="49110d03-eb91-478d-97b1-2811fcf6329f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{salaire}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="2" y="29" width="553" height="1" uuid="d8a2c69f-3b8c-422e-bd8c-1bbcb922a50b"/>
+				<graphicElement>
+					<pen lineColor="#999999"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+	<columnFooter>
+		<band splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="341" y="0" width="115" height="30" uuid="43d114e7-f69b-4ded-a588-5c489252a8cd"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<textField pattern="#,##0;-#,##0">
+				<reportElement x="456" y="0" width="96" height="30" uuid="2b4d5d7a-8282-4a8b-b803-fd36363d62ed"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$V{TOTAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="139" y="24" width="122" height="18" uuid="8b0836c2-d6d8-411c-b42d-f6d1f1a75555"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Tahoma" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Cachet et Signature]]></text>
+			</staticText>
+		</band>
+	</summary>
+</jasperReport>

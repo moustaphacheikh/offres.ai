@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="dITS" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4a89b714-7f06-401b-bad3-b0d266cad9f0">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="144"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="style1">
+		<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+			<pen lineWidth="0.25"/>
+			<topPen lineWidth="0.25"/>
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+	</style>
+	<style name="table">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#CCCCCC">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFEFEF"/>
+		</conditionalStyle>
+	</style>
+	<parameter name="DECLARATIONITS_PERIODE" class="java.util.Date">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_NBSALARIES" class="java.lang.Integer">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONBRU" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_ABATEMENTFORFET" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONIMP" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONNON" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONT1" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONT2" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_REMUNERATIONT3" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_TOTALITS" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="DECLARATIONITS_AVANTAGESNATURE" class="java.lang.Double">
+		<defaultValueExpression><![CDATA[]]></defaultValueExpression>
+	</parameter>
+	<parameter name="PARAMGEN_NOMENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ACTIVITEENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_TELEPHONE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_FAX" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ADRESSE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_VILLESIEGE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_BD" class="java.lang.String"/>
+	<parameter name="PARAMGEN_NOITS" class="java.lang.String"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="762" splitType="Stretch">
+			<rectangle>
+				<reportElement x="92" y="52" width="370" height="50" uuid="c6b3d261-ddd0-4e40-8b5a-551ecf72a886"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle>
+				<reportElement x="432" y="441" width="123" height="80" uuid="bc23dac8-fd0c-479b-8eea-0e7f23523189"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="432" y="290" width="122" height="120" uuid="b8f7415a-dc4b-498e-9a59-0271d395dcd7"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="133" y="180" width="421" height="80" uuid="a3bbc34f-538d-44aa-b464-444788ee4451"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="180" width="132" height="80" uuid="b5342f24-cdf5-4671-b96b-03b7f15f5c80"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="741" width="555" height="21" uuid="e5fbe8d8-29cd-406a-80d8-00359e21e6e5"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="441" width="431" height="80" uuid="71c567bc-a99d-4f74-bf58-10094aa7121d"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="421" width="554" height="20" uuid="5016a909-8e8d-4343-afe3-458a76317d39"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="0" y="290" width="432" height="120" uuid="a0b1f237-e8ce-4062-8fff-d605800f21d5"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="270" width="553" height="20" uuid="dfbf42dc-bee8-4626-8280-0dde3377290c"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="342" y="160" width="212" height="20" uuid="1f681452-77b7-4966-b372-41d8b280640a"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="1" y="160" width="341" height="20" uuid="b7807357-b2f6-4aee-bbbb-ab8125e60c1d"/>
+			</rectangle>
+			<rectangle>
+				<reportElement x="97" y="58" width="361" height="39" uuid="c6b3d261-ddd0-4e40-8b5a-551ecf72a886"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="0" y="0" width="555" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[REPUBLIQUE ISLAMIQUE DE MAURITANIE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="160" width="29" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[I.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="110" y="59" width="326" height="18" uuid="1e0da4b7-013a-4a3f-8bf1-f32bbaf402e8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DECLARATION AFFERENTE AU MOIS DE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="180" width="121" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Raison sociale]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="144" y="180" width="410" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_NOMENTREPRISE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="432" y="290" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_NBSALARIES}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="290" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[a) Nombre de salariés rémunérés]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="269" y="521" width="163" height="20" uuid="902cdc6a-cf6c-4764-9222-647611200175"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_VILLESIEGE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="433" y="521" width="25" height="20" uuid="6361f95b-7eb2-46e8-9a42-8acf51682b5a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[, Le:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="458" y="521" width="95" height="20" uuid="78fdf26a-d95a-4057-8096-89957db377dd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="3" y="599" width="552" height="19" uuid="160c6115-896e-4b55-8c2a-17c94f92e2bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SERVICE DE L'ACTION EN RECOUVREMENT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="15" width="554" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MINISTERE DES FINANCES]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="30" width="554" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DIRECTION GENERALE DES IMPOTS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="107" width="555" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IMPOT SUR LES TRAITEMENTS ET SALAIRES (ITS)]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="110" y="77" width="326" height="20" uuid="ad104177-0373-49c1-8dfb-ac4601a5b371"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_PERIODE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="144" y="200" width="410" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_ACTIVITEENTREPRISE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="200" width="121" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Activité principale]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="143" y="220" width="410" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_ADRESSE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="12" y="220" width="121" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Adresse géographique]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="240" width="121" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Adresse posatale]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="166" y="240" width="43" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_BD}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="144" y="240" width="22" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BP]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="209" y="240" width="34" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TEL.]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="243" y="240" width="155" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_TELEPHONE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="432" y="240" width="121" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_FAX}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="398" y="240" width="34" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[FAX.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="741" width="555" height="21" uuid="160c6115-896e-4b55-8c2a-17c94f92e2bb"/>
+				<textElement>
+					<font fontName="Times New Roman" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOTA BENE : Cette déclaration accompagnée du paiement, doit être déposée avant le 15 du mois auprès du service de recouvrement de la
+Direction Générale des Impôts (DGI)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="127" width="556" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[<<Article 69 du CGI>>]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="42" y="160" width="300" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[IDENTIFICATION DU CONTRIBUABLE]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="382" y="160" width="174" height="20" uuid="e26c1ffe-7eb2-4e20-b12e-cc8fc64d8a0c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_NOITS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="342" y="160" width="30" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NIF]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="42" y="270" width="511" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CALCUL DE L'IMPOT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="270" width="29" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[II.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="13" y="310" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[b) Rémunérations brutes du mois]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="432" y="310" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONBRU}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="330" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[c) Avantages en nature évalués à leur valeur réelle]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="432" y="330" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_AVANTAGESNATURE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="350" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[d) Abattement forfaitaire (6.000 MRU par salarié).]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="432" y="350" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_ABATEMENTFORFET}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="370" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[e) Rémunérations non imposables au titre du mois]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="432" y="370" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONNON}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="13" y="390" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[f) Rémunérations imposables au titre du mois {(b + c) - (d + e)}]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="432" y="390" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONIMP}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="14" y="441" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[a) Sur rémunérations inférieures ou égales à 9.000 MRU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="14" y="481" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[c) Sur rémunérations supérieures à 21.000 MRU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="14" y="421" width="28" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[III.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="14" y="501" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[d) Montant total des retenues opérées (IIIa + IIIb + IIIc) ]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="433" y="501" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_TOTALITS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="14" y="461" width="419" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[b) Sur rémunérations supérieures à 9.000 MRU et inférieures ou égales à 21.000 MRU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="42" y="421" width="514" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MONTANT DES RETENUES OPEREES]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement x="433" y="461" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONT2}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="433" y="481" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONT3}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement x="433" y="441" width="110" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONITS_REMUNERATIONT1}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="1" y="598" width="553" height="1" uuid="29c67295-3e7b-4af8-8eb8-f1c2ecb7fd22"/>
+				<graphicElement>
+					<pen lineStyle="Double"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="269" y="678" width="272" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[4 Mode de paiement : ………………………………………]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="658" width="272" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[3 Date du Versement : …………/……………/20………]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="638" width="272" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[2 N° de la Quitance : ………………………………………]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="618" width="272" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[1 Montant versé: ...........................................................]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="269" y="700" width="272" height="20" uuid="645de557-b10f-4500-bcba-dc0e674b011e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Signature et Cachet du Poste Comptable]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="628" width="81" height="30" uuid="160c6115-896e-4b55-8c2a-17c94f92e2bb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PAYEMENT]]></text>
+			</staticText>
+			<rectangle>
+				<reportElement mode="Transparent" x="11" y="628" width="81" height="30" uuid="6d7d286a-ff06-41a2-9458-547b0ccdd2b6"/>
+				<graphicElement>
+					<pen lineWidth="2.0" lineStyle="Double"/>
+				</graphicElement>
+			</rectangle>
+			<staticText>
+				<reportElement x="556" y="487" width="16" height="131" uuid="73353f4b-1785-4c3e-b9af-5609aeeb4e57"/>
+				<textElement verticalAlignment="Bottom" rotation="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[ELIYA PAIE - www.mccmr.com]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="10" width="554" height="20" backcolor="#CCCCCC" uuid="fe4790b8-5e61-45b4-8b99-f0ba311256e5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="0" y="10" width="100" height="20" uuid="a5c61471-e61b-4a1c-bb10-6c4decdda63e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="166" y="10" width="80" height="20" uuid="eff16dc9-6977-4f6c-86c7-b9bf7123afdb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="246" y="10" width="40" height="20" uuid="7e1e366a-a80b-4acc-8b3d-00991ef7cc0c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

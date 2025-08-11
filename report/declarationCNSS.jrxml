@@ -1,0 +1,808 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="declerationCNSS" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="4a89b714-7f06-401b-bad3-b0d266cad9f0">
+	<property name="ireport.zoom" value="2.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="247"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="style1">
+		<pen lineColor="#000000"/>
+		<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2">
+			<pen lineWidth="0.25"/>
+			<topPen lineWidth="0.25"/>
+			<leftPen lineWidth="0.25"/>
+			<bottomPen lineWidth="0.25"/>
+			<rightPen lineWidth="0.25"/>
+		</box>
+	</style>
+	<style name="table">
+		<pen lineWidth="0.25" lineColor="#000000"/>
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#FFFFFF">
+		<pen lineColor="#000000"/>
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#CCCCCC">
+		<pen lineColor="#000000"/>
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" mode="Opaque" backcolor="#FFFFFF">
+		<pen lineColor="#000000"/>
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+		<conditionalStyle>
+			<conditionExpression><![CDATA[new Boolean($V{REPORT_COUNT}.intValue()%2==0)]]></conditionExpression>
+			<style backcolor="#FFEFEF"/>
+		</conditionalStyle>
+	</style>
+	<subDataset name="Detail" uuid="3e1b07d8-70c0-4a6a-8c42-0d57323690af">
+		<field name="noCnssemploye" class="java.lang.String"/>
+		<field name="nomEmploye" class="java.lang.String"/>
+		<field name="nbJour1erMois" class="java.lang.String"/>
+		<field name="nbJour2emeMois" class="java.lang.String"/>
+		<field name="nbJour3emeMois" class="java.lang.String"/>
+		<field name="totalNbJour" class="java.lang.Double"/>
+		<field name="remunerationReeles" class="java.lang.Double"/>
+		<field name="plafond" class="java.lang.Double"/>
+		<field name="dateEmbauche" class="java.lang.String"/>
+		<field name="dateDebauche" class="java.lang.String"/>
+		<variable name="TOTAL_RI" class="java.lang.Double" calculation="Sum">
+			<variableExpression><![CDATA[$F{remunerationReeles}]]></variableExpression>
+		</variable>
+		<variable name="TOTAL_PLAF" class="java.lang.Integer" calculation="Sum">
+			<variableExpression><![CDATA[$F{plafond}]]></variableExpression>
+		</variable>
+		<variable name="NBRE_SAL" class="java.lang.Integer" calculation="Count">
+			<variableExpression><![CDATA[]]></variableExpression>
+		</variable>
+	</subDataset>
+	<parameter name="DECLARATIONCNSSTRIM_PERIODE" class="java.sql.Timestamp"/>
+	<parameter name="DECLARATIONCNSSTRIM_ANNEE" class="java.lang.Integer"/>
+	<parameter name="DECLARATIONCNSSTRIM_TRIMESTRE" class="java.lang.Integer"/>
+	<parameter name="DECLARATIONCNSSTRIM_PLAFONDTOT" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_CNSS1EREPE" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_CNSS2EMEPE" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_PARTIEEMPL" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_PARTIEPATR" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_PARTIEMEDE" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_TOTAL" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_AVERSER" class="java.lang.Double"/>
+	<parameter name="DECLARATIONCNSSTRIM_NBSAL" class="java.lang.Integer"/>
+	<parameter name="PARAMGEN_NOMENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ACTIVITEENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_TELEPHONE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_FAX" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ADRESSE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_BD" class="java.lang.String"/>
+	<parameter name="PARAMGEN_SITEWEB" class="java.lang.String"/>
+	<parameter name="PARAMGEN_EMAIL" class="java.lang.String"/>
+	<parameter name="PARAMGEN_NOCNSS" class="java.lang.String"/>
+	<parameter name="PARAMGEN_VILLESIEGE" class="java.lang.String"/>
+	<parameter name="DS1" class="java.util.Collection"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<detail>
+		<band height="762" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="0" width="246" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Republique Islamique de MAURITANIE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="304" y="15" width="59" height="15" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[N° Empl]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="363" y="15" width="190" height="15" uuid="e26c1ffe-7eb2-4e20-b12e-cc8fc64d8a0c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_NOCNSS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="45" width="246" height="20" uuid="1e0da4b7-013a-4a3f-8bf1-f32bbaf402e8"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="14" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DECLARATION TRIMESTRIELLE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="304" y="45" width="59" height="20" uuid="3a042541-2e4f-494c-b24d-017a69b0e303"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Nom]]></text>
+			</staticText>
+			<textField pattern="MMMM yyyy">
+				<reportElement x="363" y="45" width="190" height="20" uuid="4669969e-bd44-4d3a-96f6-02d42042e958"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_NOMENTREPRISE}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="488" y="115" width="64" height="20" uuid="28d40217-b939-4f21-b1c7-b4c1766e005c"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PLAFONDTOT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="115" width="488" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Montant des remunérations versées au personnel pendant le trimestre :]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="2" y="175" width="302" height="20" uuid="2f980b96-6e37-4d9f-9017-00cac6574bba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cotisation patronale-Remunération portée au 1 ci-dessus :]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="488" y="235" width="64" height="20" uuid="5c11c8d2-2a64-406e-8ed0-b15da8d1d6ef"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_TOTAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="440" y="235" width="48" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="316" y="364" width="28" height="20" uuid="645de557-b10f-4500-bcba-dc0e674b011e"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Fait à]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="344" y="364" width="88" height="20" uuid="902cdc6a-cf6c-4764-9222-647611200175"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_VILLESIEGE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="433" y="364" width="25" height="20" uuid="6361f95b-7eb2-46e8-9a42-8acf51682b5a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[, Le:]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="458" y="364" width="95" height="20" uuid="78fdf26a-d95a-4057-8096-89957db377dd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="386" width="100" height="60" uuid="160c6115-896e-4b55-8c2a-17c94f92e2bb"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[C,C,P 390 Nouakchott                                B,N,M,: 16/6                                    BMCI: 0 150 512 557                                          BAMIS: 11 147 03                                          BACIM BANK 1915]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="15" width="245" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Caisse Natioale de Securite Sociale]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="30" width="245" height="15" uuid="8e6bdc54-8411-4120-803d-f498f6877177"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[B P:224-TELEPHONE 5251649 NOUAKCHOTT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="66" width="40" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANNEE]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="41" y="66" width="49" height="20" uuid="ad104177-0373-49c1-8dfb-ac4601a5b371"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_ANNEE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="175" width="46" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[ x 13% = ]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="382" y="175" width="58" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PLAFONDTOT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="489" y="175" width="64" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PARTIEPATR}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="195" width="302" height="20" uuid="2f980b96-6e37-4d9f-9017-00cac6574bba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cotisation ouvrière -Remunération portée au 1 ci-dessus :]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="382" y="195" width="58" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PLAFONDTOT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="195" width="46" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[  x 1% = ]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="489" y="195" width="64" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PARTIEEMPL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="2" y="215" width="302" height="20" uuid="2f980b96-6e37-4d9f-9017-00cac6574bba"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Médecine du travail -Remunération portée au 1 ci-dessus :]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="382" y="215" width="58" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PLAFONDTOT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="442" y="215" width="46" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<text><![CDATA[  x 2% = ]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="489" y="215" width="64" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_PARTIEMEDE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="1" y="274" width="487" height="20" uuid="ff1c381b-d0e5-4de6-aaf7-17517f6609cd"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="11"/>
+				</textElement>
+				<text><![CDATA[A déduire cotisations vérsées au titre du 1e mois du trimestre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="294" width="487" height="20" uuid="ff1c381b-d0e5-4de6-aaf7-17517f6609cd"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="12"/>
+				</textElement>
+				<text><![CDATA[A déduire cotisations vérsées au titre du 2e mois du trimestre]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="1" y="135" width="488" height="20" uuid="41fd7a0a-eb95-43a6-9336-fb1cf83988c5"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="9" isBold="false"/>
+				</textElement>
+				<text><![CDATA[(Somme égale au total de la 8ème colonne de la liste nominative du personnel)]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="147" y="66" width="49" height="20" uuid="ad104177-0373-49c1-8dfb-ac4601a5b371"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_TRIMESTRE}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="93" y="66" width="54" height="20" uuid="612af2f8-a0b9-46e1-bfa1-6e078fe8aa83"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Times New Roman" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Trimestre: ]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="488" y="294" width="64" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0">
+				<reportElement x="488" y="274" width="64" height="20" uuid="d6051eeb-cf79-47c5-894c-fc28556cfe8f"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[0]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="432" y="314" width="56" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[A verser]]></text>
+			</staticText>
+			<textField pattern="#,##0">
+				<reportElement x="489" y="314" width="65" height="20" uuid="5c11c8d2-2a64-406e-8ed0-b15da8d1d6ef"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="11" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_TOTAL}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="0" y="346" width="553" height="16" uuid="ff1c381b-d0e5-4de6-aaf7-17517f6609cd"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="11"/>
+				</textElement>
+				<text><![CDATA[Versement effectué le :____/ ____/20____  Par ____________N° du cheque ou du mandat_______________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="123" y="386" width="123" height="60" uuid="160c6115-896e-4b55-8c2a-17c94f92e2bb"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CHINGUITTY Bank 515 Nktt            G.B.M. 673937 Nktt                  B.A.D.H. 70085/N                             B.C.I. 10080/K                             SGM 6262-01]]></text>
+			</staticText>
+			<componentElement>
+				<reportElement key="table" x="0" y="475" width="555" height="287" uuid="0861f170-744f-4376-837a-84b161bbd455"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="Detail" uuid="f7ca9c6d-b402-43a5-813e-80b7074cd786">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{DS1})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="42" uuid="9fc9518b-df39-44e4-b3ca-feffc537aa7f">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="42" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[N°D'imm]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="42" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(3ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="38" height="20" uuid="053f3ce0-dd90-44bc-8139-f06328d34533"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{noCnssemploye}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="172" uuid="c8cf90ae-4fb4-422a-849a-bab820bb0439">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="172" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Noms des travailleurs]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="172" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(4ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table" height="23" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="172" height="23" uuid="0c234fc8-a7c5-48e3-9318-d5027d60f993"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font isBold="true"/>
+								</textElement>
+								<text><![CDATA[Totaux]]></text>
+							</staticText>
+						</jr:columnFooter>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="168" height="20" uuid="fb3bb521-122d-4808-ba8d-5ace3f848e91"/>
+								<textElement verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{nomEmploye}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="31" uuid="5d284ea4-8026-4e5e-9e91-36d108169aaf">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="31" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[1e]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="31" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(5ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="27" height="20" uuid="e0c87f53-f785-4d72-b032-f5ad15363a59"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{nbJour1erMois}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="30" uuid="abb54cf1-01d1-4330-983a-6143229739e1">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="30" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[2e]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="30" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(6ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="26" height="20" uuid="ab154d19-0d86-464a-9f9e-ece438605a89"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{nbJour2emeMois}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="27" uuid="1cd264da-fc02-4818-9f1f-44e1317a026c">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="27" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[3e]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="27" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(7ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="23" height="20" uuid="f1e91c5c-e8a9-4b31-a676-335ae5b0ccec"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{nbJour3emeMois}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="31" uuid="d5323298-47f4-435b-a3cc-86c8c81b63f9">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="31" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Total]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="31" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(8ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField>
+								<reportElement x="0" y="0" width="27" height="20" uuid="9069c70d-90b6-488e-ae18-a0a2694c565d"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{totalNbJour}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="58" uuid="3a814bcc-7bf0-4ede-b5ec-6b3cee40304b">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="58" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Réels]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="58" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(9ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table" height="23" rowSpan="1">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="54" height="22" uuid="4af96613-e76d-4775-8b5c-5ae880cc6eb9"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{TOTAL_RI}]]></textFieldExpression>
+							</textField>
+						</jr:columnFooter>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="54" height="20" uuid="0cc6e56e-0c3f-48d5-95b6-5676fd50d5de"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{remunerationReeles}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="56" uuid="0ddf4e19-559c-4154-8a08-c65ffb0dda1f">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="56" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Plafonnées]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="56" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(10ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:columnFooter style="table" height="23" rowSpan="1">
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="52" height="22" uuid="02b466bc-820f-4331-9b49-bb64f6e2d195"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8" isBold="true"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$V{TOTAL_PLAF}]]></textFieldExpression>
+							</textField>
+						</jr:columnFooter>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField pattern="#,##0">
+								<reportElement x="0" y="0" width="52" height="20" uuid="c639f9f4-4ede-418c-b5e8-4cc648eb0062"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{plafond}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="53" uuid="15299dfc-4362-4dc0-bb00-9cc98856b693">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="53" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Date d'entrée]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="53" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(11ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField pattern="dd/MM/yyyy" isBlankWhenNull="true">
+								<reportElement x="0" y="0" width="49" height="20" uuid="ea6d4167-5f5b-44eb-97d9-12ec5f72d7e6"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dateEmbauche}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="54" uuid="aab68b9f-3d66-444c-91a3-4882cb1d1688">
+						<jr:tableHeader style="table_TH" height="21" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="54" height="20" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[Date de sortie]]></text>
+							</staticText>
+						</jr:tableHeader>
+						<jr:columnHeader style="table" height="13" rowSpan="1">
+							<staticText>
+								<reportElement x="0" y="0" width="54" height="13" uuid="b4682cd1-ce8c-4959-a2db-997d7f56803d"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font fontName="Times New Roman" size="8" isBold="true"/>
+								</textElement>
+								<text><![CDATA[(12ème)]]></text>
+							</staticText>
+						</jr:columnHeader>
+						<jr:detailCell style="style1" height="24" rowSpan="1">
+							<box topPadding="2" leftPadding="2" bottomPadding="2" rightPadding="2"/>
+							<textField pattern="">
+								<reportElement x="0" y="0" width="50" height="20" uuid="91bf7145-87a9-49e1-8384-f935a8d41455"/>
+								<textElement textAlignment="Center" verticalAlignment="Middle">
+									<font size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{dateDebauche}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<staticText>
+				<reportElement x="555" y="391" width="16" height="131" uuid="c6c1a283-a41a-4df3-b475-fbb1ff716a69"/>
+				<textElement verticalAlignment="Middle" rotation="Right">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<text><![CDATA[ELIYA PAIE - www.mccmr.com]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="86" width="246" height="15" uuid="bfd501f2-4887-4848-bfbc-6d7a2337c210"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="false"/>
+				</textElement>
+				<text><![CDATA[Cocher la case correspondante]]></text>
+			</staticText>
+			<line>
+				<reportElement x="0" y="104" width="554" height="1" uuid="c5b93011-e970-4423-b5b3-a3226d400d2a"/>
+				<graphicElement>
+					<pen lineWidth="3.0"/>
+				</graphicElement>
+			</line>
+			<staticText>
+				<reportElement x="2" y="155" width="552" height="20" uuid="9ff5e579-9da6-4bdc-a544-ce2b42b0ddc3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Calcul des cotisations]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="0" y="364" width="316" height="16" uuid="cd5fe743-7a57-47f7-a9b0-ef4e89442205"/>
+				<textElement>
+					<font fontName="Trebuchet MS" size="11"/>
+				</textElement>
+				<text><![CDATA[Le reglement peut etre effectue par _____________________]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="196" y="450" width="50" height="20" uuid="a926628f-8d92-40f9-ba6a-6b0f63e70c54"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Nombre]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="246" y="450" width="88" height="20" uuid="dc005e48-63a9-478c-8361-7b234f2ae300"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Trebuchet MS" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{DECLARATIONCNSSTRIM_NBSAL}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="30" splitType="Stretch">
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="10" width="554" height="20" backcolor="#CCCCCC" uuid="fe4790b8-5e61-45b4-8b99-f0ba311256e5"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy HH.mm.ss">
+				<reportElement x="0" y="10" width="100" height="20" uuid="a5c61471-e61b-4a1c-bb10-6c4decdda63e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="166" y="10" width="80" height="20" uuid="eff16dc9-6977-4f6c-86c7-b9bf7123afdb"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA["Page "+$V{PAGE_NUMBER}+" of"]]></textFieldExpression>
+			</textField>
+			<textField evaluationTime="Report">
+				<reportElement x="246" y="10" width="40" height="20" uuid="7e1e366a-a80b-4acc-8b3d-00991ef7cc0c"/>
+				<textElement verticalAlignment="Middle">
+					<font isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[" " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

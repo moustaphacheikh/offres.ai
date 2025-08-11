@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="bulletinPaie" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="a91a4708-681c-4658-8557-b305d92165eb">
+	<property name="ireport.zoom" value="1.5"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="table" fill="Solid">
+		<box>
+			<pen lineWidth="1.0" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TH" mode="Opaque" backcolor="#F0F8FF">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_CH" mode="Opaque" backcolor="#009999">
+		<box>
+			<pen lineWidth="0.5" lineColor="#000000"/>
+		</box>
+	</style>
+	<style name="table_TD" fill="Solid" hAlign="Left" vAlign="Middle" fontName="Arial" fontSize="8" isBold="false" isItalic="false" isUnderline="false">
+		<pen lineWidth="0.5" lineStyle="Dotted"/>
+	</style>
+	<subDataset name="DetailBulletinPaie" uuid="6bad3175-6bc6-48f5-9db1-5e215c500f75">
+		<field name="montant" class="java.lang.Double"/>
+		<field name="nombre" class="java.lang.Double"/>
+		<field name="base" class="java.lang.Double"/>
+		<field name="libelle" class="java.lang.String"/>
+		<field name="sens" class="java.lang.String"/>
+		<field name="codeRub" class="java.lang.Integer"/>
+	</subDataset>
+	<parameter name="paie_categorie" class="java.lang.String"/>
+	<parameter name="paie_BT" class="java.lang.Double"/>
+	<parameter name="paie_BNI" class="java.lang.Double"/>
+	<parameter name="paie_CNSS" class="java.lang.Double"/>
+	<parameter name="paie_ITS" class="java.lang.Double"/>
+	<parameter name="paie_retenuesBrut" class="java.lang.Double"/>
+	<parameter name="paie_retenuesNet" class="java.lang.Double"/>
+	<parameter name="paie_RITS" class="java.lang.Double"/>
+	<parameter name="paie_net" class="java.lang.Double"/>
+	<parameter name="paie_njt" class="java.lang.Double"/>
+	<parameter name="paie_nbrHS" class="java.lang.Double"/>
+	<parameter name="paie_CNAM" class="java.lang.Double"/>
+	<parameter name="paie_periodeLettre" class="java.lang.String"/>
+	<parameter name="paie_noCompteBanque" class="java.lang.String"/>
+	<parameter name="paie_modePaiement" class="java.lang.String"/>
+	<parameter name="paie_domicilie" class="java.lang.Boolean"/>
+	<parameter name="paie_paieDu" class="java.util.Date"/>
+	<parameter name="paie_paieAu" class="java.util.Date"/>
+	<parameter name="paie_biCNAM" class="java.lang.Double"/>
+	<parameter name="paie_biCNSS" class="java.lang.Double"/>
+	<parameter name="paie_RCNSS" class="java.lang.Double"/>
+	<parameter name="paie_RCNAM" class="java.lang.Double"/>
+	<parameter name="paie_biAVNAT" class="java.lang.Double"/>
+	<parameter name="paie_notePaie" class="java.lang.String"/>
+	<parameter name="motif_nom" class="java.lang.String"/>
+	<parameter name="paie_contratHeureMois" class="java.lang.Double"/>
+	<parameter name="paie_banque" class="java.lang.String"/>
+	<parameter name="paie_poste" class="java.lang.String"/>
+	<parameter name="paie_departement" class="java.lang.String"/>
+	<parameter name="employe_id" class="java.lang.Integer"/>
+	<parameter name="employe_nom" class="java.lang.String"/>
+	<parameter name="employe_noCNSS" class="java.lang.String"/>
+	<parameter name="employe_noCNAM" class="java.lang.String"/>
+	<parameter name="employe_contratHeureSemaine" class="java.lang.Integer"/>
+	<parameter name="employe_dateAnciennete" class="java.util.Date"/>
+	<parameter name="employe_nni" class="java.lang.String"/>
+	<parameter name="employe_dateEmbauche" class="java.util.Date"/>
+	<parameter name="employe_prenom" class="java.lang.String"/>
+	<parameter name="employe_idPsservice" class="java.lang.String"/>
+	<parameter name="PARAMGEN_NOMENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ACTIVITEENTREPRISE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_TELEPHONE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_FAX" class="java.lang.String"/>
+	<parameter name="PARAMGEN_ADRESSE" class="java.lang.String"/>
+	<parameter name="PARAMGEN_BD" class="java.lang.String"/>
+	<parameter name="PARAMGEN_SITEWEB" class="java.lang.String"/>
+	<parameter name="PARAMGEN_EMAIL" class="java.lang.String"/>
+	<parameter name="PARAMGEN_LOGO" class="java.io.InputStream"/>
+	<parameter name="PARAMGEN_PUB" class="java.lang.String"/>
+	<parameter name="DS1" class="java.util.Collection"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="145" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="1" y="90" width="554" height="25" backcolor="#CCCCCC" uuid="a0a59db3-10f2-4919-a8d1-319c8f32d686"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#333333"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="8" y="115" width="175" height="25" uuid="528d2af3-15fe-4b4b-8151-55da621106cc"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_periodeLettre}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="354" y="115" width="192" height="25" uuid="e54f684d-2bfb-4e03-840f-34c812b1d972"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{motif_nom}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="11" y="90" width="533" height="25" forecolor="#000000" backcolor="#CCCCCC" uuid="e2955fc8-4246-4414-95df-933fa6836bda"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BULLETIN DE PAIE]]></text>
+			</staticText>
+			<textField>
+				<reportElement x="7" y="0" width="435" height="15" uuid="5c9a7c2d-7273-42ac-a2eb-7c51ec5cd383"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="12" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_NOMENTREPRISE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="8" y="32" width="435" height="12" uuid="a1be89b3-3375-4b31-9f12-5ed18b28737e"/>
+				<textElement verticalAlignment="Bottom">
+					<font fontName="Arial" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_TELEPHONE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="44" width="436" height="24" uuid="83717acc-1887-40d3-8ad4-a125f3ae84d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_ADRESSE}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement x="7" y="68" width="437" height="15" uuid="9c6b404b-3f81-4915-a86e-ccc067d98707"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_EMAIL}+"    / "+$P{PARAMGEN_SITEWEB}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="183" y="115" width="16" height="25" uuid="bc0184dd-6461-4243-bbdc-6cfa46a2b380"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DU]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="262" y="115" width="23" height="25" uuid="bc0184dd-6461-4243-bbdc-6cfa46a2b380"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AU]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="199" y="115" width="63" height="25" backcolor="#CCCCCC" uuid="2701ace7-0f6f-4594-b4ff-cccdf0d2cc94"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_paieDu}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="285" y="115" width="68" height="25" backcolor="#CCCCCC" uuid="18db4734-a393-41ad-a5fd-9670c13f88a3"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="8"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_paieAu}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="10">
+				<reportElement mode="Transparent" x="1" y="115" width="554" height="25" uuid="9e2a94f4-a689-4830-b173-414b5312254a"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<image scaleImage="FillFrame">
+				<reportElement x="468" y="0" width="86" height="76" uuid="03f0c635-efc0-488c-8925-cd6cd978af0f"/>
+				<imageExpression><![CDATA[( $P{PARAMGEN_LOGO} == null ? null : $P{PARAMGEN_LOGO} )]]></imageExpression>
+			</image>
+			<textField isBlankWhenNull="true">
+				<reportElement x="8" y="15" width="435" height="17" uuid="47c85409-d8ac-4e3d-a838-a872161a52bd"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{PARAMGEN_ACTIVITEENTREPRISE}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="112" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement mode="Opaque" x="1" y="92" width="553" height="20" backcolor="#CCCCCC" uuid="9ba28aea-7aa9-4b2b-84aa-5daf3eb0454a"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<rectangle radius="10">
+				<reportElement mode="Transparent" x="1" y="0" width="553" height="81" uuid="9e2a94f4-a689-4830-b173-414b5312254a"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<textField>
+				<reportElement x="275" y="1" width="271" height="20" uuid="dc60738d-6e22-43fa-bdac-97ef099536c6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_prenom}+" "+$P{employe_nom}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="72" y="1" width="37" height="20" backcolor="#CCCCCC" uuid="122908b0-6f51-4fce-b757-087733d4c589"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_id}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="10" y="1" width="62" height="20" uuid="4b753912-c324-4f6b-a513-8c5fad0a1d8c"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MATRICULE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="189" y="1" width="85" height="20" uuid="5f4eb85c-b803-4b3f-99fc-1aa1b393bab4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[PRENOM ET NOM]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="59" width="62" height="20" uuid="badafac4-89cd-4a96-b163-0c3beed74019"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[EMBAUCHE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="132" y="60" width="66" height="20" uuid="0dcb4fed-50e1-4ddf-8182-70b7972668bc"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ANCIENNETE]]></text>
+			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="197" y="59" width="57" height="21" backcolor="#CCCCCC" uuid="8720002d-0a39-45c7-b781-9283325d7f76"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_dateAnciennete}]]></textFieldExpression>
+			</textField>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement mode="Transparent" x="72" y="60" width="60" height="20" backcolor="#CCCCCC" uuid="03f48d4d-3c31-46dc-aff4-15133ce55cb4"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_dateEmbauche}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="189" y="21" width="57" height="20" uuid="690e4d2d-6538-48ab-9582-b2cfca232050"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° CNAM]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="245" y="21" width="78" height="20" backcolor="#CCCCCC" uuid="f46676c3-c080-45ba-a522-30b4dbb4141c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_noCNAM}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="341" y="60" width="25" height="20" uuid="a44ddb96-2509-4625-ab37-361e595c0a76"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CAT.]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="366" y="60" width="47" height="20" backcolor="#CCCCCC" uuid="b77ebb5f-72de-4a08-8358-7f99b7d9c5ac"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_categorie}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="270" y="40" width="84" height="20" uuid="c26e6948-6a2e-46b7-9736-961d6e7da47f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[DEPARTEMENT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="39" width="62" height="20" uuid="856c13d0-7c48-404b-b4d4-59b19bf6d17f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[POSTE]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="354" y="40" width="192" height="20" backcolor="#CCCCCC" uuid="2638b532-48fc-4aac-ada7-df7adc6f59a1"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_departement}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="72" y="40" width="198" height="20" backcolor="#CCCCCC" uuid="1ee9b49c-8461-4b62-a0c1-4d9d0f58b47f"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_poste}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="413" y="60" width="31" height="20" uuid="ba1b9f21-4e01-4600-ae18-3baec67157ed"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NJT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="487" y="60" width="21" height="20" uuid="2ecfce8c-c7ba-496f-bf83-5c71ef77ae63"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HS]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement mode="Transparent" x="444" y="60" width="32" height="20" backcolor="#CCCCCC" uuid="cf1cef48-2dbc-4d57-89ca-1da0a17d9cb9"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_njt}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0.00">
+				<reportElement mode="Transparent" x="508" y="60" width="38" height="20" backcolor="#CCCCCC" uuid="f7edba0c-a667-4d38-806f-7f16b9a998c1"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_nbrHS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Transparent" x="385" y="92" width="90" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="59539ba3-d076-451d-b404-aa433445ed16"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NOMBRE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="297" y="92" width="90" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="8e931449-3597-4963-9d1f-9be0145b1b9c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BASE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="475" y="92" width="80" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="7cd1d039-ed3d-4d0f-8c59-f8afb71ad3c8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MONTANT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="43" y="92" width="254" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="1373ec26-a03f-41aa-b551-faa5080b3276"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[INTITULE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Transparent" x="0" y="92" width="43" height="20" forecolor="#000000" backcolor="#FFFFFF" uuid="8e931449-3597-4963-9d1f-9be0145b1b9c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CODE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="20" width="62" height="20" uuid="ee964e78-befd-492e-aa0f-ebcbafccc5d7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° CNSS]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Transparent" x="72" y="21" width="77" height="20" backcolor="#CCCCCC" uuid="4877186f-8cae-4d99-b5a6-2c17050c5f4f"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{employe_noCNSS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="341" y="21" width="25" height="20" uuid="690e4d2d-6538-48ab-9582-b2cfca232050"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[NNI]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="366" y="21" width="180" height="20" uuid="97dd9e0b-ec34-4e5f-a99c-1b84ff4a16a8"/>
+				<textElement verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{employe_nni}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="268" y="60" width="29" height="21" uuid="ee964e78-befd-492e-aa0f-ebcbafccc5d7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[HM/C]]></text>
+			</staticText>
+			<textField pattern="#,##0.00">
+				<reportElement mode="Transparent" x="296" y="60" width="32" height="20" backcolor="#CCCCCC" uuid="20b9405d-e1fd-4c87-bdde-00d4f33d418c"/>
+				<textElement textAlignment="Left" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$P{paie_contratHeureMois}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement mode="Transparent" x="109" y="1" width="74" height="20" backcolor="#CCCCCC" uuid="b9afdceb-1580-4623-890a-f42e84be45bb"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="10" isBold="true"/>
+				</textElement>
+				<textFieldExpression><![CDATA[!$P{employe_idPsservice}.equals("0") ? "/ "+$P{employe_idPsservice} : " "]]></textFieldExpression>
+			</textField>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="339" splitType="Stretch">
+			<rectangle radius="10">
+				<reportElement x="0" y="1" width="554" height="330" uuid="f8c94f0a-5768-41c5-8d35-6e09c0c97d7c"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<componentElement>
+				<reportElement key="table" mode="Transparent" x="1" y="1" width="553" height="326" forecolor="#000000" uuid="f6273317-06dc-4226-b2da-612d8b983e3f"/>
+				<jr:table xmlns:jr="http://jasperreports.sourceforge.net/jasperreports/components" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports/components http://jasperreports.sourceforge.net/xsd/components.xsd">
+					<datasetRun subDataset="DetailBulletinPaie" uuid="b031598c-fbc7-418d-ae52-565f8b9f0ee4">
+						<dataSourceExpression><![CDATA[new net.sf.jasperreports.engine.data.JRBeanCollectionDataSource($P{DS1})]]></dataSourceExpression>
+					</datasetRun>
+					<jr:column width="43" uuid="ee515db2-f46b-4ed2-b77f-0a8764ba60fa">
+						<jr:detailCell height="15" rowSpan="1">
+							<textField>
+								<reportElement style="table_TD" mode="Transparent" x="0" y="0" width="33" height="15" uuid="c321d314-a3b2-41e6-9bd2-f58e0af0e933"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{codeRub}.toString()+"-"+$F{sens}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="229" uuid="874ffc88-c123-4253-b1c6-85654c27f888">
+						<jr:detailCell height="15" rowSpan="1">
+							<textField>
+								<reportElement style="table_TD" mode="Transparent" x="10" y="0" width="219" height="15" uuid="f1339c4a-ee01-4cd9-9e8a-c00a24e7482e"/>
+								<textElement verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{libelle}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="100" uuid="20340be6-548b-4150-bb48-d471b2bc17b7">
+						<jr:detailCell height="15" rowSpan="1">
+							<textField pattern="#,##0.0000">
+								<reportElement style="table_TD" mode="Transparent" x="0" y="0" width="90" height="15" uuid="28594c44-2ccd-47ce-9e34-c478fddc834a"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{base}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="97" uuid="583f4f60-5a55-4797-b822-56e7d7026825">
+						<jr:detailCell height="15" rowSpan="1">
+							<textField pattern="#,##0.0000">
+								<reportElement style="table_TD" mode="Transparent" x="0" y="0" width="90" height="15" uuid="d040f12a-6e12-45b0-a10f-634dc700b7ee"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{nombre}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+					<jr:column width="86" uuid="f2cc9058-4d83-4365-ad1c-7a6e5d47d016">
+						<jr:detailCell height="15" rowSpan="1">
+							<textField pattern="#,##0">
+								<reportElement style="table_TD" mode="Transparent" x="0" y="0" width="75" height="15" uuid="546456c7-f3ff-49c3-a5b0-57990a1545b4"/>
+								<textElement textAlignment="Right" verticalAlignment="Middle">
+									<font fontName="Arial" size="8"/>
+								</textElement>
+								<textFieldExpression><![CDATA[$F{montant}]]></textFieldExpression>
+							</textField>
+						</jr:detailCell>
+					</jr:column>
+				</jr:table>
+			</componentElement>
+			<line>
+				<reportElement x="43" y="0" width="1" height="327" forecolor="#999999" uuid="820f3be5-6d2b-4cf9-b6dd-8344bf5b4632"/>
+			</line>
+			<line>
+				<reportElement x="296" y="0" width="1" height="327" forecolor="#999999" uuid="4a772778-3a1d-4a3c-8e36-8514e8332884"/>
+			</line>
+			<line>
+				<reportElement x="384" y="0" width="1" height="327" forecolor="#999999" uuid="29351c58-5a4f-4487-950d-b07928764a11"/>
+			</line>
+			<line>
+				<reportElement x="474" y="0" width="1" height="327" forecolor="#999999" uuid="11968e79-80e1-41f6-99ef-5d0b37a2e89c"/>
+			</line>
+		</band>
+		<band height="172">
+			<rectangle radius="10">
+				<reportElement mode="Transparent" x="1" y="120" width="554" height="47" uuid="f7e810bf-b428-46e2-a615-e45ef702abad"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="170" y="88" width="105" height="20" backcolor="#CCCCCC" uuid="933ad7fb-21fb-46f2-9b2a-387f9fec411b"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_banque}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="128" y="88" width="42" height="20" uuid="bae3358c-8c5f-4f2e-b9bc-f9cc85413dab"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[BANQUE]]></text>
+			</staticText>
+			<textField>
+				<reportElement mode="Opaque" x="71" y="88" width="52" height="20" backcolor="#CCCCCC" uuid="240572ed-d1bf-4164-a949-f5177e5314a6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_modePaiement}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="279" y="88" width="54" height="20" uuid="d599b13e-16df-4c90-8ca4-7d3d0e75c3d9"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[N° COMPTE]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="10" y="88" width="61" height="20" uuid="84211b6c-6b0d-4fa3-ac1c-27fa0c0c7dda"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[MODE PAIE]]></text>
+			</staticText>
+			<textField pattern="Oui/Non">
+				<reportElement mode="Transparent" x="452" y="88" width="103" height="20" backcolor="#CCCCCC" uuid="f8f08485-a428-403b-acab-3594855c9e14"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $P{paie_domicilie} ? "CPTE DOMICILIE" : "" )]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="true">
+				<reportElement mode="Opaque" x="333" y="88" width="118" height="20" backcolor="#CCCCCC" uuid="a2c45204-1f20-44e1-915b-fa81f2bda83a"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_noCompteBanque}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement mode="Opaque" x="8" y="114" width="67" height="13" uuid="93108c4a-0237-4900-867f-b1d8375df702"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[OBSERVATION]]></text>
+			</staticText>
+			<textField isBlankWhenNull="true">
+				<reportElement x="8" y="127" width="538" height="40" uuid="a19b1da1-8a49-4008-b75e-bafe12e57b65"/>
+				<textElement verticalAlignment="Top">
+					<font fontName="Arial" size="9"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_notePaie}]]></textFieldExpression>
+			</textField>
+			<rectangle radius="10">
+				<reportElement mode="Transparent" x="-1" y="88" width="555" height="20" uuid="35db45da-404b-445c-a6a6-6d061d75411a"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<textField isBlankWhenNull="true">
+				<reportElement x="557" y="2" width="12" height="169" uuid="9d211195-1815-4c03-92b5-d9264909a21a"/>
+				<textElement verticalAlignment="Bottom" rotation="Right">
+					<font fontName="Arial" size="7"/>
+				</textElement>
+				<textFieldExpression><![CDATA[( $P{PARAMGEN_PUB} == null || $P{PARAMGEN_PUB}.isEmpty() ? "ELIYA PAIE - www.mccmr.com" : $P{PARAMGEN_PUB} )]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="84" y="2" width="90" height="20" backcolor="#CCCCCC" uuid="ee1f3a2e-0d4f-4162-b88e-a5d5c30f4011"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_BT}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="84" y="42" width="90" height="20" backcolor="#CCCCCC" uuid="b6704a5e-8634-4fb1-a081-511372e53ea7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_CNSS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="11" y="2" width="73" height="20" uuid="4e6732c5-e954-493a-b29b-a3a274c052ce"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALAIRE BRUT]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="378" y="45" width="165" height="16" uuid="d65d0f06-daf9-4ea7-9495-03c7a5654d18"/>
+				<textElement textAlignment="Center" verticalAlignment="Bottom">
+					<font size="11" isBold="true"/>
+				</textElement>
+				<text><![CDATA[RESTE A PAYER]]></text>
+			</staticText>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="268" y="23" width="90" height="20" backcolor="#CCCCCC" uuid="541e98d7-f9cc-462b-b66a-68fa91cc230a"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RITS}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="378" y="3" width="74" height="20" uuid="5cb58ac4-636a-45ee-94e1-9e7fe9e43382"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[SALAIRE NET]]></text>
+			</staticText>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="378" y="62" width="165" height="22" backcolor="#CCCCCC" uuid="8aa2c66b-97f8-45fa-999e-f1c917835978"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="16" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_net}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="194" y="3" width="74" height="20" uuid="64147fcf-19f3-461f-8140-8f68811937f7"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TOTAL GAIN]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="42" width="73" height="20" uuid="e0b07bd1-5c44-4156-99c0-26430d18bd5d"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[CNSS]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="11" y="22" width="73" height="20" uuid="7fb3093d-7d8b-4844-be13-c7fee9095f78"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[ITS]]></text>
+			</staticText>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="84" y="22" width="90" height="20" backcolor="#CCCCCC" uuid="8be7dfb2-c543-4ceb-8eaa-0f5372ad4d2d"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_ITS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="268" y="3" width="90" height="20" backcolor="#CCCCCC" uuid="21f8bd14-62d9-4a9f-ad54-353b1bcd3930"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_BT}+$P{paie_RITS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="452" y="3" width="90" height="20" backcolor="#CCCCCC" uuid="f925101b-babf-4e98-adb5-79ed0a919bd3"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_retenuesNet}+$P{paie_net}]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="84" y="62" width="90" height="20" backcolor="#CCCCCC" uuid="1fe732a2-5260-41f1-a8f0-7b99b5b7ed38"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_CNAM}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="10" y="61" width="73" height="20" backcolor="#FFFFFF" uuid="724f74e4-2f07-4182-8c68-8be90b1bbb12"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_CNAM} > 0d ? "CNAM" : ""]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="268" y="43" width="90" height="20" backcolor="#CCCCCC" uuid="e366c47f-628a-40c5-b192-2f83dfd23a0e"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RCNSS}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="194" y="44" width="74" height="20" backcolor="#FFFFFF" uuid="e2414871-f7e9-40fa-999b-ffe6e51a5aaa"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RCNSS} > 0d ? "REMB. CNSS" : ""]]></textFieldExpression>
+			</textField>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="268" y="63" width="90" height="20" backcolor="#CCCCCC" uuid="53e46f83-ee30-4d85-910a-8fde0dcc2ed7"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RCNAM}]]></textFieldExpression>
+			</textField>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="194" y="64" width="74" height="20" backcolor="#FFFFFF" uuid="2dad9334-6578-4329-aed0-436f5ab492f6"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RCNAM} > 0d ? "REMB. CNAM" : ""]]></textFieldExpression>
+			</textField>
+			<rectangle radius="10">
+				<reportElement mode="Transparent" x="1" y="2" width="553" height="82" uuid="ec9d4745-9968-42ea-a85e-4d9d006f1f18"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#666666"/>
+				</graphicElement>
+			</rectangle>
+			<textField pattern="#,##0" isBlankWhenNull="false">
+				<reportElement mode="Opaque" x="452" y="23" width="90" height="20" backcolor="#CCCCCC" uuid="cf2051d0-0061-4a9a-8d4f-5f9108856628"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="false"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_biAVNAT}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="378" y="23" width="74" height="20" uuid="cc8b6eb5-e134-458a-8db7-ab2b53d25987"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+				</textElement>
+				<text><![CDATA[AV. NAT.]]></text>
+			</staticText>
+			<textField pattern="">
+				<reportElement mode="Opaque" x="194" y="25" width="74" height="20" backcolor="#FFFFFF" uuid="9166a7c6-2880-4e51-a88d-6cf6efe10b48"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Arial" size="9" isBold="true"/>
+					<paragraph leftIndent="3" rightIndent="3"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$P{paie_RITS} > 0d ? "REMB. ITS" : ""]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="22">
+			<staticText>
+				<reportElement mode="Transparent" x="1" y="0" width="554" height="20" backcolor="#CCCCCC" uuid="fe4790b8-5e61-45b4-8b99-f0ba311256e5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="8" isBold="false"/>
+				</textElement>
+				<text><![CDATA[NB: Pour vous aider à faire valoir vos droits, conservez ce bulletin de paie sans limitation de durée.]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+</jasperReport>

@@ -1,0 +1,93 @@
+{
+	"meta": {
+		"generatedAt": "2025-08-11T21:36:03.574Z",
+		"tasksAnalyzed": 10,
+		"totalTasks": 10,
+		"analysisCount": 10,
+		"thresholdScore": 5,
+		"projectName": "Task Master",
+		"usedResearch": false
+	},
+	"complexityAnalysis": [
+		{
+			"taskId": 1,
+			"taskTitle": "Django Project Setup and Configuration",
+			"complexityScore": 4,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Break down Django project initialization into: 1) Create project structure with core/employees/payroll/attendance/reports/compliance apps, 2) Configure PostgreSQL database settings, 3) Install and configure Django REST framework, 4) Set up Celery for async tasks, 5) Configure static files and media handling, 6) Implement development/production settings modules, 7) Set up logging configuration, 8) Create requirements.txt with all dependencies including specific versions",
+			"reasoning": "Standard Django setup with multiple apps. Moderate complexity due to specific payroll requirements and PostgreSQL configuration. No existing Django code to leverage."
+		},
+		{
+			"taskId": 2,
+			"taskTitle": "Core Django Models Implementation",
+			"complexityScore": 9,
+			"recommendedSubtasks": 12,
+			"expansionPrompt": "Implement Django models by entity groups: 1) Employee model with 72 fields and audit fields, 2) Organizational models (Department, Position, Direction, GeneralDirection), 3) Payroll core models (Payroll, PayrollElement, SalaryGrade), 4) Banking and financial models (Bank, PayrollMotif), 5) User model with 22 permission flags, 6) Time tracking models (TimeClockData, DailyWorkRecord, WeeklyOvertime), 7) Leave management models, 8) Child and dependent models, 9) Deduction and installment models, 10) Activity and status models, 11) Declaration models (CNSS, CNAM), 12) Create migrations and test model relationships",
+			"reasoning": "Extremely complex due to 37+ entities from Java codebase analysis, Employee model has 72 fields, complex relationships, and regulatory compliance requirements. This is the foundation for the entire system."
+		},
+		{
+			"taskId": 3,
+			"taskTitle": "Authentication and User Management System",
+			"complexityScore": 6,
+			"recommendedSubtasks": 8,
+			"expansionPrompt": "Build authentication system: 1) Extend AbstractUser with 22 permission flags, 2) Implement secure password hashing and validation, 3) Create login/logout views with session management, 4) Build role-based access control decorators, 5) Implement user management interface, 6) Add password complexity requirements, 7) Implement account lockout mechanisms, 8) Create permission-based menu system",
+			"reasoning": "Complex custom user model with 22 permission flags based on Java User entity. Requires extending Django's auth system and implementing granular permission control across all modules."
+		},
+		{
+			"taskId": 4,
+			"taskTitle": "Employee Management Module",
+			"complexityScore": 7,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Implement employee management: 1) Create employee CRUD views with 72-field form validation, 2) Build advanced search and filtering system, 3) Implement organizational structure management with hierarchy, 4) Create document management with upload and expiration tracking, 5) Build employee termination workflow with calculations, 6) Add bulk import from Excel/CSV with validation, 7) Create comprehensive employee profile pages, 8) Implement employee photo and document storage, 9) Add employee history tracking, 10) Build employee reporting and export features",
+			"reasoning": "High complexity due to 72-field employee records from Java analysis, document management, bulk operations, and complex organizational relationships. Critical for system usability."
+		},
+		{
+			"taskId": 5,
+			"taskTitle": "Time Clock Integration and Attendance Processing",
+			"complexityScore": 8,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Build attendance system: 1) Implement HIKVISION CSV import processing, 2) Add ZKTecho database integration, 3) Create attendance calculation engine with progressive overtime (115%→140%→150%→200%), 4) Implement night shift premium calculations after 22:00, 5) Build holiday premium processing (50% and 100% rates), 6) Create 21-field work schedule matrix management, 7) Implement leave management with accrual tracking, 8) Build attendance monitoring dashboard, 9) Create exception reporting for missing punches, 10) Add attendance validation and correction tools",
+			"reasoning": "Complex integration with multiple time clock devices, sophisticated overtime calculations found in Java FonctionsPaie class, and complex business rules for Mauritanian labor law."
+		},
+		{
+			"taskId": 6,
+			"taskTitle": "Advanced Payroll Calculation Engine",
+			"complexityScore": 10,
+			"recommendedSubtasks": 14,
+			"expansionPrompt": "Implement payroll engine: 1) Build F01-F25 calculation functions based on Java FonctionsPaie, 2) Implement progressive ITS tax calculations (15%/20%/25% nationals, 7.5%/20%/25% expatriates), 3) Create CNSS calculations with 15,000 MRU ceiling, 4) Implement CNAM calculations (uncapped), 5) Build multi-motif payroll processing, 6) Create formula evaluation engine with mathematical expressions, 7) Implement cross-reference calculations between payroll elements, 8) Add seniority and service-based calculations, 9) Build daily/hourly salary computations, 10) Implement severance calculations, 11) Add regional minimum wage functions, 12) Create payroll validation rules, 13) Implement payroll approval workflows, 14) Build payroll calculation testing framework",
+			"reasoning": "Most complex task - requires implementing 25+ mathematical functions from Java analysis, complex Mauritanian tax regulations, multi-motif processing, and sophisticated formula evaluation engine. Critical business logic."
+		},
+		{
+			"taskId": 7,
+			"taskTitle": "Banking Integration and Payment Processing",
+			"complexityScore": 7,
+			"recommendedSubtasks": 9,
+			"expansionPrompt": "Build banking integration: 1) Implement UNL file generation with 58-field structure from Java analysis, 2) Create multi-bank format support, 3) Build employee salary payment processing with validation, 4) Implement cost center analysis system, 5) Create accounting integration with double-entry journal generation, 6) Build payment reconciliation features, 7) Add financial reporting for management, 8) Implement bank account management for employees, 9) Create payment status tracking and error handling",
+			"reasoning": "Complex financial integration with multiple bank formats, UNL file structure with 58 fields from codebase analysis, accounting system integration, and reconciliation processes."
+		},
+		{
+			"taskId": 8,
+			"taskTitle": "Regulatory Compliance and Declaration System",
+			"complexityScore": 9,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Build compliance system: 1) Implement CNSS declaration generation with proper aggregation, 2) Create CNAM declaration processing, 3) Build ITS declaration system, 4) Implement compliance monitoring with deadline tracking, 5) Create automated regulatory alerts, 6) Build report templates matching government formats, 7) Implement year-end tax processing, 8) Create employee tax documentation, 9) Build audit trail system for compliance activities, 10) Implement regulatory parameter management with version control, 11) Add compliance validation and submission tracking",
+			"reasoning": "High complexity due to Mauritanian regulatory requirements, multiple declaration types (CNSS, CNAM, ITS), government format compliance, and audit trail requirements for regulatory oversight."
+		},
+		{
+			"taskId": 9,
+			"taskTitle": "Professional Reporting and Document Generation",
+			"complexityScore": 8,
+			"recommendedSubtasks": 11,
+			"expansionPrompt": "Build reporting system: 1) Implement PDF generation equivalent to JasperReports from existing .jrxml files, 2) Create professional payslip generation with branding, 3) Add multi-language support (French/Arabic), 4) Build management analytics and reporting, 5) Implement workforce analytics dashboards, 6) Create trend analysis and comparative reporting, 7) Add interactive dashboards with real-time metrics, 8) Implement export capabilities (PDF, Excel, CSV, UNL), 9) Create report scheduling system, 10) Build automated email distribution, 11) Add report template management",
+			"reasoning": "Complex reporting requirements equivalent to existing JasperReports system found in /report directory, multi-language support, professional formatting, and diverse export formats."
+		},
+		{
+			"taskId": 10,
+			"taskTitle": "System Administration and Advanced Features",
+			"complexityScore": 8,
+			"recommendedSubtasks": 10,
+			"expansionPrompt": "Build system administration: 1) Create system parameter configuration interface for 81+ settings, 2) Implement bulk operations with progress tracking and rollback, 3) Build license management with employee limits, 4) Add database performance optimization with indexing, 5) Implement query optimization and caching, 6) Create data backup and recovery procedures, 7) Build system monitoring dashboard with health checks, 8) Add multi-language localization support, 9) Implement MRU currency formatting, 10) Create system maintenance and cleanup tools",
+			"reasoning": "High complexity due to extensive system configuration (81+ parameters from Java analysis), bulk operations, license management, performance optimization, and comprehensive system administration features."
+		}
+	]
+}
