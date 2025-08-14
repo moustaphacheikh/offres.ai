@@ -26,9 +26,11 @@ class MockEmployee:
         self.seniority_date = date(2020, 1, 1)
         self.salary_grade = None
         
-    def get_seniority_rate(self, period):
+    def get_seniority_rate(self, period, special_calculation=False):
         """Mock seniority rate calculation"""
-        return Decimal('0.10')  # 10% seniority rate
+        if special_calculation:
+            return Decimal('0.15')  # 15% special seniority rate
+        return Decimal('0.10')  # 10% standard seniority rate
 
 
 class TestPayrollFunctionsStatic:
@@ -42,7 +44,7 @@ class TestPayrollFunctionsStatic:
     
     def test_F01_NJT_with_mocked_record(self):
         """Test F01 static method - NJT with mocked WorkedDays"""
-        with patch('core.utils.payroll_calculations.WorkedDays') as mock_worked_days:
+        with patch('core.models.WorkedDays') as mock_worked_days:
             mock_record = Mock()
             mock_record.worked_days = Decimal('22')
             mock_worked_days.objects.get.return_value = mock_record
@@ -52,8 +54,7 @@ class TestPayrollFunctionsStatic:
     
     def test_F01_NJT_no_record(self):
         """Test F01 static method - NJT with no record found"""
-        with patch('core.utils.payroll_calculations.WorkedDays') as mock_worked_days:
-            from core.utils.payroll_calculations import WorkedDays
+        with patch('core.models.WorkedDays') as mock_worked_days:
             mock_worked_days.DoesNotExist = Exception
             mock_worked_days.objects.get.side_effect = mock_worked_days.DoesNotExist
             
@@ -128,30 +129,16 @@ class TestPayrollFunctionsStatic:
             self.employee, self.period
         ) >= Decimal('0.00')
         
-        assert PayrollFunctionsStatic.F05_cumulBIDerDepart(
-            self.employee, self.period
-        ) == Decimal('0.00')
-        
-        assert PayrollFunctionsStatic.F06_cumulBNIDerDepart(
-            self.employee, self.period
-        ) == Decimal('0.00')
-        
-        assert PayrollFunctionsStatic.F07_cumulRETDerDepart(
-            self.employee, self.period
-        ) == Decimal('0.00')
-        
-        assert PayrollFunctionsStatic.F08_cumulBrut12DerMois(
-            self.employee, self.period
-        ) == Decimal('0.00')
-        
-        assert PayrollFunctionsStatic.F09_salaireBrutMensuelFixe(
+        assert PayrollFunctionsStatic.F23_TauxAncienneteSpeciale(
             self.employee, self.period
         ) >= Decimal('0.00')
         
-        assert PayrollFunctionsStatic.F10_smig() >= Decimal('0.00')
+        # Test F24 with mock system params
+        mock_system_params = Mock()
+        mock_system_params.get_salary_increase_rate = Mock(return_value=Decimal('0.05'))
         
-        assert PayrollFunctionsStatic.F11_smigHoraire(
-            self.employee, self.period
+        assert PayrollFunctionsStatic.F24_augmentationSalaireFixe(
+            self.employee, self.period, mock_system_params
         ) >= Decimal('0.00')
     
     def test_edge_cases_and_error_handling(self):

@@ -110,11 +110,10 @@ class TestPayrollCalculatorExtended:
         assert result == expected
     
     def test_calculate_cnam_employee_ceiling(self):
-        """Test CNAM employee calculation - at ceiling"""
-        base_salary = Decimal('60000')  # Above ceiling
+        """Test CNAM employee calculation - no ceiling applied"""
+        base_salary = Decimal('60000')  # CNAM has no ceiling
         result = self.calculator._calculate_cnam_employee(base_salary)
-        ceiling = self.system_parameters.get_cnam_ceiling()
-        expected = ceiling * self.system_parameters.cnam_employee_rate
+        expected = base_salary * self.system_parameters.cnam_employee_rate
         assert result == expected
     
     def test_calculate_cnam_employer(self):

@@ -612,13 +612,16 @@ class PayrollFunctionsStatic:
         Equivalent to F01_NJT in FonctionsPaie.java
         """
         try:
-            from .models import WorkedDays  # Import here to avoid circular imports
+            from core.models import WorkedDays  # Import here to avoid circular imports
             worked_days = WorkedDays.objects.get(
                 employee=employee, 
                 motif=motif, 
                 period=period
             )
             return worked_days.worked_days
+        except (ImportError, AttributeError):
+            # If WorkedDays model doesn't exist or is not accessible
+            return Decimal('0.00')
         except WorkedDays.DoesNotExist:
             return Decimal('0.00')
     

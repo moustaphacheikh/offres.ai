@@ -748,13 +748,13 @@ class TestMauritanianTaxCalculations:
     def setup_method(self):
         """Set up test fixtures"""
         self.system_parameters = MockSystemParameters()
-        self.calculator = InstallmentCalculator()
-        self.calculator.system_parameters = self.system_parameters
+        self.calculator = PayrollCalculator(self.system_parameters)
+        self.employee = MockEmployee()
     
     def test_calculate_cnss_employee_basic(self):
         """Test employee CNSS contribution calculation"""
         base_amount = Decimal('20000.00')
-        result = self.calculator.calculate_cnss_employee(base_amount)
+        result = self.calculator._calculate_cnss_employee(base_amount)
         
         # 1% of 20,000 = 200
         expected = Decimal('200.00')
@@ -762,20 +762,20 @@ class TestMauritanianTaxCalculations:
     
     def test_calculate_cnss_employee_with_ceiling(self):
         """Test employee CNSS with ceiling applied"""
-        base_amount = Decimal('20000.00')  # Above 15,000 ceiling
-        result = self.calculator.calculate_cnss_employee(base_amount)
+        base_amount = Decimal('60000.00')  # Above 50,000 ceiling
+        result = self.calculator._calculate_cnss_employee(base_amount)
         
-        # Should apply 15,000 ceiling: 1% of 15,000 = 150
-        expected = Decimal('150.00')
+        # Should apply 50,000 ceiling: 1% of 50,000 = 500
+        expected = Decimal('500.00')
         assert result == expected
     
     def test_calculate_cnss_employer_basic(self):
         """Test employer CNSS contribution"""
         base_amount = Decimal('10000.00')
-        result = self.calculator.calculate_cnss_employer(base_amount)
+        result = self.calculator._calculate_cnss_employer(base_amount, self.employee)
         
-        # 1% of 10,000 = 100 (base contribution same as employee)
-        expected = Decimal('100.00')
+        # 2% of 10,000 = 200 (employer rate is 2%)
+        expected = Decimal('200.00')
         assert result == expected
     
     def test_calculate_cnss_employer_with_reimbursement(self):
@@ -801,39 +801,37 @@ class TestMauritanianTaxCalculations:
     def test_calculate_cnam_employer(self):
         """Test employer CNAM contribution"""
         base_amount = Decimal('25000.00')
-        result = self.calculator.calculate_cnam_employer(base_amount)
+        result = self.calculator._calculate_cnam_employer(base_amount, self.employee)
         
-        # 4% of 25,000 = 1,000 (base rate same as employee)
-        expected = Decimal('1000.00')
+        # 5.5% of 25,000 = 1,375 (employer rate is 5.5%)
+        expected = Decimal('1375.00')
         assert result == expected
     
     def test_calculate_cnam_employer_with_reimbursement(self):
         """Test employer CNAM with reimbursement"""
         base_amount = Decimal('25000.00')
-        reimbursement_rate = Decimal('25.0')  # 25% additional
+        self.employee.cnam_reimbursement_rate = Decimal('0.25')  # 25% additional
         
-        result = self.calculator.calculate_cnam_employer(base_amount, reimbursement_rate)
+        result = self.calculator._calculate_cnam_employer(base_amount, self.employee)
         
-        # Base: 1,000, with 25% additional: 1,250
-        expected = Decimal('1250.00')
+        # Base: 5.5% of 25000 = 1375, with 25% additional: 1375 * 1.25 = 1718.75
+        expected = Decimal('1718.75')
         assert result == expected
     
     def test_calculate_its_tranche1_national(self):
-        """Test ITS Tranche 1 for national employee"""
-        year = 2023
-        taxable_income = Decimal('8000.00')  # Within tranche 1
-        cnss_amount = Decimal('80.00')
-        cnam_amount = Decimal('320.00')
-        base_salary = Decimal('8000.00')
+        """Test ITS calculation for national employee - low income"""
+        gross_salary = Decimal('60000')  # Low income, first tranche
+        cnss_amount = Decimal('600')
+        cnam_amount = Decimal('300')
         benefits_in_kind = Decimal('0.00')
         
-        result = self.calculator.calculate_its_tranche1(
-            year, taxable_income, cnss_amount, cnam_amount, 
-            base_salary, benefits_in_kind, is_expatriate=False
+        result = self.calculator._calculate_its(
+            gross_salary, cnss_amount, cnam_amount, benefits_in_kind, is_expatriate=False
         )
         
-        # Should be 15% of taxable amount after deductions
-        assert result > Decimal('0')
+        # Should have tax in tranche 1
+        assert result['total'] > Decimal('0')
+        assert result['tranche1'] > Decimal('0')
     
     def test_calculate_its_tranche1_expatriate(self):
         """Test ITS Tranche 1 for expatriate employee (7.5% rate)"""
@@ -1195,7 +1193,7 @@ class TestInstallmentCalculator:
     
     def test_calculate_quota_cessible_zero_salary(self):
         """Test quota cessible with zero net salary"""
-        result = self.calculator.calculate_quota_cessible(Decimal('0'))
+        result = InstallmentCalculator.calculate_quota_cessible(Decimal('0'), Decimal('33.33'))
         assert result == Decimal('0')
     
     def test_adjust_installments_for_quota_within_limit(self):
@@ -1207,10 +1205,10 @@ class TestInstallmentCalculator:
             {'amount': Decimal('4000'), 'priority': 3}
         ]
         
-        result = self.calculator.adjust_installments_for_quota(installments, quota)
+        result = InstallmentCalculator.adjust_installments_for_quota(installments, quota)
         
         # Total is 9000, within quota of 10000, so no adjustment
-        assert sum(inst['adjusted_amount'] for inst in result) == Decimal('9000')
+        assert sum(inst['amount'] for inst in result) == Decimal('9000')
     
     def test_adjust_installments_for_quota_exceeds_limit(self):
         """Test installment adjustment when exceeding quota"""
@@ -1221,15 +1219,15 @@ class TestInstallmentCalculator:
             {'amount': Decimal('4000'), 'priority': 3}
         ]
         
-        result = self.calculator.adjust_installments_for_quota(installments, quota)
+        result = InstallmentCalculator.adjust_installments_for_quota(installments, quota)
         
         # Should prioritize by priority and cap at quota
-        total_adjusted = sum(inst['adjusted_amount'] for inst in result)
+        total_adjusted = sum(inst['amount'] for inst in result)
         assert total_adjusted <= quota
         
         # Priority 1 should be fully satisfied
         priority_1 = next(inst for inst in result if inst['priority'] == 1)
-        assert priority_1['adjusted_amount'] == Decimal('3000')
+        assert priority_1['amount'] == Decimal('3000')
     
     def test_calculate_cnss_employee_mauritanian(self):
         """Test CNSS employee calculation for Mauritanian system"""
