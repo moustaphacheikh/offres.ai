@@ -21,3 +21,18 @@ from .payroll_elements import PayrollElement, PayrollElementFormula
 
 # Group 7: Time & Attendance
 from .time_attendance import TimeClockData, DailyWork, WeeklyOvertime, WorkWeek
+
+# Group 8: System Configuration
+from .system_config import SystemParameters, User
+
+# Group 9: Payroll Processing
+from .payroll_processing import Payroll, PayrollLineItem, WorkedDays
+
+# Group 10: Deductions & Benefits
+from .deductions_benefits import InstallmentDeduction, InstallmentTranche
+
+# Group 11: Compliance & Reporting
+from .compliance_reporting import CNSSDeclaration, CNAMDeclaration
+
+# Group 12: Accounting Integration
+from .accounting_integration import MasterPiece, DetailPiece
