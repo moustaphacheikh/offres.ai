@@ -297,6 +297,530 @@ class TestPayrollFunctions:
     def test_calculate_function_dispatcher(self):
         """Test the function dispatcher method"""
         # Test valid function codes
+        result = self.functions.calculate_function('F01', self.employee, self.motif, self.period)
+        assert isinstance(result, Decimal)
+        
+        # Test invalid function code
+        result = self.functions.calculate_function('F99', self.employee, self.motif, self.period)
+        assert result == Decimal('0.00')
+        
+        # Test empty function code
+        result = self.functions.calculate_function('', self.employee, self.motif, self.period)
+        assert result == Decimal('0.00')
+        
+        # Test None function code
+        result = self.functions.calculate_function(None, self.employee, self.motif, self.period)
+        assert result == Decimal('0.00')
+
+
+class TestPayrollCalculator:
+    """Test PayrollCalculator main calculation engine"""
+    
+    def setup_method(self):
+        """Set up test fixtures"""
+        self.system_parameters = MockSystemParameters()
+        self.calculator = PayrollCalculator(self.system_parameters)
+        self.employee = MockEmployee()
+        self.motif = Mock()
+        self.motif.employee_subject_to_cnss = True
+        self.motif.employee_subject_to_cnam = True
+        self.motif.employee_subject_to_its = True
+    
+    def test_calculate_payroll_basic(self):
+        """Test basic payroll calculation"""
+        result = self.calculator.calculate_payroll(
+            self.employee, self.motif, date(2023, 12, 1), date(2023, 12, 31)
+        )
+        
+        # Check that all expected keys are present
+        expected_keys = [
+            'gross_taxable', 'gross_non_taxable', 'cnss_employee', 'cnam_employee',
+            'its_total', 'its_tranche1', 'its_tranche2', 'its_tranche3',
+            'net_salary', 'employer_cnss', 'employer_cnam', 'benefits_in_kind'
+        ]
+        
+        for key in expected_keys:
+            assert key in result
+            assert isinstance(result[key], Decimal)
+    
+    def test_calculate_cnss_employee(self):
+        """Test employee CNSS contribution calculation"""
+        base_amount = Decimal('50000.00')
+        result = self.calculator._calculate_cnss_employee(base_amount)
+        
+        # Should apply ceiling and calculate 1%
+        ceiling = self.system_parameters.plafond_cnss
+        taxable_amount = min(base_amount, ceiling)
+        expected = taxable_amount * self.system_parameters.taux_cnss_employe
+        expected = expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        assert result == expected
+    
+    def test_calculate_cnss_employer(self):
+        """Test employer CNSS contribution calculation"""
+        base_amount = Decimal('50000.00')
+        self.employee.cnss_reimbursement_rate = None
+        
+        result = self.calculator._calculate_cnss_employer(base_amount, self.employee)
+        
+        # Should calculate base employer rate
+        ceiling = self.system_parameters.plafond_cnss
+        taxable_amount = min(base_amount, ceiling)
+        expected = taxable_amount * self.system_parameters.taux_cnss_employeur
+        expected = expected.quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        assert result == expected
+    
+    def test_calculate_cnss_employer_with_reimbursement(self):
+        """Test employer CNSS with reimbursement rate"""
+        base_amount = Decimal('50000.00')
+        self.employee.cnss_reimbursement_rate = Decimal('0.10')  # 10% additional
+        
+        result = self.calculator._calculate_cnss_employer(base_amount, self.employee)
+        
+        ceiling = self.system_parameters.plafond_cnss
+        taxable_amount = min(base_amount, ceiling)
+        base_rate = self.system_parameters.taux_cnss_employeur
+        adjusted_rate = base_rate * (Decimal('1.00') + self.employee.cnss_reimbursement_rate)
+        expected = (taxable_amount * adjusted_rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        assert result == expected
+    
+    def test_calculate_cnam_employee(self):
+        """Test employee CNAM contribution calculation"""
+        base_amount = Decimal('50000.00')
+        result = self.calculator._calculate_cnam_employee(base_amount)
+        
+        expected = (base_amount * self.system_parameters.taux_cnam_employe).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        assert result == expected
+    
+    def test_calculate_cnam_employer(self):
+        """Test employer CNAM contribution calculation"""
+        base_amount = Decimal('50000.00')
+        self.employee.cnam_reimbursement_rate = None
+        
+        result = self.calculator._calculate_cnam_employer(base_amount, self.employee)
+        
+        expected = (base_amount * self.system_parameters.taux_cnam_employeur).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        assert result == expected
+    
+    def test_calculate_cnam_employer_with_reimbursement(self):
+        """Test employer CNAM with reimbursement rate"""
+        base_amount = Decimal('50000.00')
+        self.employee.cnam_reimbursement_rate = Decimal('0.05')  # 5% additional
+        
+        result = self.calculator._calculate_cnam_employer(base_amount, self.employee)
+        
+        base_rate = self.system_parameters.taux_cnam_employeur
+        adjusted_rate = base_rate * (Decimal('1.00') + self.employee.cnam_reimbursement_rate)
+        expected = (base_amount * adjusted_rate).quantize(Decimal('0.01'), rounding=ROUND_HALF_UP)
+        
+        assert result == expected
+    
+    def test_calculate_its_basic(self):
+        """Test basic ITS calculation"""
+        taxable_income = Decimal('15000.00')  # Between tranche 1 and 2
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('600.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        result = self.calculator._calculate_its(
+            taxable_income, cnss_amount, cnam_amount, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Should have positive amounts
+        assert result['total'] >= Decimal('0')
+        assert result['tranche1'] >= Decimal('0')
+        assert result['tranche2'] >= Decimal('0')
+        assert result['tranche3'] == Decimal('0.00')  # Income too low for tranche 3
+        
+        # Total should equal sum of tranches
+        assert result['total'] == result['tranche1'] + result['tranche2'] + result['tranche3']
+    
+    def test_calculate_its_expatriate(self):
+        """Test ITS calculation for expatriate (reduced rates)"""
+        taxable_income = Decimal('15000.00')
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('600.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        national_result = self.calculator._calculate_its(
+            taxable_income, cnss_amount, cnam_amount, benefits_in_kind, is_expatriate=False
+        )
+        
+        expatriate_result = self.calculator._calculate_its(
+            taxable_income, cnss_amount, cnam_amount, benefits_in_kind, is_expatriate=True
+        )
+        
+        # Expatriate should pay less tax
+        assert expatriate_result['total'] < national_result['total']
+    
+    def test_calculate_its_high_income(self):
+        """Test ITS calculation for high income (all 3 tranches)"""
+        taxable_income = Decimal('50000.00')  # High enough for all tranches
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('2000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        result = self.calculator._calculate_its(
+            taxable_income, cnss_amount, cnam_amount, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Should have amounts in all tranches
+        assert result['tranche1'] > Decimal('0')
+        assert result['tranche2'] > Decimal('0')
+        assert result['tranche3'] > Decimal('0')
+        
+        # Total should equal sum
+        assert result['total'] == result['tranche1'] + result['tranche2'] + result['tranche3']
+    
+    def test_get_payroll_line_items_empty(self):
+        """Test getting payroll line items returns empty list by default"""
+        result = self.calculator._get_payroll_line_items(self.employee, self.motif, date(2023, 12, 1))
+        assert result == []
+
+
+class TestOvertimeCalculator:
+    """Test overtime calculation utilities"""
+    
+    def test_calculate_overtime_rates_no_overtime(self):
+        """Test overtime calculation with no overtime hours"""
+        result = OvertimeCalculator.calculate_overtime_rates(Decimal('8.00'), Decimal('8.00'))
+        
+        assert result['ot_115'] == Decimal('0.00')
+        assert result['ot_140'] == Decimal('0.00')
+        assert result['ot_150'] == Decimal('0.00')
+        assert result['ot_200'] == Decimal('0.00')
+    
+    def test_calculate_overtime_rates_first_bracket(self):
+        """Test overtime in first bracket (115%)"""
+        result = OvertimeCalculator.calculate_overtime_rates(Decimal('12.00'), Decimal('8.00'))
+        
+        assert result['ot_115'] == Decimal('4.00')  # 4 hours in first bracket
+        assert result['ot_140'] == Decimal('0.00')
+        assert result['ot_150'] == Decimal('0.00')
+        assert result['ot_200'] == Decimal('0.00')
+    
+    def test_calculate_overtime_rates_multiple_brackets(self):
+        """Test overtime spanning multiple brackets"""
+        result = OvertimeCalculator.calculate_overtime_rates(Decimal('20.00'), Decimal('8.00'))
+        
+        assert result['ot_115'] == Decimal('8.00')  # Hours 9-16 (8 hours max in first bracket)
+        assert result['ot_140'] == Decimal('4.00')  # Hours 17-20 (4 hours in second bracket)
+        assert result['ot_150'] == Decimal('0.00')
+        assert result['ot_200'] == Decimal('0.00')
+    
+    def test_calculate_overtime_rates_all_brackets(self):
+        """Test overtime in all brackets"""
+        result = OvertimeCalculator.calculate_overtime_rates(Decimal('25.00'), Decimal('8.00'))
+        
+        assert result['ot_115'] == Decimal('8.00')  # Hours 9-16 (8 hours max)
+        assert result['ot_140'] == Decimal('6.00')  # Hours 17-22 (6 hours max)
+        assert result['ot_150'] == Decimal('3.00')  # Hours 23-25 (3 hours remaining)
+        assert result['ot_200'] == Decimal('0.00')
+    
+    def test_calculate_overtime_amounts(self):
+        """Test overtime amount calculations"""
+        overtime_rates = {
+            'ot_115': Decimal('4.00'),
+            'ot_140': Decimal('2.00'),
+            'ot_150': Decimal('1.00'),
+            'ot_200': Decimal('0.50')
+        }
+        hourly_rate = Decimal('100.00')
+        
+        result = OvertimeCalculator.calculate_overtime_amounts(overtime_rates, hourly_rate)
+        
+        assert result['ot_115_amount'] == Decimal('460.00')  # 4 * 100 * 1.15
+        assert result['ot_140_amount'] == Decimal('280.00')  # 2 * 100 * 1.40
+        assert result['ot_150_amount'] == Decimal('150.00')  # 1 * 100 * 1.50
+        assert result['ot_200_amount'] == Decimal('100.00')  # 0.5 * 100 * 2.00
+
+
+class TestInstallmentCalculator:
+    """Test installment and loan calculation utilities"""
+    
+    def test_calculate_quota_cessible(self):
+        """Test quota cessible calculation"""
+        net_salary = Decimal('40000.00')
+        quota_percentage = Decimal('30.00')
+        
+        result = InstallmentCalculator.calculate_quota_cessible(net_salary, quota_percentage)
+        expected = Decimal('12000.00')  # 30% of 40,000
+        
+        assert result == expected
+    
+    def test_adjust_installments_within_quota(self):
+        """Test installment adjustment when within quota"""
+        installments = [
+            {'id': 1, 'amount': Decimal('5000.00')},
+            {'id': 2, 'amount': Decimal('3000.00')}
+        ]
+        quota_cessible = Decimal('10000.00')
+        
+        result = InstallmentCalculator.adjust_installments_for_quota(installments, quota_cessible)
+        
+        # No adjustment needed
+        assert len(result) == 2
+        assert result[0]['amount'] == Decimal('5000.00')
+        assert result[1]['amount'] == Decimal('3000.00')
+    
+    def test_adjust_installments_exceed_quota(self):
+        """Test installment adjustment when exceeding quota"""
+        installments = [
+            {'id': 1, 'amount': Decimal('8000.00')},
+            {'id': 2, 'amount': Decimal('6000.00')}
+        ]
+        quota_cessible = Decimal('10000.00')  # Total installments = 14,000 > 10,000
+        
+        result = InstallmentCalculator.adjust_installments_for_quota(installments, quota_cessible)
+        
+        # Should be proportionally reduced
+        assert len(result) == 2
+        assert result[0]['amount'] < Decimal('8000.00')
+        assert result[1]['amount'] < Decimal('6000.00')
+        
+        # Total should not exceed quota
+        total_adjusted = sum(item['amount'] for item in result)
+        assert total_adjusted <= quota_cessible
+
+
+class TestMauritanianTaxCalculations:
+    """Test Mauritanian-specific tax calculation methods"""
+    
+    def setup_method(self):
+        """Set up test fixtures"""
+        self.system_parameters = MockSystemParameters()
+        self.calculator = InstallmentCalculator()
+        self.calculator.system_parameters = self.system_parameters
+    
+    def test_calculate_cnss_employee_basic(self):
+        """Test employee CNSS contribution calculation"""
+        base_amount = Decimal('20000.00')
+        result = self.calculator.calculate_cnss_employee(base_amount)
+        
+        # 1% of 20,000 = 200
+        expected = Decimal('200.00')
+        assert result == expected
+    
+    def test_calculate_cnss_employee_with_ceiling(self):
+        """Test employee CNSS with ceiling applied"""
+        base_amount = Decimal('20000.00')  # Above 15,000 ceiling
+        result = self.calculator.calculate_cnss_employee(base_amount)
+        
+        # Should apply 15,000 ceiling: 1% of 15,000 = 150
+        expected = Decimal('150.00')
+        assert result == expected
+    
+    def test_calculate_cnss_employer_basic(self):
+        """Test employer CNSS contribution"""
+        base_amount = Decimal('10000.00')
+        result = self.calculator.calculate_cnss_employer(base_amount)
+        
+        # 1% of 10,000 = 100 (base contribution same as employee)
+        expected = Decimal('100.00')
+        assert result == expected
+    
+    def test_calculate_cnss_employer_with_reimbursement(self):
+        """Test employer CNSS with reimbursement rate"""
+        base_amount = Decimal('10000.00')
+        reimbursement_rate = Decimal('50.0')  # 50% additional
+        
+        result = self.calculator.calculate_cnss_employer(base_amount, reimbursement_rate)
+        
+        # Base: 100, with 50% additional: 150
+        expected = Decimal('150.00')
+        assert result == expected
+    
+    def test_calculate_cnam_employee(self):
+        """Test employee CNAM contribution (4%)"""
+        base_amount = Decimal('25000.00')
+        result = self.calculator.calculate_cnam_employee(base_amount)
+        
+        # 4% of 25,000 = 1,000
+        expected = Decimal('1000.00')
+        assert result == expected
+    
+    def test_calculate_cnam_employer(self):
+        """Test employer CNAM contribution"""
+        base_amount = Decimal('25000.00')
+        result = self.calculator.calculate_cnam_employer(base_amount)
+        
+        # 4% of 25,000 = 1,000 (base rate same as employee)
+        expected = Decimal('1000.00')
+        assert result == expected
+    
+    def test_calculate_cnam_employer_with_reimbursement(self):
+        """Test employer CNAM with reimbursement"""
+        base_amount = Decimal('25000.00')
+        reimbursement_rate = Decimal('25.0')  # 25% additional
+        
+        result = self.calculator.calculate_cnam_employer(base_amount, reimbursement_rate)
+        
+        # Base: 1,000, with 25% additional: 1,250
+        expected = Decimal('1250.00')
+        assert result == expected
+    
+    def test_calculate_its_tranche1_national(self):
+        """Test ITS Tranche 1 for national employee"""
+        year = 2023
+        taxable_income = Decimal('8000.00')  # Within tranche 1
+        cnss_amount = Decimal('80.00')
+        cnam_amount = Decimal('320.00')
+        base_salary = Decimal('8000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        result = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount, 
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Should be 15% of taxable amount after deductions
+        assert result > Decimal('0')
+    
+    def test_calculate_its_tranche1_expatriate(self):
+        """Test ITS Tranche 1 for expatriate employee (7.5% rate)"""
+        year = 2023
+        taxable_income = Decimal('8000.00')
+        cnss_amount = Decimal('80.00')
+        cnam_amount = Decimal('320.00')
+        base_salary = Decimal('8000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        national_result = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        expatriate_result = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=True
+        )
+        
+        # Expatriate rate should be half of national rate
+        assert expatriate_result < national_result
+    
+    def test_calculate_its_tranche2(self):
+        """Test ITS Tranche 2 calculation"""
+        year = 2023
+        taxable_income = Decimal('15000.00')  # Partially in tranche 2
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('600.00')
+        base_salary = Decimal('15000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        result = self.calculator.calculate_its_tranche2(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Should have some tax in tranche 2
+        assert result > Decimal('0')
+    
+    def test_calculate_its_tranche3(self):
+        """Test ITS Tranche 3 calculation"""
+        year = 2023
+        taxable_income = Decimal('30000.00')  # High enough for tranche 3
+        cnss_amount = Decimal('150.00')  # CNSS has ceiling
+        cnam_amount = Decimal('1200.00')
+        base_salary = Decimal('30000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        result = self.calculator.calculate_its_tranche3(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Should have tax in tranche 3 for high income
+        assert result > Decimal('0')
+    
+    def test_calculate_its_total(self):
+        """Test total ITS calculation (sum of all tranches)"""
+        year = 2023
+        taxable_income = Decimal('25000.00')
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('1000.00')
+        base_salary = Decimal('25000.00')
+        benefits_in_kind = Decimal('0.00')
+        
+        total_result = self.calculator.calculate_its_total(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        # Total should be sum of individual tranches
+        tranche1 = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        tranche2 = self.calculator.calculate_its_tranche2(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        tranche3 = self.calculator.calculate_its_tranche3(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        expected_total = tranche1 + tranche2 + tranche3
+        assert total_result == expected_total
+    
+    def test_calculate_its_reimbursement(self):
+        """Test ITS employer reimbursement calculation"""
+        year = 2023
+        taxable_income = Decimal('15000.00')
+        cnss_amount = Decimal('150.00')
+        cnam_amount = Decimal('600.00')
+        base_salary = Decimal('15000.00')
+        benefits_in_kind = Decimal('0.00')
+        reimb_rate_t1 = Decimal('50.0')  # 50% reimbursement on tranche 1
+        reimb_rate_t2 = Decimal('25.0')  # 25% reimbursement on tranche 2
+        reimb_rate_t3 = Decimal('0.0')   # No reimbursement on tranche 3
+        
+        result = self.calculator.calculate_its_reimbursement(
+            year, taxable_income, cnss_amount, cnam_amount, base_salary, benefits_in_kind,
+            reimb_rate_t1, reimb_rate_t2, reimb_rate_t3, is_expatriate=False
+        )
+        
+        # Should be positive reimbursement based on tranches
+        assert result >= Decimal('0')
+    
+    def test_benefits_in_kind_special_treatment(self):
+        """Test benefits in kind 60% deduction when > 20% of base salary"""
+        year = 2023
+        base_salary = Decimal('10000.00')
+        benefits_in_kind = Decimal('3000.00')  # 30% of base salary (> 20% threshold)
+        taxable_income = base_salary + benefits_in_kind  # 13,000
+        cnss_amount = Decimal('130.00')
+        cnam_amount = Decimal('520.00')
+        
+        result_with_bik = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, benefits_in_kind, is_expatriate=False
+        )
+        
+        result_without_bik = self.calculator.calculate_its_tranche1(
+            year, taxable_income, cnss_amount, cnam_amount,
+            base_salary, Decimal('0.00'), is_expatriate=False
+        )
+        
+        # With BIK deduction, tax should be lower than without any BIK
+        assert result_with_bik < result_without_bik
+    
+    def test_utility_methods_placeholders(self):
+        """Test placeholder utility methods return expected defaults"""
+        calc = PayrollCalculator(self.system_parameters)
+        employee = MockEmployee()
+        
+        # These are placeholder methods that should return None or 0
+        assert calc.get_njt_record(employee, None, None) is None
+        assert calc.get_rubrique_paie_record(employee, 1, None, None) is None
+        assert calc.get_used_rub_id(1) == 1
+        assert calc.get_cumulative_amount_by_type(employee, 'BI') == Decimal('0.00')
+        assert calc.get_cumulative_gross_12_months(employee, None, None) == Decimal('0.00')
+        assert calc.get_fixed_monthly_gross_salary(employee, None) == Decimal('0.00')
+        assert calc.get_housing_allowance_base(employee) == Decimal('0.00')
+        assert calc.get_salary_increase(employee, None) == Decimal('0.00')
         result_f01 = self.functions.calculate_function("F01", self.employee, self.motif, self.period)
         assert result_f01 >= Decimal('0')
         

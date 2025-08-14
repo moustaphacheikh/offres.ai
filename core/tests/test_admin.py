@@ -469,3 +469,57 @@ class AdminIntegrationTest(BaseAdminTestCase):
         display = overtime_admin.total_overtime_display(weekly_overtime)
         self.assertIsInstance(display, str)
         self.assertIn('h', display)
+    
+    def test_admin_readonly_fields(self):
+        """Test that readonly fields are properly configured"""
+        cnss_admin = CNSSDeclarationAdmin(CNSSDeclaration, AdminSite())
+        self.assertIn('created_at', cnss_admin.readonly_fields)
+        self.assertIn('updated_at', cnss_admin.readonly_fields)
+        
+        cnam_admin = CNAMDeclarationAdmin(CNAMDeclaration, AdminSite())
+        self.assertIn('created_at', cnam_admin.readonly_fields)
+        self.assertIn('updated_at', cnam_admin.readonly_fields)
+        
+        master_admin = MasterPieceAdmin(MasterPiece, AdminSite())
+        self.assertIn('balance_difference', master_admin.readonly_fields)
+        self.assertIn('is_balanced', master_admin.readonly_fields)
+        self.assertIn('created_at', master_admin.readonly_fields)
+        self.assertIn('updated_at', master_admin.readonly_fields)
+    
+    def test_admin_fieldsets(self):
+        """Test that fieldsets are properly configured"""
+        cnss_admin = CNSSDeclarationAdmin(CNSSDeclaration, AdminSite())
+        self.assertTrue(hasattr(cnss_admin, 'fieldsets'))
+        self.assertGreater(len(cnss_admin.fieldsets), 0)
+        
+        cnam_admin = CNAMDeclarationAdmin(CNAMDeclaration, AdminSite())
+        self.assertTrue(hasattr(cnam_admin, 'fieldsets'))
+        self.assertGreater(len(cnam_admin.fieldsets), 0)
+        
+        master_admin = MasterPieceAdmin(MasterPiece, AdminSite())
+        self.assertTrue(hasattr(master_admin, 'fieldsets'))
+        self.assertGreater(len(master_admin.fieldsets), 0)
+    
+    def test_admin_actions_exist(self):
+        """Test that admin actions are properly configured"""
+        master_admin = MasterPieceAdmin(MasterPiece, AdminSite())
+        actions = [action.__name__ for action in master_admin.actions]
+        self.assertIn('recalculate_totals', actions)
+        self.assertIn('mark_as_validated', actions)
+        self.assertIn('mark_as_exported', actions)
+        
+        detail_admin = DetailPieceAdmin(DetailPiece, AdminSite())
+        actions = [action.__name__ for action in detail_admin.actions]
+        self.assertIn('mark_as_exported', actions)
+        self.assertIn('mark_as_not_exported', actions)
+    
+    def test_inline_configuration(self):
+        """Test that inline admin is properly configured"""
+        master_admin = MasterPieceAdmin(MasterPiece, AdminSite())
+        self.assertTrue(hasattr(master_admin, 'inlines'))
+        self.assertIn(DetailPieceInline, master_admin.inlines)
+        
+        inline = DetailPieceInline(DetailPiece, AdminSite())
+        self.assertEqual(inline.extra, 0)
+        self.assertIn('cvmro_montant', inline.readonly_fields)
+        self.assertIn('formatted_account', inline.readonly_fields)
