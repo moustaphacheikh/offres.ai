@@ -25,6 +25,10 @@ class MockEmployee:
         self.number_of_children = 2
         self.seniority_date = date(2020, 1, 1)
         self.salary_grade = None
+        
+    def get_seniority_rate(self, period):
+        """Mock seniority rate calculation"""
+        return Decimal('0.10')  # 10% seniority rate
 
 
 class TestPayrollFunctionsStatic:
