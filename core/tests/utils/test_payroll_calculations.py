@@ -1309,3 +1309,120 @@ class TestPayrollCalculationsIntegration:
         negative_salary = Decimal('-1000')
         cnss_negative = calculator._calculate_cnss_employee(negative_salary)
         assert cnss_negative == Decimal('0')  # Should not be negative
+
+
+class TestPayrollCalculatorStructure:
+    """Test PayrollCalculator structure and private methods"""
+    
+    def setup_method(self):
+        """Set up test instances"""
+        self.system_params = MockSystemParameters()
+        self.calculator = PayrollCalculator(self.system_params)
+    
+    def test_calculate_payroll_basic_structure(self):
+        """Test that calculate_payroll returns proper structure"""
+        employee = Mock()
+        motif = Mock()
+        
+        # Mock the private method to return empty list
+        with patch.object(self.calculator, '_get_payroll_line_items', return_value=[]):
+            result = self.calculator.calculate_payroll(
+                employee, motif, date.today(), date.today()
+            )
+            
+            # Check that all expected keys are present
+            expected_keys = [
+                'gross_taxable', 'gross_non_taxable', 'cnss_employee',
+                'cnam_employee', 'its_total', 'its_tranche1', 'its_tranche2',
+                'its_tranche3', 'net_salary', 'employer_cnss', 'employer_cnam',
+                'benefits_in_kind'
+            ]
+            
+            for key in expected_keys:
+                assert key in result
+    
+    def test_private_calculate_cnss_employee(self):
+        """Test private _calculate_cnss_employee method"""
+        result = self.calculator._calculate_cnss_employee(Decimal('10000'))
+        assert result == Decimal('100.00')
+    
+    def test_private_calculate_cnss_employer(self):
+        """Test private _calculate_cnss_employer method"""
+        employee = Mock()
+        employee.cnss_reimbursement_rate = None
+        
+        result = self.calculator._calculate_cnss_employer(Decimal('10000'), employee)
+        assert result == Decimal('200.00')  # 2% of 10000
+    
+    def test_private_calculate_cnam_employee(self):
+        """Test private _calculate_cnam_employee method"""
+        result = self.calculator._calculate_cnam_employee(Decimal('10000'))
+        assert result == Decimal('400.00')
+    
+    def test_private_calculate_cnam_employer(self):
+        """Test private _calculate_cnam_employer method"""
+        employee = Mock()
+        employee.cnam_reimbursement_rate = None
+        
+        result = self.calculator._calculate_cnam_employer(Decimal('10000'), employee)
+        assert result == Decimal('550.00')  # 5.5% of 10000
+
+
+class TestPayrollFunctionsEdgeCases:
+    """Test edge cases for PayrollFunctions dispatcher"""
+    
+    def setup_method(self):
+        """Set up test instances"""
+        self.system_params = MockSystemParameters()
+        self.payroll_calc = PayrollCalculator(self.system_params)
+        self.functions = PayrollFunctions(self.system_params, self.payroll_calc)
+    
+    def test_calculate_function_dispatcher_empty(self):
+        """Test calculate_function with empty function code"""
+        employee = Mock()
+        motif = Mock()
+        period = date.today()
+        
+        result = self.functions.calculate_function("", employee, motif, period)
+        assert result == Decimal('0.00')
+    
+    def test_calculate_function_dispatcher_none(self):
+        """Test calculate_function with None function code"""
+        employee = Mock()
+        motif = Mock()
+        period = date.today()
+        
+        result = self.functions.calculate_function(None, employee, motif, period)
+        assert result == Decimal('0.00')
+    
+    def test_calculate_function_dispatcher_unknown(self):
+        """Test calculate_function with unknown function code"""
+        employee = Mock()
+        motif = Mock()
+        period = date.today()
+        
+        result = self.functions.calculate_function("F99_Unknown", employee, motif, period)
+        assert result == Decimal('0.00')
+
+
+class TestStaticPayrollFunctions:
+    """Test static PayrollFunctions class"""
+    
+    def test_static_functions_exist(self):
+        """Test that static functions exist and are callable"""
+        # Import the static methods version
+        from core.utils.payroll_calculations import PayrollFunctions as StaticPF
+        
+        # These should be available as static methods
+        employee = Mock()
+        employee.salary_grade = None
+        motif = Mock()
+        period = date.today()
+        
+        # Test various static methods exist (even if they fail due to missing dependencies)
+        assert hasattr(StaticPF, 'F01_NJT')
+        assert hasattr(StaticPF, 'F02_sbJour')
+        assert hasattr(StaticPF, 'F03_sbHoraire')
+        assert callable(getattr(StaticPF, 'F01_NJT'))
+        assert callable(getattr(StaticPF, 'F02_sbJour'))
+        assert callable(getattr(StaticPF, 'F03_sbHoraire'))
