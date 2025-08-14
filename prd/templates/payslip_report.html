@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulletin de Paie - {{ employee_data.full_name }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 12px; }
+        }
+        
+        .payslip-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .company-header {
+            border-bottom: 2px solid #007bff;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+        }
+        
+        .company-logo {
+            max-height: 60px;
+            max-width: 120px;
+        }
+        
+        .payslip-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            color: #007bff;
+        }
+        
+        .employee-info-table {
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .employee-info-table td {
+            padding: 5px 10px;
+            border: 1px solid #dee2e6;
+        }
+        
+        .payroll-table {
+            font-size: 12px;
+        }
+        
+        .payroll-table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            text-align: center;
+            padding: 8px;
+        }
+        
+        .payroll-table td {
+            padding: 5px;
+            text-align: right;
+        }
+        
+        .payroll-table td.left {
+            text-align: left;
+        }
+        
+        .summary-section {
+            background-color: #f8f9fa;
+            border: 2px solid #007bff;
+            padding: 15px;
+            margin-top: 20px;
+        }
+        
+        .total-row {
+            font-weight: bold;
+            background-color: #e9ecef;
+        }
+        
+        .net-salary {
+            font-size: 16px;
+            font-weight: bold;
+            color: #28a745;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payslip-container">
+        <!-- Company Header -->
+        <div class="company-header">
+            <div class="row">
+                <div class="col-md-2">
+                    {% if company_logo %}
+                    <img src="data:image/png;base64,{{ company_logo }}" alt="Logo" class="company-logo">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h4 class="mb-1">{{ company_name }}</h4>
+                    <p class="mb-0"><small>{{ company_activity }}</small></p>
+                    <p class="mb-0"><small>{{ company_address }}</small></p>
+                    <p class="mb-0"><small>Tél: {{ company_phone }}</small></p>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        CNSS: {{ registrations.cnss }}<br>
+                        CNAM: {{ registrations.cnam }}<br>
+                        ITS: {{ registrations.its }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Payslip Title -->
+        <div class="payslip-title">
+            BULLETIN DE PAIE<br>
+            <small>{{ period_text }}</small>
+        </div>
+        
+        <!-- Employee Information -->
+        <table class="table table-bordered employee-info-table">
+            <tr>
+                <td><strong>Nom et Prénom:</strong></td>
+                <td>{{ employee_data.full_name }}</td>
+                <td><strong>Matricule:</strong></td>
+                <td>{{ employee_data.employee_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Poste:</strong></td>
+                <td>{{ employee_data.position }}</td>
+                <td><strong>NNI:</strong></td>
+                <td>{{ employee_data.national_id }}</td>
+            </tr>
+            <tr>
+                <td><strong>Département:</strong></td>
+                <td>{{ employee_data.department }}</td>
+                <td><strong>CNSS:</strong></td>
+                <td>{{ employee_data.cnss_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Direction:</strong></td>
+                <td>{{ employee_data.direction }}</td>
+                <td><strong>CNAM:</strong></td>
+                <td>{{ employee_data.cnam_number }}</td>
+            </tr>
+            <tr>
+                <td><strong>Catégorie:</strong></td>
+                <td>{{ employee_data.salary_grade }}</td>
+                <td><strong>Date d'embauche:</strong></td>
+                <td>{{ employee_data.hire_date|date:"d/m/Y" }}</td>
+            </tr>
+        </table>
+        
+        <!-- Payroll Details -->
+        <div class="row">
+            <!-- Gains (Left Column) -->
+            <div class="col-md-6">
+                <h6 class="text-center bg-primary text-white p-2">GAINS</h6>
+                <table class="table table-bordered table-sm payroll-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Libellé</th>
+                            <th>Base</th>
+                            <th>Nombre</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for gain in gains %}
+                        <tr>
+                            <td class="left">{{ gain.code }}</td>
+                            <td class="left">{{ gain.label }}</td>
+                            <td>{{ gain.base|floatformat:2 }}</td>
+                            <td>{{ gain.quantity|floatformat:2 }}</td>
+                            <td>{{ gain.amount|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucun gain enregistré</td>
+                        </tr>
+                        {% endfor %}
+                        <tr class="total-row">
+                            <td colspan="4"><strong>Total Gains</strong></td>
+                            <td><strong>{{ gross_taxable|add:gross_non_taxable|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Deductions (Right Column) -->
+            <div class="col-md-6">
+                <h6 class="text-center bg-danger text-white p-2">RETENUES</h6>
+                <table class="table table-bordered table-sm payroll-table">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Libellé</th>
+                            <th>Base</th>
+                            <th>Nombre</th>
+                            <th>Montant</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for deduction in deductions %}
+                        <tr>
+                            <td class="left">{{ deduction.code }}</td>
+                            <td class="left">{{ deduction.label }}</td>
+                            <td>{{ deduction.base|floatformat:2 }}</td>
+                            <td>{{ deduction.quantity|floatformat:2 }}</td>
+                            <td>{{ deduction.amount|floatformat:2 }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">Aucune retenue enregistrée</td>
+                        </tr>
+                        {% endfor %}
+                        
+                        <!-- Tax Deductions -->
+                        <tr>
+                            <td class="left">CNSS</td>
+                            <td class="left">Cotisation CNSS</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>{{ cnss_employee|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td class="left">CNAM</td>
+                            <td class="left">Cotisation CNAM</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>{{ cnam_employee|floatformat:2 }}</td>
+                        </tr>
+                        <tr>
+                            <td class="left">ITS</td>
+                            <td class="left">Impôt sur Salaires</td>
+                            <td>-</td>
+                            <td>-</td>
+                            <td>{{ its_total|floatformat:2 }}</td>
+                        </tr>
+                        
+                        <tr class="total-row">
+                            <td colspan="4"><strong>Total Retenues</strong></td>
+                            <td><strong>{{ cnss_employee|add:cnam_employee|add:its_total|add:gross_deductions|add:net_deductions|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Nombre de jours travaillés:</strong></td>
+                            <td class="text-right">{{ worked_days|floatformat:1 }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Heures supplémentaires:</strong></td>
+                            <td class="text-right">{{ overtime_hours|floatformat:1 }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Brut Imposable:</strong></td>
+                            <td class="text-right">{{ gross_taxable|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Brut Non Imposable:</strong></td>
+                            <td class="text-right">{{ gross_non_taxable|floatformat:2 }} MRU</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm">
+                        <tr>
+                            <td><strong>Banque:</strong></td>
+                            <td class="text-right">{{ bank_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compte:</strong></td>
+                            <td class="text-right">{{ bank_account }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Mode de paiement:</strong></td>
+                            <td class="text-right">{{ payment_mode }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Domicilié:</strong></td>
+                            <td class="text-right">{% if is_domiciled %}Oui{% else %}Non{% endif %}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Net Salary -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header bg-success text-white text-center">
+                        <h5>SALAIRE NET À PAYER</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="net-salary">{{ net_salary|floatformat:2 }} MRU</div>
+                        <div class="mt-2"><em>{{ net_in_words }}</em></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary">
+                Imprimer
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

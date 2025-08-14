@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration ITS - {{ period_text }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 11px; }
+        }
+        
+        .declaration-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .its-logo {
+            max-height: 60px;
+        }
+        
+        .declaration-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        
+        .company-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .employees-table {
+            font-size: 9px;
+        }
+        
+        .employees-table th {
+            background-color: #ffc107;
+            color: #212529;
+            text-align: center;
+            padding: 8px 3px;
+            vertical-align: middle;
+        }
+        
+        .employees-table td {
+            padding: 3px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .total-row {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        
+        .summary-section {
+            background-color: #f8f9fa;
+            border: 2px solid #ffc107;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+        
+        .tax-brackets {
+            font-size: 11px;
+        }
+    </style>
+</head>
+<body>
+    <div class="declaration-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="/static/images/its_logo.png" alt="ITS Logo" class="its-logo">
+                </div>
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h4>DIRECTION GÉNÉRALE DES IMPÔTS</h4>
+                        <h5>RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</h5>
+                        <h6>IMPÔT SUR LES TRAITEMENTS ET SALAIRES</h6>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        <strong>Déclaration N°:</strong><br>
+                        ITS-{{ period|date:"Ym" }}-{{ company_its }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Declaration Title -->
+        <div class="declaration-title">
+            Déclaration de l'Impôt sur les Traitements et Salaires<br>
+            <small>Période: {{ period_text }}</small>
+        </div>
+        
+        <!-- Company Information -->
+        <div class="company-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Entreprise:</strong></td>
+                            <td>{{ company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>N° ITS:</strong></td>
+                            <td>{{ company_its }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Activité:</strong></td>
+                            <td>{{ company_activity }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Période:</strong></td>
+                            <td>{{ period|date:"m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date de déclaration:</strong></td>
+                            <td>{{ declaration_date|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nombre d'employés:</strong></td>
+                            <td>{{ total_employees }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tax Brackets Information -->
+        <div class="alert alert-warning tax-brackets">
+            <div class="row">
+                <div class="col-md-4">
+                    <strong>Barème ITS Progressif:</strong><br>
+                    • 0 à 60 000 MRU: 0%<br>
+                    • 60 001 à 180 000 MRU: 15%<br>
+                    • 180 001 à 540 000 MRU: 25%<br>
+                    • Plus de 540 000 MRU: 30%
+                </div>
+                <div class="col-md-4">
+                    <strong>Abattements:</strong><br>
+                    • CNSS: {{ cnss_deduction_rate|default:"1" }}%<br>
+                    • CNAM: {{ cnam_deduction_rate|default:"2" }}%<br>
+                    • Autres déductions selon réglementation
+                </div>
+                <div class="col-md-4">
+                    <strong>Base imposable:</strong><br>
+                    Salaire Brut - Déductions CNSS/CNAM - Autres abattements légaux
+                </div>
+            </div>
+        </div>
+        
+        <!-- Employees Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered employees-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">N°</th>
+                        <th rowspan="2">Nom et Prénom</th>
+                        <th rowspan="2">Salaire<br>Brut (MRU)</th>
+                        <th colspan="2">Déductions</th>
+                        <th rowspan="2">Base<br>Imposable</th>
+                        <th colspan="4">ITS par Tranche</th>
+                        <th rowspan="2">Total ITS<br>(MRU)</th>
+                    </tr>
+                    <tr>
+                        <th>CNSS<br>CNAM</th>
+                        <th>Autres</th>
+                        <th>Tranche 1<br>(15%)</th>
+                        <th>Tranche 2<br>(25%)</th>
+                        <th>Tranche 3<br>(30%)</th>
+                        <th>Exonéré<br>(0%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="text-left">{{ employee.employee_name }}</td>
+                        <td class="text-right">{{ employee.gross_salary|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.cnss_cnam_deductions|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.other_deductions|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.taxable_base|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.its_tranche1|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.its_tranche2|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.its_tranche3|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.its_exempt|floatformat:2 }}</td>
+                        <td class="text-right"><strong>{{ employee.total_its|floatformat:2 }}</strong></td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center">Aucun employé assujetti à l'ITS pour cette période</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if employees %}
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="2"><strong>TOTAUX</strong></td>
+                        <td class="text-right"><strong>{{ total_gross_salary|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_cnss_cnam_deductions|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_other_deductions|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_taxable_base|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_its_tranche1|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_its_tranche2|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_its_tranche3|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_its_exempt|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_its|floatformat:2 }}</strong></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>RÉCAPITULATIF ITS</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Total Salaires Bruts:</td>
+                            <td class="text-right"><strong>{{ total_gross_salary|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Total Déductions CNSS/CNAM:</td>
+                            <td class="text-right">{{ total_cnss_cnam_deductions|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Total Autres Déductions:</td>
+                            <td class="text-right">{{ total_other_deductions|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Total Base Imposable:</td>
+                            <td class="text-right">{{ total_taxable_base|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr class="table-warning">
+                            <td><strong>Total ITS à payer:</strong></td>
+                            <td class="text-right"><strong>{{ total_its|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>RÉPARTITION PAR TRANCHE</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>ITS Tranche 1 (15%):</td>
+                            <td class="text-right">{{ total_its_tranche1|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>ITS Tranche 2 (25%):</td>
+                            <td class="text-right">{{ total_its_tranche2|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>ITS Tranche 3 (30%):</td>
+                            <td class="text-right">{{ total_its_tranche3|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Montant Exonéré:</td>
+                            <td class="text-right">{{ total_its_exempt|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Date limite de paiement:</td>
+                            <td class="text-right">{{ period|add_months:1|date:"15/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Legal Text -->
+        <div class="mt-4">
+            <div class="alert alert-warning">
+                <small>
+                    <strong>Note importante:</strong> 
+                    Cette déclaration doit être déposée au plus tard le 15 du mois suivant la période déclarée, 
+                    accompagnée du paiement de l'ITS. Tout retard dans le dépôt ou le paiement entraîne des pénalités 
+                    conformément au Code Général des Impôts. Les employeurs sont tenus de retenir l'ITS à la source 
+                    et de le reverser au Trésor Public dans les délais prescrits.
+                </small>
+            </div>
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Cachet et Signature de l'Entreprise</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>{{ company_name }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Visa de la Direction des Impôts</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Date de réception: ___/___/_____</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Généré le {{ report_meta.generated_date|date:"d/m/Y à H:i" }} par {{ report_meta.generated_by }}
+            </small>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-warning">
+                Imprimer
+            </button>
+            <button onclick="exportToCSV()" class="btn btn-success ml-2">
+                Exporter CSV
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function exportToCSV() {
+            let csv = 'N°,Nom et Prénom,Salaire Brut,Déductions CNSS/CNAM,Autres Déductions,Base Imposable,ITS Tranche 1,ITS Tranche 2,ITS Tranche 3,ITS Exonéré,Total ITS\n';
+            
+            {% for employee in employees %}
+            csv += '{{ forloop.counter }},"{{ employee.employee_name }}","{{ employee.gross_salary|floatformat:2 }}","{{ employee.cnss_cnam_deductions|floatformat:2 }}","{{ employee.other_deductions|floatformat:2 }}","{{ employee.taxable_base|floatformat:2 }}","{{ employee.its_tranche1|floatformat:2 }}","{{ employee.its_tranche2|floatformat:2 }}","{{ employee.its_tranche3|floatformat:2 }}","{{ employee.its_exempt|floatformat:2 }}","{{ employee.total_its|floatformat:2 }}"\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'declaration_its_{{ period|date:"Ym" }}.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<!--
+TEMPLATE CONTEXT DOCUMENTATION:
+
+This template expects the following context variables:
+
+HEADER DATA:
+- company_name: Company name
+- company_its: Company ITS registration number  
+- company_activity: Company business activity
+- period: Period date (Date object)
+- period_text: Formatted period text (e.g., "Janvier 2023")
+- declaration_date: Date when declaration was generated
+
+TAX PARAMETERS:
+- cnss_deduction_rate: CNSS deduction rate percentage (default 1%)
+- cnam_deduction_rate: CNAM deduction rate percentage (default 2%)
+
+SUMMARY DATA:
+- total_employees: Total number of employees
+- total_gross_salary: Total gross salary
+- total_cnss_cnam_deductions: Total CNSS and CNAM deductions
+- total_other_deductions: Total other allowable deductions
+- total_taxable_base: Total taxable base after deductions
+- total_its_tranche1: Total ITS from tranche 1 (15%)
+- total_its_tranche2: Total ITS from tranche 2 (25%) 
+- total_its_tranche3: Total ITS from tranche 3 (30%)
+- total_its_exempt: Total exempt amount (0%)
+- total_its: Total ITS amount due
+
+EMPLOYEE DATA:
+- employees: List of employee records with fields:
+  - employee_name: Employee full name
+  - gross_salary: Employee gross salary
+  - cnss_cnam_deductions: CNSS and CNAM deductions combined
+  - other_deductions: Other allowable deductions
+  - taxable_base: Net taxable base after all deductions
+  - its_tranche1: ITS calculated at 15% rate
+  - its_tranche2: ITS calculated at 25% rate
+  - its_tranche3: ITS calculated at 30% rate
+  - its_exempt: Exempt amount (0% bracket)
+  - total_its: Total ITS for this employee
+
+REPORT META:
+- report_meta.generated_date: Report generation timestamp
+- report_meta.generated_by: Name of user who generated report
+
+USAGE:
+To use this template in a Django view:
+
+# Prepare ITS calculation data using progressive tax calculation
+context = {
+    'employees': its_calculation_data,
+    'total_employees': len(its_calculation_data),
+    'total_its': sum(emp['total_its'] for emp in its_calculation_data),
+    # ... other totals
+}
+context.update(ReportContext.prepare_base_context(system_params, request.user))
+return render(request, 'its_declaration.html', context)
+
+FEATURES:
+- Print-optimized layout
+- CSV export functionality  
+- Professional ITS-compliant format
+- Bootstrap 4 responsive design
+- Progressive tax bracket display
+- Detailed tax calculations by tranche
+- Legal compliance notes
+- Automatic totals and summaries
+-->

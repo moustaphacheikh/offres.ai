@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration CNAM - {{ period_text }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 11px; }
+        }
+        
+        .declaration-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cnam-logo {
+            max-height: 60px;
+        }
+        
+        .declaration-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        
+        .company-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .employees-table {
+            font-size: 10px;
+        }
+        
+        .employees-table th {
+            background-color: #17a2b8;
+            color: white;
+            text-align: center;
+            padding: 8px 4px;
+            vertical-align: middle;
+        }
+        
+        .employees-table td {
+            padding: 4px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .total-row {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        
+        .summary-section {
+            background-color: #f8f9fa;
+            border: 2px solid #17a2b8;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="declaration-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="/static/images/cnam_logo.png" alt="CNAM Logo" class="cnam-logo">
+                </div>
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h4>CAISSE NATIONALE D'ASSURANCE MALADIE</h4>
+                        <h5>RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</h5>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        <strong>Déclaration N°:</strong><br>
+                        CNAM-{{ period|date:"Ym" }}-{{ company_cnam }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Declaration Title -->
+        <div class="declaration-title">
+            Déclaration des Assurés CNAM<br>
+            <small>Période: {{ period_text }}</small>
+        </div>
+        
+        <!-- Company Information -->
+        <div class="company-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Entreprise:</strong></td>
+                            <td>{{ company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>N° CNAM:</strong></td>
+                            <td>{{ company_cnam }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Activité:</strong></td>
+                            <td>{{ company_activity }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Période:</strong></td>
+                            <td>{{ period|date:"m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date de déclaration:</strong></td>
+                            <td>{{ declaration_date|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nombre d'assurés:</strong></td>
+                            <td>{{ total_employees }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Employees Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered employees-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">N°</th>
+                        <th rowspan="2">N° CNAM</th>
+                        <th rowspan="2">Nom et Prénom</th>
+                        <th rowspan="2">Sexe</th>
+                        <th rowspan="2">Situation<br>Familiale</th>
+                        <th rowspan="2">Nombre<br>d'Enfants</th>
+                        <th rowspan="2">Salaire<br>Soumis (MRU)</th>
+                        <th colspan="2">Cotisations CNAM</th>
+                        <th rowspan="2">Date<br>Embauche</th>
+                    </tr>
+                    <tr>
+                        <th>Employé<br>(2%)</th>
+                        <th>Employeur<br>(3%)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ employee.employee_cnam_number }}</td>
+                        <td class="text-left">{{ employee.employee_name }}</td>
+                        <td>{{ employee.gender|default:"-" }}</td>
+                        <td>{{ employee.marital_status|default:"-" }}</td>
+                        <td>{{ employee.children_count|default:"0" }}</td>
+                        <td class="text-right">{{ employee.taxable_salary|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.cnam_employee|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.cnam_employer|floatformat:2 }}</td>
+                        <td>{{ employee.hire_date|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="10" class="text-center">Aucun assuré CNAM pour cette période</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if employees %}
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="6"><strong>TOTAUX</strong></td>
+                        <td class="text-right"><strong>{{ total_taxable_salary|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_employee_contributions|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_employer_contributions|floatformat:2 }}</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>RÉCAPITULATIF DES COTISATIONS</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Total Salaires Soumis:</td>
+                            <td class="text-right"><strong>{{ total_taxable_salary|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Cotisation Employé (2%):</td>
+                            <td class="text-right">{{ total_employee_contributions|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Cotisation Employeur (3%):</td>
+                            <td class="text-right">{{ total_employer_contributions|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr class="table-info">
+                            <td><strong>Total Cotisations CNAM:</strong></td>
+                            <td class="text-right"><strong>{{ total_contributions|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>INFORMATIONS COMPLÉMENTAIRES</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Taux employé CNAM:</td>
+                            <td class="text-right">2,00%</td>
+                        </tr>
+                        <tr>
+                            <td>Taux employeur CNAM:</td>
+                            <td class="text-right">3,00%</td>
+                        </tr>
+                        <tr>
+                            <td>Nombre d'assurés déclarés:</td>
+                            <td class="text-right">{{ total_employees }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date limite de paiement:</td>
+                            <td class="text-right">{{ period|add_months:1|date:"15/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Legal Text -->
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <small>
+                    <strong>Note importante:</strong> 
+                    Cette déclaration doit être déposée au plus tard le 15 du mois suivant la période déclarée, 
+                    accompagnée du paiement des cotisations d'assurance maladie. 
+                    Tout retard dans le dépôt ou le paiement entraîne des pénalités conformément à la réglementation CNAM en vigueur.
+                </small>
+            </div>
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Cachet et Signature de l'Entreprise</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>{{ company_name }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Visa de la CNAM</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Date de réception: ___/___/_____</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Généré le {{ report_meta.generated_date|date:"d/m/Y à H:i" }} par {{ report_meta.generated_by }}
+            </small>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-info">
+                Imprimer
+            </button>
+            <button onclick="exportToCSV()" class="btn btn-success ml-2">
+                Exporter CSV
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function exportToCSV() {
+            let csv = 'N°,N° CNAM,Nom et Prénom,Sexe,Situation Familiale,Nombre d\'Enfants,Salaire Soumis,Cotisation Employé,Cotisation Employeur,Date Embauche\n';
+            
+            {% for employee in employees %}
+            csv += '{{ forloop.counter }},"{{ employee.employee_cnam_number }}","{{ employee.employee_name }}","{{ employee.gender|default:"-" }}","{{ employee.marital_status|default:"-" }}","{{ employee.children_count|default:"0" }}","{{ employee.taxable_salary|floatformat:2 }}","{{ employee.cnam_employee|floatformat:2 }}","{{ employee.cnam_employer|floatformat:2 }}","{{ employee.hire_date|default:"-" }}"\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'declaration_cnam_{{ period|date:"Ym" }}.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<!--
+TEMPLATE CONTEXT DOCUMENTATION:
+
+This template expects the following context variables:
+
+HEADER DATA:
+- company_name: Company name
+- company_cnam: Company CNAM registration number
+- company_activity: Company business activity
+- period: Period date (Date object)
+- period_text: Formatted period text (e.g., "Janvier 2023")
+- declaration_date: Date when declaration was generated
+
+SUMMARY DATA:
+- total_employees: Total number of employees
+- total_taxable_salary: Total taxable salary amount
+- total_employee_contributions: Total CNAM employee contributions (2%)
+- total_employer_contributions: Total CNAM employer contributions (3%)
+- total_contributions: Total CNAM contributions (employee + employer)
+
+EMPLOYEE DATA:
+- employees: List of employee records with fields:
+  - employee_cnam_number: Employee CNAM number
+  - employee_name: Employee full name
+  - gender: Employee gender (M/F)
+  - marital_status: Marital status (Célibataire, Marié, etc.)
+  - children_count: Number of children
+  - taxable_salary: Taxable salary amount for CNAM
+  - cnam_employee: CNAM employee contribution (2% of salary)
+  - cnam_employer: CNAM employer contribution (3% of salary)
+  - hire_date: Hire date (optional)
+
+REPORT META:
+- report_meta.generated_date: Report generation timestamp
+- report_meta.generated_by: Name of user who generated report
+
+USAGE:
+To use this template in a Django view:
+
+context = DeclarationReportData.prepare_cnam_declaration_data(
+    employees_data, period, system_params
+)
+context.update(ReportContext.prepare_base_context(system_params, request.user))
+return render(request, 'cnam_declaration.html', context)
+
+FEATURES:
+- Print-optimized layout
+- CSV export functionality
+- Professional CNAM-compliant format
+- Bootstrap 4 responsive design
+- Automatic calculations and totals
+- Legal compliance notes
+- Family information tracking for CNAM coverage
+-->

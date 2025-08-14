@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Déclaration CNSS - {{ period_text }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 11px; }
+        }
+        
+        .declaration-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .cnss-logo {
+            max-height: 60px;
+        }
+        
+        .declaration-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 20px;
+            margin: 20px 0;
+            text-transform: uppercase;
+        }
+        
+        .company-info {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+        
+        .employees-table {
+            font-size: 10px;
+        }
+        
+        .employees-table th {
+            background-color: #007bff;
+            color: white;
+            text-align: center;
+            padding: 8px 4px;
+            vertical-align: middle;
+        }
+        
+        .employees-table td {
+            padding: 4px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .total-row {
+            background-color: #e9ecef;
+            font-weight: bold;
+        }
+        
+        .summary-section {
+            background-color: #f8f9fa;
+            border: 2px solid #007bff;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border-top: 1px solid #000;
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="declaration-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    <img src="/static/images/cnss_logo.png" alt="CNSS Logo" class="cnss-logo">
+                </div>
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h4>CAISSE NATIONALE DE SÉCURITÉ SOCIALE</h4>
+                        <h5>RÉPUBLIQUE ISLAMIQUE DE MAURITANIE</h5>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        <strong>Déclaration N°:</strong><br>
+                        CNSS-{{ period|date:"Ym" }}-{{ company_cnss }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Declaration Title -->
+        <div class="declaration-title">
+            Liste Nominative des Salariés Soumis à la CNSS<br>
+            <small>Période: {{ period_text }}</small>
+        </div>
+        
+        <!-- Company Information -->
+        <div class="company-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Entreprise:</strong></td>
+                            <td>{{ company_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>N° CNSS:</strong></td>
+                            <td>{{ company_cnss }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Activité:</strong></td>
+                            <td>{{ company_activity }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Période:</strong></td>
+                            <td>{{ period|date:"m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date de déclaration:</strong></td>
+                            <td>{{ declaration_date|date:"d/m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Nombre d'employés:</strong></td>
+                            <td>{{ total_employees }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Employees Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered employees-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">N°</th>
+                        <th rowspan="2">N° CNSS</th>
+                        <th rowspan="2">Nom et Prénom</th>
+                        <th colspan="3">Nombre de jours</th>
+                        <th rowspan="2">Total<br>Jours</th>
+                        <th rowspan="2">Rémunération<br>Réelles (MRU)</th>
+                        <th rowspan="2">Plafond<br>(MRU)</th>
+                        <th rowspan="2">Date<br>Embauche</th>
+                        <th rowspan="2">Date<br>Débauche</th>
+                    </tr>
+                    <tr>
+                        <th>1er Mois</th>
+                        <th>2ème Mois</th>
+                        <th>3ème Mois</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for employee in employees %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ employee.employee_cnss_number }}</td>
+                        <td class="text-left">{{ employee.employee_name }}</td>
+                        <td>{{ employee.days_month1|default:"-" }}</td>
+                        <td>{{ employee.days_month2|default:"-" }}</td>
+                        <td>{{ employee.days_month3|default:"-" }}</td>
+                        <td>{{ employee.total_days|floatformat:1 }}</td>
+                        <td class="text-right">{{ employee.actual_remuneration|floatformat:2 }}</td>
+                        <td class="text-right">{{ employee.ceiling|floatformat:2 }}</td>
+                        <td>{{ employee.hire_date|default:"-" }}</td>
+                        <td>{{ employee.termination_date|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="11" class="text-center">Aucun employé soumis à la CNSS pour cette période</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if employees %}
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="6"><strong>TOTAUX</strong></td>
+                        <td><strong>{{ total_days|floatformat:1 }}</strong></td>
+                        <td class="text-right"><strong>{{ total_taxable_salary|floatformat:2 }}</strong></td>
+                        <td class="text-right"><strong>-</strong></td>
+                        <td colspan="2"></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Summary Section -->
+        <div class="summary-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>RÉCAPITULATIF DES COTISATIONS</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Total Rémunérations Soumises:</td>
+                            <td class="text-right"><strong>{{ total_taxable_salary|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Taux Employé (1%):</td>
+                            <td class="text-right">{{ total_contributions|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Taux Employeur (2%):</td>
+                            <td class="text-right">{{ total_contributions|mul:"2"|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr class="table-primary">
+                            <td><strong>Total Cotisations CNSS:</strong></td>
+                            <td class="text-right"><strong>{{ total_contributions|mul:"3"|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>INFORMATIONS COMPLÉMENTAIRES</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Plafond mensuel CNSS:</td>
+                            <td class="text-right">15 000,00 MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Nombre d'employés déclarés:</td>
+                            <td class="text-right">{{ total_employees }}</td>
+                        </tr>
+                        <tr>
+                            <td>Période de déclaration:</td>
+                            <td class="text-right">{{ period|date:"m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td>Date limite de paiement:</td>
+                            <td class="text-right">{{ period|add_months:1|date:"15/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Legal Text -->
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <small>
+                    <strong>Note importante:</strong> 
+                    Cette déclaration doit être déposée au plus tard le 15 du mois suivant la période déclarée, 
+                    accompagnée du paiement des cotisations sociales. 
+                    Tout retard dans le dépôt ou le paiement entraîne des pénalités conformément à la réglementation en vigueur.
+                </small>
+            </div>
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Cachet et Signature de l'Entreprise</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>{{ company_name }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Visa de la CNSS</strong></p>
+                        <div style="height: 100px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Date de réception: ___/___/_____</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Généré le {{ report_meta.generated_date|date:"d/m/Y à H:i" }} par {{ report_meta.generated_by }}
+            </small>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary">
+                Imprimer
+            </button>
+            <button onclick="exportToCSV()" class="btn btn-success ml-2">
+                Exporter CSV
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function exportToCSV() {
+            // Simple CSV export functionality
+            let csv = 'N°,N° CNSS,Nom et Prénom,1er Mois,2ème Mois,3ème Mois,Total Jours,Rémunération,Plafond,Date Embauche,Date Débauche\n';
+            
+            {% for employee in employees %}
+            csv += '{{ forloop.counter }},"{{ employee.employee_cnss_number }}","{{ employee.employee_name }}","{{ employee.days_month1|default:"-" }}","{{ employee.days_month2|default:"-" }}","{{ employee.days_month3|default:"-" }}","{{ employee.total_days|floatformat:1 }}","{{ employee.actual_remuneration|floatformat:2 }}","{{ employee.ceiling|floatformat:2 }}","{{ employee.hire_date|default:"-" }}","{{ employee.termination_date|default:"-" }}"\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'declaration_cnss_{{ period|date:"Ym" }}.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<!--
+TEMPLATE CONTEXT DOCUMENTATION:
+
+This template expects the following context variables:
+
+HEADER DATA:
+- company_name: Company name
+- company_cnss: Company CNSS registration number
+- company_activity: Company business activity
+- period: Period date (Date object)
+- period_text: Formatted period text (e.g., "Janvier 2023")
+- declaration_date: Date when declaration was generated
+
+SUMMARY DATA:
+- total_employees: Total number of employees
+- total_days: Total days worked by all employees
+- total_taxable_salary: Total taxable salary amount
+- total_contributions: Total CNSS contributions (employee portion)
+
+EMPLOYEE DATA:
+- employees: List of employee records with fields:
+  - employee_cnss_number: Employee CNSS number
+  - employee_name: Employee full name
+  - days_month1: Days worked in first month (optional)
+  - days_month2: Days worked in second month (optional)
+  - days_month3: Days worked in third month (optional)
+  - total_days: Total days worked
+  - actual_remuneration: Actual remuneration amount
+  - ceiling: CNSS ceiling amount
+  - hire_date: Hire date (optional)
+  - termination_date: Termination date (optional)
+
+REPORT META:
+- report_meta.generated_date: Report generation timestamp
+- report_meta.generated_by: Name of user who generated report
+
+USAGE:
+To use this template in a Django view:
+
+context = DeclarationReportData.prepare_cnss_declaration_data(
+    employees_data, period, system_params
+)
+context.update(ReportContext.prepare_base_context(system_params, request.user))
+return render(request, 'cnss_declaration.html', context)
+
+FEATURES:
+- Print-optimized layout
+- CSV export functionality
+- Professional CNSS-compliant format
+- Bootstrap 4 responsive design
+- Automatic calculations and totals
+- Legal compliance notes
+-->

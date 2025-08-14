@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rapport de Présence - {{ period_text }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 10px; }
+        }
+        
+        .attendance-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .company-logo {
+            max-height: 60px;
+        }
+        
+        .report-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            text-transform: uppercase;
+            background-color: #6f42c1;
+            color: white;
+            padding: 10px;
+        }
+        
+        .period-info {
+            background-color: #e9ecef;
+            padding: 15px;
+            border-left: 4px solid #6f42c1;
+            margin-bottom: 20px;
+        }
+        
+        .attendance-table {
+            font-size: 9px;
+        }
+        
+        .attendance-table th {
+            background-color: #6f42c1;
+            color: white;
+            text-align: center;
+            padding: 6px 3px;
+            vertical-align: middle;
+        }
+        
+        .attendance-table td {
+            padding: 3px 2px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        .employee-name {
+            text-align: left !important;
+            min-width: 120px;
+        }
+        
+        .day-cell {
+            min-width: 25px;
+            font-size: 8px;
+        }
+        
+        .day-present { background-color: #d4edda; }
+        .day-absent { background-color: #f8d7da; }
+        .day-partial { background-color: #fff3cd; }
+        .day-holiday { background-color: #d1ecf1; }
+        .day-weekend { background-color: #e2e3e5; }
+        
+        .summary-row {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+        
+        .total-row {
+            background-color: #6f42c1;
+            color: white;
+            font-weight: bold;
+        }
+        
+        .legend {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border: 1px solid #dee2e6;
+            margin-top: 20px;
+        }
+        
+        .statistics-section {
+            background-color: #f8f9fa;
+            border: 2px solid #6f42c1;
+            padding: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="attendance-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    {% if company_logo %}
+                    <img src="data:image/png;base64,{{ company_logo }}" alt="Logo" class="company-logo">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h4>{{ company_name }}</h4>
+                        <p class="mb-0"><small>{{ company_activity }}</small></p>
+                        <p class="mb-0"><small>Rapport de Présence et Temps de Travail</small></p>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        <strong>Date:</strong><br>
+                        {{ report_date|date:"d/m/Y" }}<br>
+                        <strong>Période:</strong><br>
+                        {{ period|date:"m/Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Report Title -->
+        <div class="report-title">
+            RAPPORT DE PRÉSENCE<br>
+            <small>{{ period_text }}</small>
+        </div>
+        
+        <!-- Period Information -->
+        <div class="period-info">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Période analysée:</strong><br>
+                    {{ period_text }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Nombre d'employés:</strong><br>
+                    {{ total_employees }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Jours ouvrables:</strong><br>
+                    {{ working_days_in_period }}
+                </div>
+                <div class="col-md-3">
+                    <strong>Total heures travaillées:</strong><br>
+                    {{ total_worked_hours|floatformat:1 }} h
+                </div>
+            </div>
+        </div>
+        
+        <!-- Attendance Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered attendance-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2">N°</th>
+                        <th rowspan="2">Nom et Prénom</th>
+                        <th rowspan="2">Matricule</th>
+                        <th rowspan="2">Poste</th>
+                        <th colspan="{{ days_in_month }}">Jours du Mois</th>
+                        <th rowspan="2">Total<br>Présent</th>
+                        <th rowspan="2">Total<br>Absent</th>
+                        <th rowspan="2">Heures<br>Travaillées</th>
+                        <th rowspan="2">Heures<br>Supp.</th>
+                        <th rowspan="2">Taux<br>Présence</th>
+                    </tr>
+                    <tr>
+                        {% for day in month_days %}
+                        <th class="day-cell">{{ day.day }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in attendance_records %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td class="employee-name">{{ record.employee_name }}</td>
+                        <td>{{ record.employee_number }}</td>
+                        <td>{{ record.position|truncatechars:12 }}</td>
+                        
+                        <!-- Daily attendance cells -->
+                        {% for day_data in record.daily_attendance %}
+                        <td class="day-cell 
+                            {% if day_data.status == 'P' %}day-present
+                            {% elif day_data.status == 'A' %}day-absent
+                            {% elif day_data.status == 'H' %}day-partial
+                            {% elif day_data.status == 'F' %}day-holiday
+                            {% elif day_data.status == 'W' %}day-weekend
+                            {% endif %}">
+                            {{ day_data.display|default:"-" }}
+                        </td>
+                        {% endfor %}
+                        
+                        <td><strong>{{ record.total_present }}</strong></td>
+                        <td>{{ record.total_absent }}</td>
+                        <td>{{ record.total_hours|floatformat:1 }}</td>
+                        <td>{{ record.overtime_hours|floatformat:1 }}</td>
+                        <td>{{ record.attendance_rate|floatformat:1 }}%</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="{{ 9|add:days_in_month }}" class="text-center">Aucune donnée de présence pour cette période</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if attendance_records %}
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="4"><strong>TOTAUX</strong></td>
+                        {% for day_total in daily_totals %}
+                        <td class="day-cell"><strong>{{ day_total }}</strong></td>
+                        {% endfor %}
+                        <td><strong>{{ total_present_days }}</strong></td>
+                        <td><strong>{{ total_absent_days }}</strong></td>
+                        <td><strong>{{ total_worked_hours|floatformat:1 }}</strong></td>
+                        <td><strong>{{ total_overtime|floatformat:1 }}</strong></td>
+                        <td><strong>{{ global_attendance_rate|floatformat:1 }}%</strong></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Legend -->
+        <div class="legend">
+            <div class="row">
+                <div class="col-md-12">
+                    <h6><strong>LÉGENDE</strong></h6>
+                    <div class="row">
+                        <div class="col-md-2">
+                            <span class="badge badge-success">P</span> Présent
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge badge-danger">A</span> Absent
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge badge-warning">H</span> Demi-journée
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge badge-info">F</span> Férié
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge badge-secondary">W</span> Weekend
+                        </div>
+                        <div class="col-md-2">
+                            <span class="badge badge-light">-</span> Non applicable
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Section -->
+        <div class="statistics-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <h6><strong>STATISTIQUES GLOBALES</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Taux de présence moyen:</td>
+                            <td class="text-right"><strong>{{ global_attendance_rate|floatformat:1 }}%</strong></td>
+                        </tr>
+                        <tr>
+                            <td>Total jours travaillés:</td>
+                            <td class="text-right">{{ total_present_days }}</td>
+                        </tr>
+                        <tr>
+                            <td>Total jours d'absence:</td>
+                            <td class="text-right">{{ total_absent_days }}</td>
+                        </tr>
+                        <tr>
+                            <td>Total heures travaillées:</td>
+                            <td class="text-right">{{ total_worked_hours|floatformat:1 }} h</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h6><strong>RÉPARTITION ABSENCES</strong></h6>
+                    <table class="table table-sm">
+                        {% for absence_type, count in absence_breakdown.items %}
+                        <tr>
+                            <td>{{ absence_type }}:</td>
+                            <td class="text-right">{{ count }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="2">Aucune absence enregistrée</td>
+                        </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div class="col-md-4">
+                    <h6><strong>HEURES SUPPLÉMENTAIRES</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Total heures supplémentaires:</td>
+                            <td class="text-right">{{ total_overtime|floatformat:1 }} h</td>
+                        </tr>
+                        <tr>
+                            <td>Moyenne par employé:</td>
+                            <td class="text-right">{{ average_overtime_per_employee|floatformat:1 }} h</td>
+                        </tr>
+                        <tr>
+                            <td>Nombre d'employés avec HS:</td>
+                            <td class="text-right">{{ employees_with_overtime }}</td>
+                        </tr>
+                        <tr>
+                            <td>% du temps total:</td>
+                            <td class="text-right">{{ overtime_percentage|floatformat:1 }}%</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Important Notes -->
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <small>
+                    <strong>Notes importantes:</strong><br>
+                    • Ce rapport est généré à partir des données de pointage et peut être sujet à révision.<br>
+                    • Les heures supplémentaires sont calculées sur la base du contrat de travail de chaque employé.<br>
+                    • Pour toute contestation, veuillez vous référer aux enregistrements de pointage originaux.<br>
+                    • Les jours fériés sont définis selon la législation mauritanienne en vigueur.
+                </small>
+            </div>
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="mt-4">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Préparé par</strong></p>
+                        <div style="height: 80px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Service RH<br>{{ report_meta.generated_by }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="text-center">
+                        <p><strong>Approuvé par</strong></p>
+                        <div style="height: 80px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Direction<br>{{ company_manager|default:"Direction RH" }}</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Généré le {{ report_meta.generated_date|date:"d/m/Y à H:i" }} par {{ report_meta.generated_by }}
+            </small>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-primary">
+                Imprimer
+            </button>
+            <button onclick="exportToCSV()" class="btn btn-success ml-2">
+                Exporter CSV
+            </button>
+            <button onclick="exportSummary()" class="btn btn-info ml-2">
+                Résumé
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function exportToCSV() {
+            let csv = 'N°,Nom et Prénom,Matricule,Poste';
+            
+            // Add day headers
+            {% for day in month_days %}
+            csv += ',{{ day.day }}';
+            {% endfor %}
+            csv += ',Total Présent,Total Absent,Heures Travaillées,Heures Supp.,Taux Présence\n';
+            
+            // Add employee data
+            {% for record in attendance_records %}
+            csv += '{{ forloop.counter }},"{{ record.employee_name }}","{{ record.employee_number }}","{{ record.position }}"';
+            {% for day_data in record.daily_attendance %}
+            csv += ',"{{ day_data.display|default:"-" }}"';
+            {% endfor %}
+            csv += ',"{{ record.total_present }}","{{ record.total_absent }}","{{ record.total_hours|floatformat:1 }}","{{ record.overtime_hours|floatformat:1 }}","{{ record.attendance_rate|floatformat:1 }}%"\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'presence_{{ period|date:"Ym" }}.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function exportSummary() {
+            let summary = 'Résumé de Présence - {{ period_text }}\n\n';
+            summary += 'Statistiques globales:\n';
+            summary += 'Taux de présence moyen: {{ global_attendance_rate|floatformat:1 }}%\n';
+            summary += 'Total employés: {{ total_employees }}\n';
+            summary += 'Total heures travaillées: {{ total_worked_hours|floatformat:1 }} h\n';
+            summary += 'Total heures supplémentaires: {{ total_overtime|floatformat:1 }} h\n';
+            
+            const blob = new Blob([summary], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'resume_presence_{{ period|date:"Ym" }}.txt';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<!--
+TEMPLATE CONTEXT DOCUMENTATION:
+
+This template expects the following context variables:
+
+HEADER DATA:
+- company_name: Company name
+- company_activity: Company business activity
+- company_logo: Company logo (base64 encoded)
+- company_manager: Company manager name (optional)
+
+PERIOD DATA:
+- period: Period date (Date object)
+- period_text: Formatted period text (e.g., "Janvier 2023")
+- report_date: Report generation date
+- days_in_month: Number of days in the month
+- working_days_in_period: Number of working days in period
+- month_days: List of day objects with day numbers
+
+SUMMARY DATA:
+- total_employees: Total number of employees
+- total_worked_hours: Total hours worked by all employees
+- total_overtime: Total overtime hours
+- total_present_days: Total present days across all employees
+- total_absent_days: Total absent days across all employees
+- global_attendance_rate: Overall attendance rate percentage
+- average_overtime_per_employee: Average overtime per employee
+- employees_with_overtime: Number of employees with overtime
+- overtime_percentage: Overtime as percentage of total time
+- daily_totals: List of daily totals for each day
+
+ATTENDANCE RECORDS:
+- attendance_records: List of employee attendance records with fields:
+  - employee_name: Employee full name
+  - employee_number: Employee matricule/ID
+  - position: Employee position/job title
+  - daily_attendance: List of daily attendance data with fields:
+    - status: Status code (P=Present, A=Absent, H=Half-day, F=Holiday, W=Weekend)
+    - display: Display value for the cell
+  - total_present: Total days present
+  - total_absent: Total days absent
+  - total_hours: Total hours worked
+  - overtime_hours: Total overtime hours
+  - attendance_rate: Individual attendance rate percentage
+
+ABSENCE DATA:
+- absence_breakdown: Dictionary of absence types and counts
+
+REPORT META:
+- report_meta.generated_date: Report generation timestamp
+- report_meta.generated_by: Name of user who generated report
+
+USAGE:
+To use this template in a Django view:
+
+context = AttendanceReportData.prepare_attendance_report_data(
+    attendance_records, period, system_params
+)
+context.update(ReportContext.prepare_base_context(system_params, request.user))
+return render(request, 'attendance_report.html', context)
+
+FEATURES:
+- Print-optimized layout
+- Color-coded attendance status
+- CSV export functionality
+- Daily attendance grid display
+- Bootstrap 4 responsive design
+- Comprehensive statistics
+- Summary export functionality
+- Visual legend for status codes
+- Overtime tracking and analysis
+- Absence type breakdown
+-->

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ordre de Virement Bancaire - {{ bank_name }} - {{ period_text }}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        @media print {
+            .no-print { display: none; }
+            body { font-size: 11px; }
+        }
+        
+        .transfer-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header-section {
+            border: 2px solid #000;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .company-logo {
+            max-height: 60px;
+        }
+        
+        .transfer-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            text-transform: uppercase;
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+        }
+        
+        .bank-info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border: 1px solid #007bff;
+            margin-bottom: 20px;
+        }
+        
+        .transfers-table {
+            font-size: 11px;
+        }
+        
+        .transfers-table th {
+            background-color: #28a745;
+            color: white;
+            text-align: center;
+            padding: 8px 5px;
+            vertical-align: middle;
+        }
+        
+        .transfers-table td {
+            padding: 5px;
+            vertical-align: middle;
+        }
+        
+        .total-row {
+            background-color: #d4edda;
+            font-weight: bold;
+            font-size: 12px;
+        }
+        
+        .transfer-summary {
+            background-color: #f8f9fa;
+            border: 2px solid #28a745;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .signature-section {
+            margin-top: 30px;
+            border-top: 2px solid #28a745;
+            padding-top: 20px;
+        }
+        
+        .amount-in-words {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 10px;
+            font-style: italic;
+            text-align: center;
+        }
+        
+        .reference-number {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="transfer-container">
+        <!-- Header Section -->
+        <div class="header-section">
+            <div class="row align-items-center">
+                <div class="col-md-2">
+                    {% if company_logo %}
+                    <img src="data:image/png;base64,{{ company_logo }}" alt="Logo" class="company-logo">
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="text-center">
+                        <h4>{{ company_name }}</h4>
+                        <p class="mb-0"><small>{{ company_activity }}</small></p>
+                        <p class="mb-0"><small>{{ company_address }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-2 text-right">
+                    <small>
+                        <strong>Référence:</strong><br>
+                        <span class="reference-number">{{ reference }}</span><br>
+                        <strong>Date:</strong><br>
+                        {{ transfer_date|date:"d/m/Y" }}
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Transfer Title -->
+        <div class="transfer-title">
+            ORDRE DE VIREMENT BANCAIRE<br>
+            <small>Salaires - {{ period_text }}</small>
+        </div>
+        
+        <!-- Bank Information -->
+        <div class="bank-info">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>INFORMATIONS BANCAIRES</strong></h6>
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Banque destinataire:</strong></td>
+                            <td>{{ bank_name }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Compte de débit:</strong></td>
+                            <td>{{ company_account }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Date d'exécution:</strong></td>
+                            <td>{{ transfer_date|date:"d/m/Y" }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>RÉCAPITULATIF</strong></h6>
+                    <table class="table table-sm table-borderless">
+                        <tr>
+                            <td><strong>Nombre de virements:</strong></td>
+                            <td>{{ total_employees }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Période de paie:</strong></td>
+                            <td>{{ period|date:"m/Y" }}</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Montant total:</strong></td>
+                            <td><strong>{{ total_amount|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Total Amount in Words -->
+        <div class="amount-in-words">
+            <strong>Montant total en lettres:</strong><br>
+            {{ total_amount_in_words }}
+        </div>
+        
+        <!-- Transfers Table -->
+        <div class="table-responsive mt-4">
+            <table class="table table-bordered transfers-table">
+                <thead>
+                    <tr>
+                        <th>N°</th>
+                        <th>Nom et Prénom</th>
+                        <th>Matricule</th>
+                        <th>Compte Bancaire</th>
+                        <th>Banque</th>
+                        <th>Montant Net<br>(MRU)</th>
+                        <th>Observations</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for transfer in transfers %}
+                    <tr>
+                        <td class="text-center">{{ forloop.counter }}</td>
+                        <td>{{ transfer.employee_name }}</td>
+                        <td class="text-center">{{ transfer.employee_number }}</td>
+                        <td class="text-center">{{ transfer.bank_account }}</td>
+                        <td>{{ transfer.bank_name|default:bank_name }}</td>
+                        <td class="text-right">{{ transfer.net_salary|floatformat:2 }}</td>
+                        <td class="text-center">{{ transfer.notes|default:"-" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center">Aucun virement à effectuer pour cette période</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                {% if transfers %}
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="5" class="text-center"><strong>TOTAL GÉNÉRAL</strong></td>
+                        <td class="text-right"><strong>{{ total_amount|floatformat:2 }} MRU</strong></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+                {% endif %}
+            </table>
+        </div>
+        
+        <!-- Transfer Summary -->
+        <div class="transfer-summary">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6><strong>INSTRUCTIONS DE VIREMENT</strong></h6>
+                    <ul class="list-unstyled">
+                        <li>• Débiter le compte {{ company_account }}</li>
+                        <li>• Exécuter les virements individuels ci-dessus</li>
+                        <li>• Date d'exécution: {{ transfer_date|date:"d/m/Y" }}</li>
+                        <li>• Frais bancaires à la charge de l'entreprise</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6><strong>CONTRÔLES</strong></h6>
+                    <table class="table table-sm">
+                        <tr>
+                            <td>Nombre d'employés:</td>
+                            <td class="text-right">{{ total_employees }}</td>
+                        </tr>
+                        <tr>
+                            <td>Montant à débiter:</td>
+                            <td class="text-right">{{ total_amount|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr>
+                            <td>Frais bancaires estimés:</td>
+                            <td class="text-right">{{ estimated_fees|default:"0.00"|floatformat:2 }} MRU</td>
+                        </tr>
+                        <tr class="table-success">
+                            <td><strong>Total débit compte:</strong></td>
+                            <td class="text-right"><strong>{{ total_debit|default:total_amount|floatformat:2 }} MRU</strong></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Important Notes -->
+        <div class="mt-4">
+            <div class="alert alert-info">
+                <small>
+                    <strong>Note importante:</strong> 
+                    Cet ordre de virement doit être accompagné d'un fichier électronique aux normes bancaires en vigueur. 
+                    Vérifier que tous les comptes bénéficiaires sont valides et actifs. 
+                    En cas de rejet d'un virement, l'entreprise sera notifiée pour régularisation.
+                </small>
+            </div>
+        </div>
+        
+        <!-- Signature Section -->
+        <div class="signature-section">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <p><strong>Préparé par</strong></p>
+                        <div style="height: 80px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Service Comptabilité<br>{{ report_meta.generated_by }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <p><strong>Approuvé par</strong></p>
+                        <div style="height: 80px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>Direction Générale<br>{{ company_manager|default:"Direction" }}</small></p>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <p><strong>Cachet Entreprise</strong></p>
+                        <div style="height: 80px; border: 1px dashed #000; margin: 10px 0;"></div>
+                        <p><small>{{ company_name }}</small></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <div class="text-center mt-4">
+            <small class="text-muted">
+                Généré le {{ report_meta.generated_date|date:"d/m/Y à H:i" }} par {{ report_meta.generated_by }}
+            </small>
+        </div>
+        
+        <!-- Print Button -->
+        <div class="text-center mt-4 no-print">
+            <button onclick="window.print()" class="btn btn-success">
+                Imprimer
+            </button>
+            <button onclick="exportToCSV()" class="btn btn-primary ml-2">
+                Exporter CSV
+            </button>
+            <button onclick="generateBankFile()" class="btn btn-warning ml-2">
+                Fichier Bancaire
+            </button>
+            <button onclick="window.history.back()" class="btn btn-secondary ml-2">
+                Retour
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        function exportToCSV() {
+            let csv = 'N°,Nom et Prénom,Matricule,Compte Bancaire,Banque,Montant Net,Observations\n';
+            
+            {% for transfer in transfers %}
+            csv += '{{ forloop.counter }},"{{ transfer.employee_name }}","{{ transfer.employee_number }}","{{ transfer.bank_account }}","{{ transfer.bank_name|default:bank_name }}","{{ transfer.net_salary|floatformat:2 }}","{{ transfer.notes|default:"-" }}"\n';
+            {% endfor %}
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'virement_{{ reference }}.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+        
+        function generateBankFile() {
+            // This would typically generate a standardized bank file format
+            alert('Génération du fichier bancaire en cours...\nFormat: SEPA XML ou format bancaire local');
+            // Implementation would depend on specific bank requirements
+        }
+    </script>
+    
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+
+<!--
+TEMPLATE CONTEXT DOCUMENTATION:
+
+This template expects the following context variables:
+
+HEADER DATA:
+- company_name: Company name
+- company_activity: Company business activity  
+- company_address: Company address
+- company_account: Company bank account for debit
+- company_logo: Company logo (base64 encoded)
+- company_manager: Company manager name (optional)
+
+TRANSFER DATA:
+- bank_name: Destination bank name
+- reference: Transfer reference number
+- transfer_date: Transfer execution date
+- period: Payroll period (Date object)
+- period_text: Formatted period text (e.g., "Janvier 2023")
+
+SUMMARY DATA:
+- total_employees: Total number of transfers
+- total_amount: Total transfer amount
+- total_amount_in_words: Amount spelled out in French
+- estimated_fees: Estimated bank fees (optional)
+- total_debit: Total amount to debit from company account
+
+TRANSFER RECORDS:
+- transfers: List of individual transfer records with fields:
+  - employee_name: Employee full name
+  - employee_number: Employee matricule/ID
+  - bank_account: Employee bank account number
+  - bank_name: Employee's bank name (optional, defaults to main bank)
+  - net_salary: Net salary amount to transfer
+  - notes: Optional notes or observations
+
+REPORT META:
+- report_meta.generated_date: Report generation timestamp
+- report_meta.generated_by: Name of user who generated report
+
+USAGE:
+To use this template in a Django view:
+
+context = BankTransferReportData.prepare_bank_transfer_data(
+    payroll_records, bank, period, system_params
+)
+context['total_amount_in_words'] = NumberToTextConverter().convert_to_mru(
+    context['total_amount']
+)
+context.update(ReportContext.prepare_base_context(system_params, request.user))
+return render(request, 'bank_transfer_report.html', context)
+
+FEATURES:
+- Print-optimized layout for bank submission
+- CSV export functionality
+- Professional bank-compliant format
+- Bootstrap 4 responsive design
+- Transfer reference tracking
+- Amount in words display
+- Signature sections for approvals
+- Bank file generation placeholder
+- Comprehensive transfer instructions
+- Fee calculation support
+-->
