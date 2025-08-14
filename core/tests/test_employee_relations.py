@@ -483,6 +483,14 @@ class DocumentModelTest(EmployeeRelationsTestBase):
         
         self.assertFalse(valid_doc.expires_soon)
         
+        # Document without expiry date
+        no_expiry_doc = Document.objects.create(
+            employee=self.employee1,
+            document_name="No Expiry Contract"
+        )
+        
+        self.assertFalse(no_expiry_doc.expires_soon)
+        
     def test_document_ordering(self):
         """Test default ordering by created_at (descending)"""
         doc1 = Document.objects.create(
