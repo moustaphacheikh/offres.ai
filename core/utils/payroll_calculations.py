@@ -599,9 +599,10 @@ class PayrollCalculator:
         return result
 
 
-class PayrollFunctions:
+class PayrollFunctionsStatic:
     """
     Payroll calculation functions F01-F24 converted from FonctionsPaie.java
+    Static methods version
     """
     
     @staticmethod
@@ -646,7 +647,7 @@ class PayrollFunctions:
         F03: Calculate hourly base salary
         Equivalent to F03_sbHoraire in FonctionsPaie.java
         """
-        daily_salary = PayrollFunctions.F02_sbJour(employee, motif, period, payroll_elements)
+        daily_salary = PayrollFunctionsStatic.F02_sbJour(employee, motif, period, payroll_elements)
         if daily_salary > 0 and employee.contract_hours_per_week > 0:
             monthly_salary = daily_salary * 30
             monthly_hours = employee.contract_hours_per_week * Decimal('52') / Decimal('12')

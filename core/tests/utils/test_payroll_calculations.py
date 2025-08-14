@@ -10,11 +10,11 @@ import pytest
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import date, datetime
 from unittest.mock import Mock, MagicMock, patch
-
 from core.utils.payroll_calculations import (
     PayrollCalculator,
     OvertimeCalculator,
-    InstallmentCalculator
+    InstallmentCalculator,
+    PayrollFunctions
 )
 
 
@@ -48,7 +48,9 @@ class MockSystemParameters:
         
         # SMIG (minimum wage)
         self.smig_mensuel = Decimal('30000')  # MRU 30,000
+        self.smig = Decimal('30000')  # Alternative name for minimum wage
         self.heures_travail_mensuel = Decimal('173')  # Standard monthly hours
+        self.current_period = date(2023, 12, 31)
 
 
 class MockEmployee:
@@ -61,9 +63,14 @@ class MockEmployee:
         self.hire_date = date(2020, 1, 1)
         self.birth_date = date(1985, 6, 15)
         self.contract_hours = Decimal('8')
+        self.contract_hours_per_week = Decimal('40')
         self.base_salary = Decimal('50000')
         self.is_expatriate = False
         self.number_of_children = 2
+        self.seniority_date = date(2020, 1, 1)
+        self.salary_grade = None
+        self.psra_rate = Decimal('0.00')
+        self.origin = None
 
 
 class MockPayrollCalculator:
@@ -89,6 +96,26 @@ class MockPayrollCalculator:
     def get_used_rub_id(self, component_id):
         """Mock salary component ID mapping"""
         return component_id
+    
+    def get_cumulative_amount_by_type(self, employee, type_code):
+        """Mock get cumulative amount"""
+        return Decimal('0.00')
+    
+    def get_fixed_monthly_gross_salary(self, employee, period):
+        """Mock fixed monthly gross salary"""
+        return employee.base_salary
+    
+    def get_housing_allowance_base(self, employee):
+        """Mock housing allowance base"""
+        return Decimal('0.00')
+    
+    def calculate_cnss_employee(self, employee, period):
+        """Mock CNSS employee calculation"""
+        return Decimal('0.00')
+    
+    def get_salary_increase(self, employee, period):
+        """Mock salary increase"""
+        return Decimal('0.00')
 
 
 class TestPayrollFunctions:
@@ -101,7 +128,7 @@ class TestPayrollFunctions:
         self.functions = PayrollFunctions(self.system_parameters, self.payroll_calculator)
         self.employee = MockEmployee()
         self.motif = Mock()
-        self.period = "202312"
+        self.period = date(2023, 12, 31)
     
     def test_F01_NJT_with_record(self):
         """Test F01 - Number of Working Days with existing record"""
@@ -131,12 +158,18 @@ class TestPayrollFunctions:
         # Mock F02 to return daily salary
         with patch.object(self.functions, 'F02_sbJour', return_value=Decimal('1666.67')):
             result = self.functions.F03_sbHoraire(self.employee, self.motif, self.period)
-            expected = Decimal('1666.67') / self.employee.contract_hours
+            # F03 calculates: monthly_salary = daily_salary * 30
+            # monthly_hours = contract_hours_per_week * 52 / 12
+            # hourly_rate = monthly_salary / monthly_hours
+            daily_salary = Decimal('1666.67')
+            monthly_salary = daily_salary * Decimal('30')  # 50000.1
+            monthly_hours = Decimal('40') * Decimal('52') / Decimal('12')  # 173.33...
+            expected = monthly_salary / monthly_hours
             assert result == expected
     
     def test_F03_sbHoraire_zero_hours(self):
         """Test F03 - Hourly Base Salary with zero contract hours"""
-        self.employee.contract_hours = Decimal('0')
+        self.employee.contract_hours_per_week = Decimal('0')
         with patch.object(self.functions, 'F02_sbJour', return_value=Decimal('1666.67')):
             result = self.functions.F03_sbHoraire(self.employee, self.motif, self.period)
             assert result == Decimal('0.00')
@@ -148,7 +181,7 @@ class TestPayrollFunctions:
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            result = self.functions.F04_TauxAnciennete(self.employee, self.motif, self.period)
+            result = self.functions.F04_TauxAnciennete(self.employee, self.period)
             
             # 3 years * 2% = 6%
             expected = Decimal('0.06')
@@ -157,12 +190,12 @@ class TestPayrollFunctions:
     def test_F04_TauxAnciennete_max_cap(self):
         """Test F04 - Seniority Rate with maximum cap"""
         # Employee hired 20 years ago (exceeds 16-year cap)
-        self.employee.hire_date = date(2000, 1, 1)
+        self.employee.seniority_date = date(2000, 1, 1)
         current_date = date(2023, 12, 31)
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            result = self.functions.F04_TauxAnciennete(self.employee, self.motif, self.period)
+            result = self.functions.F04_TauxAnciennete(self.employee, self.period)
             
             # Should cap at 30% (16 years * 2%)
             expected = Decimal('0.30')
@@ -170,30 +203,30 @@ class TestPayrollFunctions:
     
     def test_F04_TauxAnciennete_no_hire_date(self):
         """Test F04 - Seniority Rate with no hire date"""
-        self.employee.hire_date = None
-        result = self.functions.F04_TauxAnciennete(self.employee, self.motif, self.period)
+        self.employee.seniority_date = None
+        result = self.functions.F04_TauxAnciennete(self.employee, self.period)
         assert result == Decimal('0.00')
     
     def test_F05_to_F08_cumulative_functions(self):
         """Test cumulative functions F05-F08 (should return 0 in basic implementation)"""
-        assert self.functions.F05_cumulBIDerDepart(self.employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F06_cumulBNIDerDepart(self.employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F07_cumulRETDerDepart(self.employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F08_cumulBrut12DerMois(self.employee, self.motif, self.period) == Decimal('0.00')
+        assert self.functions.F05_cumulBIDerDepart(self.employee) == Decimal('0.00')
+        assert self.functions.F06_cumulBNIDerDepart(self.employee) == Decimal('0.00')
+        assert self.functions.F07_cumulRETDerDepart(self.employee) == Decimal('0.00')
+        assert self.functions.F08_cumulBrut12DerMois(self.employee) == Decimal('0.00')
     
     def test_F09_salaireBrutMensuelFixe(self):
         """Test F09 - Fixed Monthly Gross Salary"""
-        result = self.functions.F09_salaireBrutMensuelFixe(self.employee, self.motif, self.period)
+        result = self.functions.F09_salaireBrutMensuelFixe(self.employee, self.period)
         assert result == self.employee.base_salary
     
     def test_F10_smig(self):
         """Test F10 - Minimum Wage (SMIG)"""
-        result = self.functions.F10_smig(self.employee, self.motif, self.period)
+        result = self.functions.F10_smig()
         assert result == self.system_parameters.smig_mensuel
     
     def test_F11_smigHoraire(self):
         """Test F11 - Hourly Minimum Wage"""
-        result = self.functions.F11_smigHoraire(self.employee, self.motif, self.period)
+        result = self.functions.F11_smigHoraire(self.employee)
         expected = self.system_parameters.smig_mensuel / self.system_parameters.heures_travail_mensuel
         assert result == expected
     
@@ -204,7 +237,7 @@ class TestPayrollFunctions:
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            result = self.functions.F12_TauxLicenciement(self.employee, self.motif, self.period)
+            result = self.functions.F12_TauxLicenciement(self.employee, self.period)
             
             # Progressive rate for 3 years should be calculated
             assert result >= Decimal('0')
@@ -215,40 +248,40 @@ class TestPayrollFunctions:
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            individual_rate = self.functions.F12_TauxLicenciement(self.employee, self.motif, self.period)
-            collective_rate = self.functions.F13_TauxLicenciementCollectif(self.employee, self.motif, self.period)
+            individual_rate = self.functions.F12_TauxLicenciement(self.employee, self.period)
+            collective_rate = self.functions.F13_TauxLicenciementCollectif(self.employee, self.period)
             
             # Collective rate should be higher than individual
             assert collective_rate >= individual_rate
     
     def test_F14_TauxRetraite(self):
         """Test F14 - Retirement Benefits Rate"""
-        result = self.functions.F14_TauxRetraite(self.employee, self.motif, self.period)
+        result = self.functions.F14_TauxRetraite(self.employee, self.period)
         # Should be based on dismissal rate
         assert result >= Decimal('0')
     
     def test_F15_to_F17_special_functions(self):
         """Test special functions F15-F17"""
         # These return 0 in basic implementation
-        assert self.functions.F15_TauxPSRA(self.employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F16_TauxPreavis(self.employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F17_CumulNJTMC(self.employee, self.motif, self.period) == Decimal('0.00')
+        assert self.functions.F15_TauxPSRA(self.employee) == Decimal('0.00')
+        assert self.functions.F16_TauxPreavis(self.employee) == Decimal('0.00')
+        assert self.functions.F17_CumulNJTMC(self.employee) == Decimal('0.00')
     
     def test_F18_NbSmigRegion(self):
         """Test F18 - Regional SMIG Number"""
         # Default implementation
-        result = self.functions.F18_NbSmigRegion(self.employee, self.motif, self.period)
+        result = self.functions.F18_NbSmigRegion(self.employee)
         assert result == Decimal('1.00')
     
     def test_F19_TauxPresence_full_year(self):
         """Test F19 - Attendance Rate for full year"""
         # Full year employment (should be 1.0)
-        result = self.functions.F19_TauxPresence(self.employee, self.motif, self.period)
+        result = self.functions.F19_TauxPresence(self.employee, self.period)
         assert result <= Decimal('1.0')
     
     def test_F20_BaseIndLogement(self):
         """Test F20 - Housing Allowance Base"""
-        result = self.functions.F20_BaseIndLogement(self.employee, self.motif, self.period)
+        result = self.functions.F20_BaseIndLogement(self.employee)
         # Should return some housing allowance base
         assert result >= Decimal('0')
     
@@ -256,14 +289,14 @@ class TestPayrollFunctions:
         """Test F21 - Net Salary calculation"""
         # Mock other functions that F21 depends on
         with patch.object(self.functions, 'F09_salaireBrutMensuelFixe', return_value=Decimal('50000')):
-            result = self.functions.F21_salaireNet(self.employee, self.motif, self.period)
+            result = self.functions.F21_salaireNet(self.employee, self.period)
             # Net salary should be less than gross due to deductions
             assert result <= Decimal('50000')
             assert result > Decimal('0')
     
     def test_F22_NbEnfants(self):
         """Test F22 - Number of Children"""
-        result = self.functions.F22_NbEnfants(self.employee, self.motif, self.period)
+        result = self.functions.F22_NbEnfants(self.employee)
         assert result == Decimal(str(self.employee.number_of_children))
     
     def test_F23_TauxAncienneteSpeciale(self):
@@ -272,14 +305,14 @@ class TestPayrollFunctions:
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            result = self.functions.F23_TauxAncienneteSpeciale(self.employee, self.motif, self.period)
+            result = self.functions.F23_TauxAncienneteSpeciale(self.employee, self.period)
             
             # Should continue growing beyond 16 years (no cap)
             assert result >= Decimal('0')
     
     def test_F24_augmentationSalaireFixe(self):
         """Test F24 - Fixed Salary Increase"""
-        result = self.functions.F24_augmentationSalaireFixe(self.employee, self.motif, self.period)
+        result = self.functions.F24_augmentationSalaireFixe(self.employee, self.period)
         # Default implementation returns 0
         assert result == Decimal('0.00')
     
@@ -289,7 +322,7 @@ class TestPayrollFunctions:
         
         with patch('core.utils.payroll_calculations.date') as mock_date:
             mock_date.today.return_value = current_date
-            result = self.functions.F23X_TauxAncienneteSpeciale(self.employee, self.motif, self.period)
+            result = self.functions.F23X_TauxAncienneteSpeciale(self.employee, self.period)
             
             # Different calculation than F23
             assert result >= Decimal('0')
@@ -838,7 +871,7 @@ class TestMauritanianTaxCalculations:
         # Test a few key functions
         assert self.functions.F01_NJT(none_employee, self.motif, self.period) == Decimal('0.00')
         assert self.functions.F02_sbJour(none_employee, self.motif, self.period) == Decimal('0.00')
-        assert self.functions.F10_smig(none_employee, self.motif, self.period) == self.system_parameters.smig_mensuel
+        assert self.functions.F10_smig() == self.system_parameters.smig_mensuel
 
 
 class TestPayrollCalculator:
@@ -1156,7 +1189,7 @@ class TestPayrollCalculationsIntegration:
         self.functions = PayrollFunctions(self.system_parameters, self.payroll_calculator)
         self.employee = MockEmployee()
         self.motif = Mock()
-        self.period = "202312"
+        self.period = date(2023, 12, 31)
     
     def test_complete_payroll_calculation_workflow(self):
         """Test complete payroll calculation from start to finish"""
@@ -1411,7 +1444,7 @@ class TestStaticPayrollFunctions:
     def test_static_functions_exist(self):
         """Test that static functions exist and are callable"""
         # Import the static methods version
-        from core.utils.payroll_calculations import PayrollFunctions as StaticPF
+        from core.utils.payroll_calculations import PayrollFunctionsStatic as StaticPF
         
         # These should be available as static methods
         employee = Mock()
