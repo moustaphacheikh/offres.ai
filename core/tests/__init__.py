@@ -1,0 +1,1 @@
+# Core app tests - each test module will be in its own file
