@@ -160,8 +160,8 @@ class TestExportUtilities:
         assert lines[0] == "name;salary;date"
         
         # Check data rows
-        assert "Ahmed;50000.00;2023-06-15" in lines[1]
-        assert "Fatima;45000.00;2023-06-16" in lines[2]
+        assert "Ahmed;50000,00;15/06/2023" in lines[1]
+        assert "Fatima;45000,00;16/06/2023" in lines[2]
     
     def test_to_csv_format_with_field_mapping(self):
         """Test CSV format conversion with field mapping"""

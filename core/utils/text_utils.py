@@ -156,11 +156,16 @@ class NumberToTextConverter:
         
         # Hundreds
         hundreds = number // 100
+        remainder = number % 100
         if hundreds > 0:
             if hundreds == 1:
                 result.append("cent")
             else:
-                result.append(f"{self.ONES[hundreds]} cents")
+                # Add 's' to 'cent' only if remainder is 0 (e.g., exactly 200, 300, etc.)
+                if remainder == 0:
+                    result.append(f"{self.ONES[hundreds]} cents")
+                else:
+                    result.append(f"{self.ONES[hundreds]} cent")
         
         # Tens and ones
         remainder = number % 100

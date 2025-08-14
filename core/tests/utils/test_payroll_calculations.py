@@ -750,6 +750,9 @@ class TestMauritanianTaxCalculations:
         self.system_parameters = MockSystemParameters()
         self.calculator = PayrollCalculator(self.system_parameters)
         self.employee = MockEmployee()
+        self.functions = PayrollFunctions(self.system_parameters, self.calculator)
+        self.motif = Mock()
+        self.period = date(2023, 12, 31)
     
     def test_calculate_cnss_employee_basic(self):
         """Test employee CNSS contribution calculation"""

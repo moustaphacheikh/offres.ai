@@ -331,7 +331,7 @@ class ReportFormatter:
             return "0" + (",00" if decimal_places > 0 else "")
         
         if decimal_places == 0:
-            return f"{int(number):,}".replace(',', ' ')
+            return f"{int(round(number)):,}".replace(',', ' ')
         else:
             formatted = f"{number:,.{decimal_places}f}".replace(',', ' ').replace('.', ',')
             return formatted

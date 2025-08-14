@@ -503,13 +503,13 @@ class AdminIntegrationTest(BaseAdminTestCase):
     def test_admin_actions_exist(self):
         """Test that admin actions are properly configured"""
         master_admin = MasterPieceAdmin(MasterPiece, AdminSite())
-        actions = [action.__name__ for action in master_admin.actions]
+        actions = [action.__name__ if callable(action) else action for action in master_admin.actions]
         self.assertIn('recalculate_totals', actions)
         self.assertIn('mark_as_validated', actions)
         self.assertIn('mark_as_exported', actions)
         
         detail_admin = DetailPieceAdmin(DetailPiece, AdminSite())
-        actions = [action.__name__ for action in detail_admin.actions]
+        actions = [action.__name__ if callable(action) else action for action in detail_admin.actions]
         self.assertIn('mark_as_exported', actions)
         self.assertIn('mark_as_not_exported', actions)
     
