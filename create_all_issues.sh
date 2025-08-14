@@ -104,7 +104,7 @@ convert_dependencies() {
 echo "Reading tasks from JSON file..."
 
 # Get total number of tasks
-total_tasks=$(jq '.tasks | length' "$TASKS_FILE")
+total_tasks=$(jq '.master.tasks | length' "$TASKS_FILE")
 echo "Found $total_tasks main tasks"
 
 # Initialize issue counter
@@ -114,7 +114,7 @@ issue_counter=1
 for task_index in $(seq 0 $((total_tasks - 1))); do
     
     # Get task data
-    task_data=$(jq ".tasks[$task_index]" "$TASKS_FILE")
+    task_data=$(jq ".master.tasks[$task_index]" "$TASKS_FILE")
     task_id=$(echo "$task_data" | jq -r '.id')
     task_title=$(echo "$task_data" | jq -r '.title')
     task_description=$(echo "$task_data" | jq -r '.description')
