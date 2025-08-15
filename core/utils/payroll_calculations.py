@@ -6,7 +6,7 @@ Equivalent to FonctionsPaie.java and core methods from PaieClass.java
 
 from decimal import Decimal, ROUND_HALF_UP
 from datetime import datetime, date
-# Removed unused import: timedelta
+# Cleaned up imports - removed unused timedelta
 from django.utils import timezone
 from typing import Dict, List, Optional, Union
 from .formula_engine import PayrollFormulaEvaluator, FormulaCalculationError
