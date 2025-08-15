@@ -2,10 +2,24 @@ from django.contrib import admin
 from .models import (
     # Organizational
     GeneralDirection, Direction, Department, Position,
+    # Reference/Lookup Tables
+    Activity, Bank, Origin, EmployeeStatus, PayrollMotif,
+    # Compensation
+    SalaryGrade, HousingGrid,
     # Employee
     Employee,
+    # Employee Relations
+    Child, Leave, Document, Diploma,
+    # Payroll Elements
+    PayrollElement, PayrollElementFormula,
     # Time & Attendance
     TimeClockData, DailyWork, WeeklyOvertime, WorkWeek,
+    # System Configuration
+    SystemParameters, User,
+    # Payroll Processing
+    Payroll, PayrollLineItem, WorkedDays,
+    # Deductions & Benefits
+    InstallmentDeduction, InstallmentTranche,
     # Compliance & Reporting
     CNSSDeclaration, CNAMDeclaration,
     # Accounting Integration
@@ -40,6 +54,55 @@ class PositionAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+# Reference/Lookup Tables
+@admin.register(Activity)
+class ActivityAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(Bank)
+class BankAdmin(admin.ModelAdmin):
+    list_display = ('name', 'accounting_account')
+    search_fields = ('name',)
+
+
+@admin.register(Origin)
+class OriginAdmin(admin.ModelAdmin):
+    list_display = ('label', 'smig_hours_for_leave_allowance')
+    search_fields = ('label',)
+
+
+@admin.register(EmployeeStatus)
+class EmployeeStatusAdmin(admin.ModelAdmin):
+    list_display = ('name',)
+    search_fields = ('name',)
+
+
+@admin.register(PayrollMotif)
+class PayrollMotifAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_active', 'employee_subject_to_its', 'employee_subject_to_cnss')
+    list_filter = ('is_active', 'employee_subject_to_its', 'employee_subject_to_cnss', 'employee_subject_to_cnam')
+    search_fields = ('name',)
+
+
+# Compensation
+@admin.register(SalaryGrade)
+class SalaryGradeAdmin(admin.ModelAdmin):
+    list_display = ('category', 'category_name', 'base_salary', 'level', 'status')
+    list_filter = ('status', 'level')
+    search_fields = ('category', 'category_name')
+    ordering = ('level', 'category')
+
+
+@admin.register(HousingGrid)
+class HousingGridAdmin(admin.ModelAdmin):
+    list_display = ('salary_grade', 'marital_status', 'children_count', 'amount')
+    list_filter = ('marital_status', 'children_count')
+    search_fields = ('salary_grade__category', 'salary_grade__category_name')
+    ordering = ('salary_grade', 'marital_status', 'children_count')
+
+
 # Employee
 @admin.register(Employee)
 class EmployeeAdmin(admin.ModelAdmin):
@@ -48,6 +111,110 @@ class EmployeeAdmin(admin.ModelAdmin):
     search_fields = ('first_name', 'last_name', 'national_id', 'email')
     date_hierarchy = 'hire_date'
     ordering = ('last_name', 'first_name')
+
+
+# Employee Relations
+@admin.register(Child)
+class ChildAdmin(admin.ModelAdmin):
+    list_display = ('child_name', 'employee', 'birth_date', 'gender', 'parent_type')
+    list_filter = ('gender', 'parent_type', 'birth_date')
+    search_fields = ('child_name', 'employee__first_name', 'employee__last_name')
+    date_hierarchy = 'birth_date'
+    ordering = ('employee', 'child_name')
+
+
+@admin.register(Leave)
+class LeaveAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'leave_type', 'start_date', 'planned_return', 'actual_return', 'is_active_display')
+    list_filter = ('leave_type', 'start_date', 'planned_return')
+    search_fields = ('employee__first_name', 'employee__last_name')
+    date_hierarchy = 'start_date'
+    ordering = ('-start_date',)
+    
+    def is_active_display(self, obj):
+        return obj.is_active
+    is_active_display.short_description = 'Currently Active'
+    is_active_display.boolean = True
+
+
+@admin.register(Document)
+class DocumentAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'document_type', 'document_name', 'expiry_date', 'is_expired_display')
+    list_filter = ('document_type', 'issue_date', 'expiry_date')
+    search_fields = ('employee__first_name', 'employee__last_name', 'document_name', 'document_type')
+    date_hierarchy = 'expiry_date'
+    ordering = ('employee', 'document_type')
+    
+    def is_expired_display(self, obj):
+        return obj.is_expired
+    is_expired_display.short_description = 'Expired'
+    is_expired_display.boolean = True
+
+
+@admin.register(Diploma)
+class DiplomaAdmin(admin.ModelAdmin):
+    list_display = ('employee', 'diploma_name', 'level', 'institution', 'graduation_date', 'is_verified')
+    list_filter = ('level', 'is_verified', 'graduation_date')
+    search_fields = ('employee__first_name', 'employee__last_name', 'institution', 'diploma_name', 'field_of_study')
+    date_hierarchy = 'graduation_date'
+    ordering = ('employee', '-graduation_date')
+
+
+# Payroll Elements
+@admin.register(PayrollElement)
+class PayrollElementAdmin(admin.ModelAdmin):
+    list_display = ('label', 'abbreviation', 'type', 'is_active', 'affects_its', 'affects_cnss', 'affects_cnam')
+    list_filter = ('type', 'is_active', 'affects_its', 'affects_cnss', 'affects_cnam', 'has_ceiling', 'is_cumulative')
+    search_fields = ('label', 'abbreviation')
+    ordering = ('label',)
+
+
+@admin.register(PayrollElementFormula)
+class PayrollElementFormulaAdmin(admin.ModelAdmin):
+    list_display = ('payroll_element', 'section', 'component_type', 'text_value', 'numeric_value')
+    list_filter = ('section', 'component_type')
+    search_fields = ('payroll_element__label', 'payroll_element__abbreviation', 'text_value')
+    ordering = ('payroll_element', 'section', 'id')
+
+
+# System Configuration
+@admin.register(SystemParameters)
+class SystemParametersAdmin(admin.ModelAdmin):
+    list_display = ('company_name', 'current_period', 'currency', 'minimum_wage', 'last_update')
+    list_filter = ('currency', 'auto_meal_allowance', 'auto_seniority', 'auto_housing_allowance')
+    search_fields = ('company_name', 'company_activity', 'company_manager')
+    readonly_fields = ('last_update',)
+    
+    fieldsets = (
+        ('Company Information', {
+            'fields': ('company_name', 'company_activity', 'company_manager', 'manager_title')
+        }),
+        ('Contact Details', {
+            'fields': ('telephone', 'fax', 'email', 'address', 'website', 'city_headquarters')
+        }),
+        ('Financial Configuration', {
+            'fields': ('currency', 'minimum_wage', 'default_working_days', 'tax_abatement')
+        }),
+        ('Period Management', {
+            'fields': ('current_period', 'next_period', 'closure_period')
+        }),
+        ('Automation Settings', {
+            'fields': ('auto_meal_allowance', 'auto_seniority', 'auto_housing_allowance')
+        }),
+        ('System Information', {
+            'fields': ('last_update', 'database_version'),
+            'classes': ('collapse',)
+        })
+    )
+
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_active', 'date_joined')
+    list_filter = ('is_active', 'is_staff', 'is_superuser', 'date_joined')
+    search_fields = ('username', 'email', 'first_name', 'last_name')
+    date_hierarchy = 'date_joined'
+    ordering = ('username',)
 
 
 # Time & Attendance
