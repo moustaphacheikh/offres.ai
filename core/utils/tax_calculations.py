@@ -6,7 +6,8 @@ Includes all Mauritanian tax calculation logic with proper rates and brackets
 """
 
 from decimal import Decimal, ROUND_HALF_UP
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Tuple
+# Cleaned up imports - removed unused Optional, Union
 import math
 
 

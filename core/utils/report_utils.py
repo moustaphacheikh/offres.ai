@@ -15,16 +15,17 @@ Maintains compatibility with Mauritanian tax laws and reporting requirements.
 """
 
 from decimal import Decimal
-from datetime import date, datetime, timedelta
-from typing import Dict, List, Optional, Any, Union, Tuple
+from datetime import date, datetime
+from typing import Dict, List, Any, Union
 import json
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
 import csv
 import io
-from collections import defaultdict, OrderedDict
-import calendar
-# Optional babel for enhanced formatting - remove if not available\n# from babel.numbers import format_currency, format_decimal
+from collections import defaultdict
+# Cleaned up imports - removed unused timedelta, Optional, Tuple, OrderedDict, calendar
+# Optional babel for enhanced formatting - remove if not available
+# from babel.numbers import format_currency, format_decimal
 # from babel.dates import format_date
 import re
 

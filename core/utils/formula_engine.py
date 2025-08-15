@@ -5,15 +5,17 @@ Converted from Java Calcul.class and PaieClass.java - complete formula system
 Supports payroll element formulas with functions, variables, and cross-references
 """
 
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
-from typing import Union, Tuple, Optional, Dict, List, Any, Set
-from datetime import datetime, date
+# Standard library imports
 import re
 import logging
 import time
 import threading
-from functools import lru_cache, wraps
+from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from typing import Union, Tuple, Optional, Dict, List, Set, Any
+from functools import lru_cache
 from collections import defaultdict, OrderedDict
+
+# Cleaned up imports - removed unused datetime, date
 
 
 class FormulaCalculationError(Exception):

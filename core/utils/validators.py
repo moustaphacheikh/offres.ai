@@ -16,7 +16,8 @@ and implements Mauritanian-specific rules (NNI, phone formats, local compliance)
 from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
 from datetime import datetime, date, timedelta
 from dateutil.relativedelta import relativedelta
-from typing import Dict, List, Optional, Union, Tuple, Any, Set
+from typing import Dict, List, Optional, Union, Tuple, Set
+# Removed unused import: Any
 import re
 import unicodedata
 import email.utils

@@ -19,8 +19,8 @@ import re
 import unicodedata
 from decimal import Decimal
 from datetime import datetime, date
-from typing import Dict, List, Optional, Union, Tuple
-import locale
+from typing import Dict, List, Union, Tuple
+# Cleaned up imports - removed unused Optional, locale
 
 
 class NumberToTextConverter:
