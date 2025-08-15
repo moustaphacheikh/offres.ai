@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.core.validators import EmailValidator, MinValueValidator, MaxValueValidator
 from django.db import models
 
 
@@ -20,16 +21,16 @@ class SystemParameters(models.Model):
     fax = models.CharField(max_length=30, blank=True)
     address = models.CharField(max_length=500, blank=True)  # adresse
     website = models.CharField(max_length=50, blank=True)  # siteweb
-    email = models.CharField(max_length=50, blank=True)
+    email = models.EmailField(max_length=50, blank=True)
     city_headquarters = models.CharField(max_length=300, blank=True)  # villeSiege
     signatories = models.CharField(max_length=500, blank=True)  # signataires
     
     # Financial Configuration
     currency = models.CharField(max_length=50, blank=True)  # devise
-    minimum_wage = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # smig
-    default_working_days = models.DecimalField(max_digits=22, decimal_places=2)  # njtDefault
+    minimum_wage = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True, validators=[MinValueValidator(0)])  # smig
+    default_working_days = models.DecimalField(max_digits=22, decimal_places=2, validators=[MinValueValidator(0), MaxValueValidator(31)])  # njtDefault
     tax_abatement = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # abatement
-    non_taxable_allowance_ceiling = models.DecimalField(max_digits=22, decimal_places=2)  # plafonIndNonImposable
+    non_taxable_allowance_ceiling = models.DecimalField(max_digits=22, decimal_places=2, validators=[MinValueValidator(0)])  # plafonIndNonImposable
     installment_quota = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # quotaEcheanceRae
     
     # Period Management
@@ -75,10 +76,35 @@ class SystemParameters(models.Model):
     transfer_account = models.CharField(max_length=300, blank=True)  # comptevirement
     
     # System Information
-    contract_expiry_alert_days = models.IntegerField(blank=True, null=True)  # delaiAlerteFinContrat
+    contract_expiry_alert_days = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(1), MaxValueValidator(365)])  # delaiAlerteFinContrat
     last_update = models.DateTimeField(auto_now=True)  # dateMaj
     license_key = models.CharField(max_length=500, blank=True)  # licenceKey
     database_version = models.CharField(max_length=10, blank=True)  # bd
+    
+    def clean(self):
+        """Custom validation for SystemParameters"""
+        from django.core.exceptions import ValidationError
+        
+        if self.current_period and self.next_period:
+            if self.current_period >= self.next_period:
+                raise ValidationError('Next period must be after current period')
+        
+        if self.current_period and self.closure_period:
+            if self.closure_period < self.current_period:
+                raise ValidationError('Closure period cannot be before current period')
+    
+    def save(self, *args, **kwargs):
+        """Override save to ensure only one SystemParameters instance exists"""
+        if not self.pk and SystemParameters.objects.exists():
+            # Update existing instance instead of creating new one
+            existing = SystemParameters.objects.first()
+            for field in self._meta.fields:
+                if field.name != 'id':
+                    setattr(existing, field.name, getattr(self, field.name))
+            existing.save()
+            self.pk = existing.pk
+        else:
+            super().save(*args, **kwargs)
     
     # Email Configuration
     smtp_host = models.CharField(max_length=100, blank=True)  # mailSmtpHost
@@ -231,6 +257,16 @@ class User(AbstractUser):
     class Meta:
         db_table = 'utilisateurs'
         ordering = ['full_name']
+        
+    def clean(self):
+        """Custom validation for User"""
+        from django.core.exceptions import ValidationError
+        
+        if not self.full_name.strip():
+            raise ValidationError('Full name cannot be empty')
+        
+        if len(self.username) < 3:
+            raise ValidationError('Username must be at least 3 characters long')
     
     def __str__(self):
         return f"{self.full_name} ({self.username})"
@@ -240,3 +276,43 @@ class User(AbstractUser):
     
     def get_short_name(self):
         return self.username
+    
+    @property
+    def has_personnel_access(self):
+        """Check if user has any personnel management permissions"""
+        return (self.can_access_personnel or self.can_manage_employee_identity or 
+                self.can_manage_employee_contracts or self.can_add_employees or 
+                self.can_update_employees)
+    
+    @property
+    def has_payroll_access(self):
+        """Check if user has any payroll-related permissions"""
+        return (self.can_access_payroll or self.can_manage_employee_payroll or 
+                self.can_access_elements or self.can_access_reports)
+    
+    @property
+    def has_admin_access(self):
+        """Check if user has administrative permissions"""
+        return (self.can_access_parameters or self.can_access_security or 
+                self.can_access_structures or self.can_access_closure)
+    
+    def has_module_permission(self, module_name):
+        """Check if user has permission to access a specific module"""
+        permission_map = {
+            'personnel': self.can_access_personnel,
+            'payroll': self.can_access_payroll,
+            'attendance': self.can_access_attendance,
+            'declarations': self.can_access_declarations,
+            'accounting': self.can_access_accounting,
+            'transfers': self.can_access_transfers,
+            'payslips': self.can_access_payslips,
+            'reports': self.can_access_reports,
+            'statistics': self.can_access_statistics,
+            'security': self.can_access_security,
+            'parameters': self.can_access_parameters,
+            'structures': self.can_access_structures,
+            'elements': self.can_access_elements,
+            'closure': self.can_access_closure,
+            'dashboard': self.can_access_dashboard,
+        }
+        return permission_map.get(module_name, False)

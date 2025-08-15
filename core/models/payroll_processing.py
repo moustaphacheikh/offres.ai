@@ -137,6 +137,18 @@ class Payroll(models.Model):
         """Calculate total employer contributions"""
         return self.rcnss + self.rcnam
     
+    @property
+    def line_items(self):
+        """
+        Get related payroll line items for backward compatibility
+        Since PayrollLineItem no longer has direct FK to Payroll
+        """
+        return PayrollLineItem.objects.filter(
+            employee=self.employee,
+            period=self.period,
+            motif=self.motif
+        )
+    
     def update_denormalized_fields(self):
         """Update denormalized fields from related employee data"""
         if self.employee:
@@ -152,6 +164,49 @@ class Payroll(models.Model):
             self.activity = self.employee.activity.name if self.employee.activity else ''
             self.status = self.employee.status
     
+    def calculate_seniority_rate(self):
+        """
+        F04_TauxAnciennete equivalent - Calculate seniority rate
+        From FonctionsPaie.java F04_TauxAnciennete method
+        """
+        if not self.employee.seniority_date:
+            return 0.0
+        
+        # Calculate years of seniority
+        days_diff = (self.period - self.employee.seniority_date).days
+        years = max(0, (days_diff - 365) / 365)  # After first year
+        
+        if years >= 16:
+            return 0.30
+        elif years >= 15:
+            return 0.29
+        elif years >= 14:
+            return 0.28
+        else:
+            return min(years * 0.02, 0.26)  # 2% per year, max 26%
+    
+    def get_worked_days_for_period(self):
+        """
+        F01_NJT equivalent - Get worked days from WorkedDays model
+        From FonctionsPaie.java F01_NJT method
+        """
+        try:
+            worked_days_record = WorkedDays.objects.get(
+                employee=self.employee,
+                motif=self.motif,
+                period=self.period
+            )
+            return float(worked_days_record.worked_days) if worked_days_record.worked_days else 0.0
+        except WorkedDays.DoesNotExist:
+            return 0.0
+    
+    def calculate_total_employer_costs(self):
+        """
+        Calculate total employer costs including contributions
+        This includes salary + employer contributions
+        """
+        return self.total_gross + self.employer_contributions_total
+    
     def save(self, *args, **kwargs):
         """Override save to update denormalized fields"""
         self.update_denormalized_fields()
@@ -164,17 +219,15 @@ class PayrollLineItem(models.Model):
     
     Represents individual calculation elements (salary components, deductions, benefits)
     that make up the total payroll for an employee in a specific period.
+    
+    NOTE: This model follows the Java unique constraint structure exactly:
+    periode + employe + rubrique + motif must be unique.
     """
     
     # Primary Key
     id = models.AutoField(primary_key=True)
     
     # Foreign Key Relations
-    payroll = models.ForeignKey(
-        Payroll,
-        on_delete=models.CASCADE,
-        related_name='line_items'
-    )  # This links to the payroll record (derived from period/employee/motif)
     employee = models.ForeignKey(
         Employee,
         on_delete=models.PROTECT,
@@ -191,6 +244,9 @@ class PayrollLineItem(models.Model):
         related_name='line_items'
     )  # motif
     
+    # Period - CRITICAL: This was missing but is required in Java unique constraint
+    period = models.DateField()  # periode
+    
     # Calculation Values
     base_amount = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # base
     quantity = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # nombre
@@ -206,13 +262,14 @@ class PayrollLineItem(models.Model):
     
     class Meta:
         db_table = 'rubriquepaie'
-        unique_together = ['payroll', 'payroll_element']
-        ordering = ['payroll', 'payroll_element__label']
+        # FIXED: Use the exact Java unique constraint
+        unique_together = ['period', 'employee', 'payroll_element', 'motif']
+        ordering = ['period', 'employee__last_name', 'payroll_element__label']
         verbose_name = 'Payroll Line Item'
         verbose_name_plural = 'Payroll Line Items'
     
     def __str__(self):
-        return f"{self.payroll.employee.full_name} - {self.payroll_element.label}: {self.calculated_amount}"
+        return f"{self.employee.full_name} - {self.payroll_element.label} ({self.period.strftime('%Y-%m')}): {self.calculated_amount}"
     
     @property
     def is_gain(self):
@@ -224,11 +281,26 @@ class PayrollLineItem(models.Model):
         """Check if this line item is a deduction"""
         return self.payroll_element.type == 'D'
     
+    @property
+    def payroll(self):
+        """
+        Get the related payroll record for this line item
+        This provides backward compatibility for code expecting a payroll relationship
+        """
+        try:
+            return Payroll.objects.get(
+                employee=self.employee,
+                period=self.period,
+                motif=self.motif
+            )
+        except Payroll.DoesNotExist:
+            return None
+    
     def calculate_amount(self):
         """
         Calculate the amount based on base_amount and quantity
         This is a simplified calculation - in real implementation, 
-        this would use the formula engine
+        this would use the formula engine from FonctionsPaie.java
         """
         if self.base_amount and self.quantity:
             self.calculated_amount = self.base_amount * self.quantity
@@ -239,6 +311,26 @@ class PayrollLineItem(models.Model):
             self.calculated_amount = self.quantity
         
         return self.calculated_amount
+    
+    def get_salary_base_daily(self):
+        """
+        F02_sbJour equivalent - Get daily salary base
+        From FonctionsPaie.java F02_sbJour method
+        """
+        # This would need to find the base salary rubrique (ID=1 in Java)
+        # Implementation depends on your PayrollElement setup
+        return self.base_amount if self.base_amount else 0
+    
+    def get_salary_base_hourly(self):
+        """
+        F03_sbHouraire equivalent - Get hourly salary base
+        From FonctionsPaie.java F03_sbHoraire method
+        """
+        if self.base_amount and self.employee.contract_hours_week:
+            daily_base = self.base_amount * 30
+            monthly_hours = float(self.employee.contract_hours_week) * 52 / 12
+            return daily_base / monthly_hours if monthly_hours > 0 else 0
+        return 0
 
 
 class WorkedDays(models.Model):
@@ -266,7 +358,7 @@ class WorkedDays(models.Model):
     
     # Period and Days
     period = models.DateField()  # periode
-    worked_days = models.DecimalField(max_digits=22, decimal_places=2, default=0)  # njt
+    worked_days = models.DecimalField(max_digits=22, decimal_places=2, blank=True, null=True)  # njt - FIXED: Java uses nullable Double
     
     # Audit fields
     created_at = models.DateTimeField(auto_now_add=True)

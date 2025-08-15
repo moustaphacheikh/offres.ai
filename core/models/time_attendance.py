@@ -66,34 +66,38 @@ class DailyWork(models.Model):
     # dateJour - specific work date
     work_date = models.DateField()
     
-    # nbHeureJour - day hours worked
+    # nbHeureJour - day hours worked (matches Java precision = 22, scale = 0)
     day_hours = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # nbHeureNuit - night hours worked  
+    # nbHeureNuit - night hours worked (matches Java precision = 22, scale = 0)
     night_hours = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # nbPrimePanier - meal allowance count
+    # nbPrimePanier - meal allowance count (matches Java precision = 22, scale = 0, nullable = false)
     meal_allowance_count = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
         validators=[MinValueValidator(0)]
     )
     
-    # nbPrimeEloignement - distance allowance count  
+    # nbPrimeEloignement - distance allowance count (matches Java precision = 22, scale = 0, nullable = false)
     distance_allowance_count = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
         validators=[MinValueValidator(0)]
     )
@@ -120,17 +124,29 @@ class DailyWork(models.Model):
         unique_together = [['employee', 'work_date']]
         
     def __str__(self):
-        return f"{self.employee.full_name} - {self.work_date} ({self.day_hours + self.night_hours}h)"
+        return f"{self.employee.full_name} - {self.work_date} ({self.total_hours}h)"
     
     @property
     def total_hours(self):
         """Calculate total hours worked for the day"""
-        return self.day_hours + self.night_hours
+        day_hrs = self.day_hours or 0
+        night_hrs = self.night_hours or 0
+        return day_hrs + night_hrs
     
     @property 
     def has_holiday_work(self):
         """Check if any holiday work was performed"""
         return self.holiday_100_percent or self.holiday_50_percent
+    
+    @property
+    def total_allowances(self):
+        """Calculate total allowances for the day"""
+        return self.meal_allowance_count + self.distance_allowance_count
+    
+    @property
+    def is_work_day(self):
+        """Check if any work was performed on this day"""
+        return self.total_hours > 0 or self.has_holiday_work or self.total_allowances > 0
 
 
 class WeeklyOvertime(models.Model):
@@ -156,50 +172,58 @@ class WeeklyOvertime(models.Model):
     # endweek - week end date
     week_end = models.DateField()
     
-    # ot115 - overtime at 115% rate
+    # ot115 - overtime at 115% rate (matches Java precision = 22, scale = 0)
     overtime_115 = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # ot140 - overtime at 140% rate  
+    # ot140 - overtime at 140% rate (matches Java precision = 22, scale = 0)
     overtime_140 = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # ot150 - overtime at 150% rate
+    # ot150 - overtime at 150% rate (matches Java precision = 22, scale = 0)
     overtime_150 = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # ot200 - overtime at 200% rate
+    # ot200 - overtime at 200% rate (matches Java precision = 22, scale = 0)
     overtime_200 = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
-        validators=[MinValueValidator(0)]
+        validators=[MinValueValidator(0)],
+        null=True,
+        blank=True
     )
     
-    # nbPrimePanier - meal allowance count for the week
+    # nbPrimePanier - meal allowance count for the week (matches Java precision = 22, scale = 0, nullable = false)
     meal_allowance_count = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
         validators=[MinValueValidator(0)]
     )
     
-    # nbPrimeEloignement - distance allowance count for the week
+    # nbPrimeEloignement - distance allowance count for the week (matches Java precision = 22, scale = 0, nullable = false)
     distance_allowance_count = models.DecimalField(
         max_digits=22,
-        decimal_places=2,
+        decimal_places=0,
         default=0,
         validators=[MinValueValidator(0)]
     )
@@ -222,13 +246,28 @@ class WeeklyOvertime(models.Model):
     @property
     def total_overtime_hours(self):
         """Calculate total overtime hours for all rates"""
-        return (self.overtime_115 + self.overtime_140 + 
-                self.overtime_150 + self.overtime_200)
+        ot115 = self.overtime_115 or 0
+        ot140 = self.overtime_140 or 0
+        ot150 = self.overtime_150 or 0
+        ot200 = self.overtime_200 or 0
+        return ot115 + ot140 + ot150 + ot200
     
     @property
     def has_overtime(self):
         """Check if any overtime was worked"""
         return self.total_overtime_hours > 0
+    
+    @property
+    def total_weekly_allowances(self):
+        """Calculate total allowances for the week"""
+        return self.meal_allowance_count + self.distance_allowance_count
+    
+    @property
+    def week_duration_days(self):
+        """Calculate the number of days in this work week"""
+        if self.week_start and self.week_end:
+            return (self.week_end - self.week_start).days + 1
+        return 0
 
 
 class WorkWeek(models.Model):

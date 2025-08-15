@@ -13,10 +13,10 @@ class Child(models.Model):
         on_delete=models.CASCADE,
         related_name='children'
     )
-    child_name = models.CharField(max_length=100)  # nomEnfant
+    child_name = models.CharField(max_length=50)  # nomEnfant - matches Java constraint
     birth_date = models.DateField()  # dateNaissanace (keeping original typo for consistency)
     parent_type = models.CharField(max_length=50)  # mereOuPere (mother or father)
-    gender = models.CharField(max_length=10)  # genre
+    gender = models.CharField(max_length=50)  # genre - matches Java constraint
     
     # Audit fields
     created_at = models.DateTimeField(auto_now_add=True)
@@ -26,6 +26,7 @@ class Child(models.Model):
         db_table = 'enfants'
         ordering = ['child_name']
         unique_together = ['employee', 'child_name', 'birth_date']
+        # Note: Java has unique constraint on (employe, id) but that's automatically handled by primary key
     
     def __str__(self):
         return f"{self.child_name} ({self.employee.full_name})"
@@ -56,6 +57,7 @@ class Leave(models.Model):
     start_date = models.DateField()  # depart - departure date
     planned_return = models.DateField()  # reprise - planned return date
     actual_return = models.DateField(blank=True, null=True)  # repriseeff - actual return date
+    # Note: Java marks this as nullable=false, but business logic suggests it should be nullable until employee actually returns
     notes = models.CharField(max_length=500, blank=True)  # note
     leave_type = models.CharField(
         max_length=20, 
@@ -95,6 +97,16 @@ class Leave(models.Model):
         if self.actual_return:
             return (self.actual_return - self.start_date).days + 1
         return None
+    
+    def clean(self):
+        """Validate leave dates"""
+        from django.core.exceptions import ValidationError
+        
+        if self.planned_return <= self.start_date:
+            raise ValidationError("Planned return date must be after start date")
+        
+        if self.actual_return and self.actual_return < self.start_date:
+            raise ValidationError("Actual return date cannot be before start date")
 
 
 class Document(models.Model):
@@ -183,15 +195,15 @@ class Diploma(models.Model):
         on_delete=models.CASCADE,
         related_name='diplomas'
     )
-    diploma_name = models.CharField(max_length=200)  # nom
-    institution = models.CharField(max_length=200)  # etablissement
+    diploma_name = models.CharField(max_length=255)  # nom - Java doesn't specify length, using reasonable default
+    institution = models.CharField(max_length=255)  # etablissement - Java doesn't specify length
     graduation_date = models.DateField()  # dateObtention
     level = models.CharField(
         max_length=20, 
         choices=DEGREE_LEVEL_CHOICES,
         default='OTHER'
-    )  # degre - more structured
-    field_of_study = models.CharField(max_length=200, blank=True)  # domaine
+    )  # degre - more structured (Java constraint is 50 chars but choices fit in 20)
+    field_of_study = models.CharField(max_length=255, blank=True)  # domaine - Java doesn't specify length
     
     # Additional fields for comprehensive tracking
     gpa_score = models.DecimalField(max_digits=4, decimal_places=2, blank=True, null=True)

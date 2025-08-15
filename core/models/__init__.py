@@ -17,7 +17,7 @@ from .employee import Employee
 from .employee_relations import Child, Leave, Document, Diploma
 
 # Group 6: Payroll Elements
-from .payroll_elements import PayrollElement, PayrollElementFormula
+from .payroll_elements import PayrollElement, PayrollElementFormula, PayrollElementModel
 
 # Group 7: Time & Attendance
 from .time_attendance import TimeClockData, DailyWork, WeeklyOvertime, WorkWeek
@@ -35,4 +35,4 @@ from .deductions_benefits import InstallmentDeduction, InstallmentTranche
 from .compliance_reporting import CNSSDeclaration, CNAMDeclaration
 
 # Group 12: Accounting Integration
-from .accounting_integration import MasterPiece, DetailPiece
+from .accounting_integration import ExportFormat, MasterPiece, DetailPiece, AccountGenerator
