@@ -42,8 +42,11 @@ from .tax_calculations import (
 from .text_utils import (
     NumberToTextConverter,
     TextFormatter,
-    ReportTextUtils,
-    ValidationUtils
+    ReportTextProcessor,
+    ValidationUtils,
+    ArabicTextUtils,
+    LocalizationUtils,
+    DocumentNumberGenerator
 )
 
 # Report generation utilities
@@ -56,6 +59,23 @@ from .report_utils import (
     ReportContext,
     ReportDataValidator,
     ExportUtilities
+)
+
+# Import/Export utilities
+from .import_export import (
+    ImportResult,
+    ExportResult,
+    ProgressTracker,
+    DataValidator,
+    ExcelProcessor,
+    CSVProcessor,
+    EmployeeImportExport,
+    PayrollElementImportExport,
+    AttendanceImportExport,
+    ImportExportManager,
+    import_employees_from_excel,
+    export_employees_to_excel,
+    create_employee_template
 )
 
 # Main utility classes for convenient access
@@ -88,8 +108,11 @@ __all__ = [
     # Text utilities
     'NumberToTextConverter',
     'TextFormatter',
-    'ReportTextUtils',
+    'ReportTextProcessor',
     'ValidationUtils',
+    'ArabicTextUtils',
+    'LocalizationUtils',
+    'DocumentNumberGenerator',
     
     # Report utilities
     'PayslipReportData',
@@ -100,6 +123,21 @@ __all__ = [
     'ReportContext',
     'ReportDataValidator',
     'ExportUtilities',
+    
+    # Import/Export utilities
+    'ImportResult',
+    'ExportResult',
+    'ProgressTracker',
+    'DataValidator',
+    'ExcelProcessor',
+    'CSVProcessor',
+    'EmployeeImportExport',
+    'PayrollElementImportExport',
+    'AttendanceImportExport',
+    'ImportExportManager',
+    'import_employees_from_excel',
+    'export_employees_to_excel',
+    'create_employee_template',
 ]
 
 # Version info

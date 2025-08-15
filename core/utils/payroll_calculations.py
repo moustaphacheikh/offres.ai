@@ -686,12 +686,116 @@ class PayrollFunctionsStatic:
 
 
 class OvertimeCalculator:
-    """Overtime calculation utilities"""
+    """
+    Enhanced overtime calculation utilities with complex weekly breakdown and holiday rates
+    Equivalent to overtime logic in Java payroll system
+    """
+    
+    @staticmethod
+    def calculate_weekly_overtime_breakdown(weekly_hours: List[Decimal], standard_daily_hours: Decimal = Decimal('8'),
+                                          standard_weekly_hours: Decimal = Decimal('40'),
+                                          holiday_days: List[bool] = None) -> Dict[str, Decimal]:
+        """
+        Calculate overtime with complex weekly breakdown including daily and weekly limits
+        
+        Args:
+            weekly_hours: List of hours worked each day (7 days)
+            standard_daily_hours: Standard hours per day (default 8)
+            standard_weekly_hours: Standard hours per week (default 40)
+            holiday_days: List of booleans indicating holiday days
+            
+        Returns:
+            Dict with detailed overtime breakdown
+        """
+        if holiday_days is None:
+            holiday_days = [False] * 7
+            
+        # Initialize results
+        result = {
+            'regular_hours': Decimal('0.00'),
+            'daily_ot_115': Decimal('0.00'),  # Daily OT up to 2 hours at 115%
+            'daily_ot_140': Decimal('0.00'),  # Daily OT 2-6 hours at 140%
+            'daily_ot_150': Decimal('0.00'),  # Daily OT 6+ hours at 150%
+            'weekly_ot_150': Decimal('0.00'), # Weekly OT beyond 40h at 150%
+            'holiday_ot_200': Decimal('0.00'), # Holiday work at 200%
+            'sunday_ot_175': Decimal('0.00'),  # Sunday work at 175%
+            'night_ot_125': Decimal('0.00'),   # Night work at 125%
+            'total_hours': Decimal('0.00'),
+            'total_regular_equivalent': Decimal('0.00')
+        }
+        
+        daily_regular_hours = Decimal('0.00')
+        daily_overtime_hours = Decimal('0.00')
+        
+        # Process each day
+        for day_index, hours in enumerate(weekly_hours):
+            if hours <= 0:
+                continue
+                
+            result['total_hours'] += hours
+            is_holiday = holiday_days[day_index] if day_index < len(holiday_days) else False
+            is_sunday = day_index == 6  # Assuming Sunday is index 6
+            
+            if is_holiday:
+                # All holiday hours at 200%
+                result['holiday_ot_200'] += hours
+                result['total_regular_equivalent'] += hours * Decimal('2.00')
+            elif is_sunday:
+                # Sunday work at 175%
+                result['sunday_ot_175'] += hours
+                result['total_regular_equivalent'] += hours * Decimal('1.75')
+            else:
+                # Regular weekday processing
+                if hours <= standard_daily_hours:
+                    # Within daily standard hours
+                    daily_regular_hours += hours
+                    result['regular_hours'] += hours
+                    result['total_regular_equivalent'] += hours
+                else:
+                    # Daily overtime
+                    regular_portion = standard_daily_hours
+                    overtime_portion = hours - standard_daily_hours
+                    
+                    daily_regular_hours += regular_portion
+                    daily_overtime_hours += overtime_portion
+                    result['regular_hours'] += regular_portion
+                    result['total_regular_equivalent'] += regular_portion
+                    
+                    # Distribute daily overtime by brackets
+                    remaining_ot = overtime_portion
+                    
+                    # First 2 hours of daily OT at 115%
+                    if remaining_ot > 0:
+                        bracket_115 = min(remaining_ot, Decimal('2.00'))
+                        result['daily_ot_115'] += bracket_115
+                        result['total_regular_equivalent'] += bracket_115 * Decimal('1.15')
+                        remaining_ot -= bracket_115
+                    
+                    # Next 4 hours (hours 3-6) at 140%
+                    if remaining_ot > 0:
+                        bracket_140 = min(remaining_ot, Decimal('4.00'))
+                        result['daily_ot_140'] += bracket_140
+                        result['total_regular_equivalent'] += bracket_140 * Decimal('1.40')
+                        remaining_ot -= bracket_140
+                    
+                    # Remaining hours (6+) at 150%
+                    if remaining_ot > 0:
+                        result['daily_ot_150'] += remaining_ot
+                        result['total_regular_equivalent'] += remaining_ot * Decimal('1.50')
+        
+        # Calculate weekly overtime (beyond 40 hours for the week)
+        total_regular_and_daily_ot = daily_regular_hours + daily_overtime_hours
+        if total_regular_and_daily_ot > standard_weekly_hours:
+            weekly_overtime = total_regular_and_daily_ot - standard_weekly_hours
+            result['weekly_ot_150'] += weekly_overtime
+            result['total_regular_equivalent'] += weekly_overtime * Decimal('1.50')
+        
+        return result
     
     @staticmethod
     def calculate_overtime_rates(total_hours_worked, standard_hours=8):
         """
-        Calculate overtime hours by rate brackets
+        Legacy method for simple overtime calculation (maintained for compatibility)
         """
         overtime_hours = max(Decimal('0.00'), total_hours_worked - standard_hours)
         
@@ -731,44 +835,226 @@ class OvertimeCalculator:
             'ot_150_amount': overtime_rates['ot_150'] * hourly_rate * Decimal('1.50'),
             'ot_200_amount': overtime_rates['ot_200'] * hourly_rate * Decimal('2.00'),
         }
+    
+    @staticmethod
+    def calculate_night_differential(hours_worked: Decimal, night_start_hour: int = 22, 
+                                   night_end_hour: int = 6, differential_rate: Decimal = Decimal('0.25')) -> Decimal:
+        """
+        Calculate night work differential (typically 25% additional)
+        
+        Args:
+            hours_worked: Total hours worked during night period
+            night_start_hour: Hour when night period starts (default 22:00)
+            night_end_hour: Hour when night period ends (default 06:00)
+            differential_rate: Additional rate for night work (default 25%)
+            
+        Returns:
+            Additional payment for night work
+        """
+        if hours_worked <= 0:
+            return Decimal('0.00')
+            
+        # Night period is typically 22:00 to 06:00 (8 hours)
+        night_period_hours = (24 + night_end_hour - night_start_hour) % 24
+        
+        # Cap night hours to actual night period
+        night_hours = min(hours_worked, Decimal(str(night_period_hours)))
+        
+        return night_hours * differential_rate
 
 
 class InstallmentCalculator:
     """
-    Installment and loan calculation utilities
+    Enhanced installment and loan calculation utilities with quota cessible logic
     Equivalent to installment logic in PaieClass.paieCalcule
     """
     
     @staticmethod
-    def calculate_quota_cessible(net_before_installments, quota_percentage):
+    def calculate_quota_cessible(net_before_installments: Decimal, quota_percentage: Decimal,
+                               minimum_net_required: Decimal = None) -> Decimal:
         """
         Calculate the maximum deductible amount based on quota cessible
+        
+        Args:
+            net_before_installments: Net salary before installment deductions
+            quota_percentage: Maximum percentage that can be deducted (typically 30-40%)
+            minimum_net_required: Minimum net salary that must remain (optional)
+            
+        Returns:
+            Maximum allowable installment amount
         """
-        return net_before_installments * quota_percentage / Decimal('100')
+        quota_amount = net_before_installments * quota_percentage / Decimal('100')
+        
+        if minimum_net_required:
+            # Ensure minimum net is preserved
+            max_deduction_for_minimum = net_before_installments - minimum_net_required
+            quota_amount = min(quota_amount, max_deduction_for_minimum)
+        
+        return max(Decimal('0.00'), quota_amount)
     
     @staticmethod
-    def adjust_installments_for_quota(installments, quota_cessible):
+    def adjust_installments_for_quota(installments: List[Dict], quota_cessible: Decimal,
+                                    priority_order: List[str] = None) -> Dict[str, Union[List[Dict], Decimal]]:
         """
-        Adjust installments when they exceed the quota cessible
-        """
-        total_installments = sum(installment['amount'] for installment in installments)
+        Adjust installments when they exceed the quota cessible with priority system
         
-        if total_installments <= quota_cessible:
+        Args:
+            installments: List of installment dictionaries with 'amount', 'type', 'priority'
+            quota_cessible: Maximum allowable total installment amount
+            priority_order: Order of priority for installment types (optional)
+            
+        Returns:
+            Dict with adjusted installments, total deducted, and carry-forward amounts
+        """
+        if not installments:
+            return {
+                'adjusted_installments': [],
+                'total_deducted': Decimal('0.00'),
+                'total_carry_forward': Decimal('0.00'),
+                'quota_exceeded': False
+            }
+        
+        total_requested = sum(Decimal(str(installment['amount'])) for installment in installments)
+        
+        if total_requested <= quota_cessible:
+            return {
+                'adjusted_installments': installments,
+                'total_deducted': total_requested,
+                'total_carry_forward': Decimal('0.00'),
+                'quota_exceeded': False
+            }
+        
+        # Sort by priority if specified
+        if priority_order:
+            sorted_installments = sorted(installments, 
+                                       key=lambda x: priority_order.index(x.get('type', 'other')) 
+                                       if x.get('type', 'other') in priority_order else 999)
+        else:
+            # Default priority: court orders, garnishments, loans, advances
+            default_priority = ['court_order', 'garnishment', 'loan', 'advance', 'other']
+            sorted_installments = sorted(installments,
+                                       key=lambda x: default_priority.index(x.get('type', 'other'))
+                                       if x.get('type', 'other') in default_priority else 999)
+        
+        adjusted_installments = []
+        remaining_quota = quota_cessible
+        total_carry_forward = Decimal('0.00')
+        
+        # Process installments by priority
+        for installment in sorted_installments:
+            requested_amount = Decimal(str(installment['amount']))
+            
+            if remaining_quota >= requested_amount:
+                # Full amount can be deducted
+                adjusted_installment = installment.copy()
+                adjusted_installments.append(adjusted_installment)
+                remaining_quota -= requested_amount
+            elif remaining_quota > 0:
+                # Partial amount can be deducted
+                adjusted_installment = installment.copy()
+                adjusted_installment['amount'] = remaining_quota
+                adjusted_installment['carry_forward'] = requested_amount - remaining_quota
+                adjusted_installments.append(adjusted_installment)
+                total_carry_forward += requested_amount - remaining_quota
+                remaining_quota = Decimal('0.00')
+            else:
+                # No quota remaining - full carry forward
+                adjusted_installment = installment.copy()
+                adjusted_installment['amount'] = Decimal('0.00')
+                adjusted_installment['carry_forward'] = requested_amount
+                adjusted_installments.append(adjusted_installment)
+                total_carry_forward += requested_amount
+        
+        return {
+            'adjusted_installments': adjusted_installments,
+            'total_deducted': quota_cessible - remaining_quota,
+            'total_carry_forward': total_carry_forward,
+            'quota_exceeded': True,
+            'remaining_quota': remaining_quota
+        }
+    
+    @staticmethod
+    def calculate_proportional_reduction(installments: List[Dict], quota_cessible: Decimal) -> List[Dict]:
+        """
+        Apply proportional reduction to all installments when quota is exceeded
+        Alternative to priority-based adjustment
+        
+        Args:
+            installments: List of installment dictionaries
+            quota_cessible: Maximum allowable total installment amount
+            
+        Returns:
+            List of adjusted installments with proportional reductions
+        """
+        total_requested = sum(Decimal(str(installment['amount'])) for installment in installments)
+        
+        if total_requested <= quota_cessible:
             return installments  # No adjustment needed
         
         # Calculate reduction ratio
-        reduction_ratio = (total_installments - quota_cessible) / total_installments
+        reduction_ratio = quota_cessible / total_requested
         
-        # Apply reduction to each installment
         adjusted_installments = []
         for installment in installments:
-            original_amount = installment['amount']
-            reduced_amount = original_amount - (original_amount * reduction_ratio)
+            original_amount = Decimal(str(installment['amount']))
+            reduced_amount = original_amount * reduction_ratio
+            
             adjusted_installment = installment.copy()
-            adjusted_installment['amount'] = max(Decimal('0.00'), reduced_amount)
+            adjusted_installment['amount'] = reduced_amount.quantize(Decimal('0.01'))
+            adjusted_installment['original_amount'] = original_amount
+            adjusted_installment['reduction_applied'] = original_amount - reduced_amount
             adjusted_installments.append(adjusted_installment)
         
         return adjusted_installments
+    
+    @staticmethod
+    def validate_installment_limits(installments: List[Dict], salary_info: Dict) -> Dict[str, Union[bool, List[str]]]:
+        """
+        Validate installments against legal and policy limits
+        
+        Args:
+            installments: List of installment dictionaries
+            salary_info: Dict with salary information (gross, net, etc.)
+            
+        Returns:
+            Dict with validation results and any violations
+        """
+        violations = []
+        warnings = []
+        
+        total_installments = sum(Decimal(str(inst['amount'])) for inst in installments)
+        net_salary = Decimal(str(salary_info.get('net_salary', 0)))
+        gross_salary = Decimal(str(salary_info.get('gross_salary', 0)))
+        
+        # Check total installments vs net salary (typically max 40%)
+        if net_salary > 0:
+            installment_ratio = (total_installments / net_salary) * 100
+            if installment_ratio > 40:
+                violations.append(f"Total installments ({installment_ratio:.1f}%) exceed 40% of net salary")
+            elif installment_ratio > 30:
+                warnings.append(f"Total installments ({installment_ratio:.1f}%) exceed recommended 30% of net salary")
+        
+        # Check individual installment limits
+        for installment in installments:
+            inst_type = installment.get('type', 'other')
+            amount = Decimal(str(installment['amount']))
+            
+            if inst_type == 'advance' and gross_salary > 0:
+                # Salary advances typically limited to 50% of gross
+                if amount > gross_salary * Decimal('0.5'):
+                    violations.append(f"Salary advance exceeds 50% of gross salary")
+                    
+            elif inst_type == 'loan' and net_salary > 0:
+                # Loan installments typically limited to 25% of net
+                if amount > net_salary * Decimal('0.25'):
+                    warnings.append(f"Loan installment exceeds recommended 25% of net salary")
+        
+        return {
+            'is_valid': len(violations) == 0,
+            'violations': violations,
+            'warnings': warnings,
+            'total_installment_percentage': (total_installments / net_salary * 100) if net_salary > 0 else 0
+        }
     
     # ========== MAURITANIAN TAX CALCULATION METHODS ==========
     # Converted from PaieClass.java
@@ -845,7 +1131,7 @@ class InstallmentCalculator:
     
     def calculate_cnam_employer(self, base_amount: Decimal, reimbursement_rate: Decimal = Decimal('0.0')) -> Decimal:
         """
-        Calculate employer CNAM reimbursement
+        Calculate employer CNAM contribution (5% = employee 4% × 1.25)
         Equivalent to RCNAMm method in PaieClass.java
         
         Args:
@@ -853,15 +1139,18 @@ class InstallmentCalculator:
             reimbursement_rate: Employer reimbursement rate percentage
             
         Returns:
-            Employer CNAM reimbursement amount
+            Employer CNAM contribution amount
         """
-        # Base employer contribution (4% like employee)
-        base_contribution = base_amount * Decimal('0.04')
+        # Employer rate is 5% (1.25 times the employee rate of 4%)
+        employee_contribution = base_amount * Decimal('0.04')
+        employer_contribution = employee_contribution * Decimal('1.25')  # 5% total
         
-        # Apply reimbursement rate
-        reimbursement = base_contribution * (reimbursement_rate / Decimal('100'))
+        # Apply reimbursement rate if applicable
+        if reimbursement_rate > 0:
+            reimbursement = employer_contribution * (reimbursement_rate / Decimal('100'))
+            return max(Decimal('0.00'), reimbursement).quantize(Decimal('0.01'))
         
-        return max(Decimal('0.00'), reimbursement).quantize(Decimal('0.01'))
+        return max(Decimal('0.00'), employer_contribution).quantize(Decimal('0.01'))
     
     def calculate_its_tranche1(self, year: int, taxable_income: Decimal, cnss_amount: Decimal, 
                              cnam_amount: Decimal, base_salary: Decimal, benefits_in_kind: Decimal,
@@ -883,7 +1172,7 @@ class InstallmentCalculator:
         Returns:
             ITS Tranche 1 amount
         """
-        abatement = Decimal(str(self.system_parameters.tax_abatement or 0))
+        abatement = Decimal(str(getattr(self.system_parameters, 'tax_abatement', 0) or 0))
         tranche1_limit = Decimal('9000.00')  # MRU 9,000
         rate = Decimal('0.15')  # 15% for nationals
         
@@ -891,18 +1180,17 @@ class InstallmentCalculator:
             rate = Decimal('0.075')  # 7.5% for expatriates
         
         # Apply deductions if configured
-        x_cnss = cnss_amount if self.system_parameters.deduct_cnss_from_its else Decimal('0.00')
-        x_cnam = cnam_amount if self.system_parameters.deduct_cnam_from_its else Decimal('0.00')
+        deduct_cnss = getattr(self.system_parameters, 'deduct_cnss_from_its', True)
+        deduct_cnam = getattr(self.system_parameters, 'deduct_cnam_from_its', True)
+        
+        x_cnss = cnss_amount if deduct_cnss else Decimal('0.00')
+        x_cnam = cnam_amount if deduct_cnam else Decimal('0.00')
         
         # Calculate taxable base
         taxable_base = taxable_income - x_cnss - x_cnam - abatement
         
-        # Benefits in kind special treatment (60% deduction if > 20% of base salary)
-        if benefits_in_kind > 0 and base_salary > 0:
-            benefit_ratio = benefits_in_kind / base_salary
-            if benefit_ratio > Decimal('0.20'):  # > 20% of base salary
-                deductible_benefits = benefits_in_kind * Decimal('0.60')  # 60% deduction
-                taxable_base -= deductible_benefits
+        # Benefits in kind special treatment
+        taxable_base = self._apply_benefits_in_kind_deduction(taxable_base, benefits_in_kind, base_salary)
         
         if taxable_base <= 0:
             return Decimal('0.00')
@@ -920,31 +1208,31 @@ class InstallmentCalculator:
         Calculate ITS Tranche 2 (MRU 9,001 - 21,000 at 25% or 12.5% for expatriates)
         Equivalent to tranche2ITS method in PaieClass.java
         """
-        abatement = Decimal(str(self.system_parameters.tax_abatement or 0))
+        abatement = Decimal(str(getattr(self.system_parameters, 'tax_abatement', 0) or 0))
         tranche1_limit = Decimal('9000.00')
         tranche2_limit = Decimal('21000.00')
         rate = Decimal('0.25')  # 25% for nationals
         
         # Check for alternative rate mode
-        if hasattr(self.system_parameters, 'its_mode') and self.system_parameters.its_mode == 'T':
+        its_mode = getattr(self.system_parameters, 'its_mode', None)
+        if its_mode == 'T':
             rate = Decimal('0.20')  # 20% in "T" mode
         
         if is_expatriate:
-            rate = rate / Decimal('2')  # Half rate for expatriates
+            rate = Decimal('0.125')  # 12.5% for expatriates (half of 25%)
         
         # Apply deductions
-        x_cnss = cnss_amount if self.system_parameters.deduct_cnss_from_its else Decimal('0.00')
-        x_cnam = cnam_amount if self.system_parameters.deduct_cnam_from_its else Decimal('0.00')
+        deduct_cnss = getattr(self.system_parameters, 'deduct_cnss_from_its', True)
+        deduct_cnam = getattr(self.system_parameters, 'deduct_cnam_from_its', True)
+        
+        x_cnss = cnss_amount if deduct_cnss else Decimal('0.00')
+        x_cnam = cnam_amount if deduct_cnam else Decimal('0.00')
         
         # Calculate taxable base  
         taxable_base = taxable_income - x_cnss - x_cnam - abatement
         
         # Benefits in kind special treatment
-        if benefits_in_kind > 0 and base_salary > 0:
-            benefit_ratio = benefits_in_kind / base_salary
-            if benefit_ratio > Decimal('0.20'):
-                deductible_benefits = benefits_in_kind * Decimal('0.60')
-                taxable_base -= deductible_benefits
+        taxable_base = self._apply_benefits_in_kind_deduction(taxable_base, benefits_in_kind, base_salary)
         
         if taxable_base <= tranche1_limit:
             return Decimal('0.00')  # No tax in tranche 2
@@ -962,31 +1250,31 @@ class InstallmentCalculator:
         Calculate ITS Tranche 3 (MRU 21,001+ at 40% or 20% for expatriates)
         Equivalent to tranche3ITS method in PaieClass.java
         """
-        abatement = Decimal(str(self.system_parameters.tax_abatement or 0))
+        abatement = Decimal(str(getattr(self.system_parameters, 'tax_abatement', 0) or 0))
         tranche1_limit = Decimal('9000.00')
         tranche2_limit = Decimal('21000.00')
         rate = Decimal('0.40')  # 40% for nationals
         
         # Check for alternative rate mode
-        if hasattr(self.system_parameters, 'its_mode') and self.system_parameters.its_mode == 'T':
+        its_mode = getattr(self.system_parameters, 'its_mode', None)
+        if its_mode == 'T':
             rate = Decimal('0.20')  # 20% in "T" mode
         
         if is_expatriate:
-            rate = rate / Decimal('2')  # Half rate for expatriates
+            rate = Decimal('0.20')  # 20% for expatriates (half of 40%)
         
         # Apply deductions
-        x_cnss = cnss_amount if self.system_parameters.deduct_cnss_from_its else Decimal('0.00')
-        x_cnam = cnam_amount if self.system_parameters.deduct_cnam_from_its else Decimal('0.00')
+        deduct_cnss = getattr(self.system_parameters, 'deduct_cnss_from_its', True)
+        deduct_cnam = getattr(self.system_parameters, 'deduct_cnam_from_its', True)
+        
+        x_cnss = cnss_amount if deduct_cnss else Decimal('0.00')
+        x_cnam = cnam_amount if deduct_cnam else Decimal('0.00')
         
         # Calculate taxable base
         taxable_base = taxable_income - x_cnss - x_cnam - abatement
         
         # Benefits in kind special treatment
-        if benefits_in_kind > 0 and base_salary > 0:
-            benefit_ratio = benefits_in_kind / base_salary
-            if benefit_ratio > Decimal('0.20'):
-                deductible_benefits = benefits_in_kind * Decimal('0.60')
-                taxable_base -= deductible_benefits
+        taxable_base = self._apply_benefits_in_kind_deduction(taxable_base, benefits_in_kind, base_salary)
         
         if taxable_base <= tranche2_limit:
             return Decimal('0.00')  # No tax in tranche 3
@@ -1066,6 +1354,121 @@ class InstallmentCalculator:
         
         return max(Decimal('0.00'), total_reimbursement).quantize(Decimal('0.01'))
     
+    def calculate_gross_from_net(self, net_target: Decimal, employee, year: int = 2018, 
+                                is_expatriate: bool = False, benefits_in_kind: Decimal = Decimal('0.00'),
+                                max_iterations: int = 50, tolerance: Decimal = Decimal('0.01')) -> Dict[str, Decimal]:
+        """
+        Calculate gross salary required to achieve a target net salary (BrutDuNet)
+        Uses iterative approximation method equivalent to Java BrutDuNet function
+        
+        Args:
+            net_target: Target net salary to achieve
+            employee: Employee instance for rates and ceilings
+            year: Tax year for calculations
+            is_expatriate: Whether employee is expatriate
+            benefits_in_kind: Benefits in kind amount
+            max_iterations: Maximum iterations for convergence
+            tolerance: Acceptable difference for convergence
+            
+        Returns:
+            Dict with gross amount and calculation breakdown
+        """
+        # Initial guess - start with net target * 1.5 as rough estimate
+        gross_estimate = net_target * Decimal('1.5')
+        
+        for iteration in range(max_iterations):
+            # Calculate all deductions based on current gross estimate
+            cnss_amount = self.calculate_cnss_employee(gross_estimate, Decimal('1.0'), year)
+            cnam_amount = self.calculate_cnam_employee(gross_estimate)
+            
+            # Calculate ITS
+            its_amount = self.calculate_its_total(
+                year, gross_estimate, cnss_amount, cnam_amount,
+                gross_estimate, benefits_in_kind, Decimal('1.0'), is_expatriate
+            )
+            
+            # Calculate resulting net salary
+            calculated_net = gross_estimate - cnss_amount - cnam_amount - its_amount - benefits_in_kind
+            
+            # Check convergence
+            difference = abs(calculated_net - net_target)
+            if difference <= tolerance:
+                return {
+                    'gross_salary': gross_estimate.quantize(Decimal('0.01')),
+                    'net_salary': calculated_net.quantize(Decimal('0.01')),
+                    'cnss_employee': cnss_amount,
+                    'cnam_employee': cnam_amount,
+                    'its_total': its_amount,
+                    'benefits_in_kind': benefits_in_kind,
+                    'iterations': iteration + 1,
+                    'converged': True
+                }
+            
+            # Adjust gross estimate based on difference
+            adjustment_factor = net_target / calculated_net if calculated_net > 0 else Decimal('1.1')
+            gross_estimate = gross_estimate * adjustment_factor
+            
+            # Safety bounds to prevent runaway calculations
+            if gross_estimate > net_target * Decimal('10'):
+                gross_estimate = net_target * Decimal('10')
+            elif gross_estimate < net_target:
+                gross_estimate = net_target * Decimal('1.1')
+        
+        # Return best estimate if convergence not achieved
+        cnss_amount = self.calculate_cnss_employee(gross_estimate, Decimal('1.0'), year)
+        cnam_amount = self.calculate_cnam_employee(gross_estimate)
+        its_amount = self.calculate_its_total(
+            year, gross_estimate, cnss_amount, cnam_amount,
+            gross_estimate, benefits_in_kind, Decimal('1.0'), is_expatriate
+        )
+        calculated_net = gross_estimate - cnss_amount - cnam_amount - its_amount - benefits_in_kind
+        
+        return {
+            'gross_salary': gross_estimate.quantize(Decimal('0.01')),
+            'net_salary': calculated_net.quantize(Decimal('0.01')),
+            'cnss_employee': cnss_amount,
+            'cnam_employee': cnam_amount,
+            'its_total': its_amount,
+            'benefits_in_kind': benefits_in_kind,
+            'iterations': max_iterations,
+            'converged': False
+        }
+
+    def _apply_benefits_in_kind_deduction(self, taxable_base: Decimal, benefits_in_kind: Decimal, base_salary: Decimal) -> Decimal:
+        """
+        Apply benefits in kind deduction logic:
+        - If benefits > 20% of (base salary - benefits), deduct only 60%
+        - Otherwise, deduct 100% from taxable income
+        
+        Args:
+            taxable_base: Current taxable income base
+            benefits_in_kind: Benefits in kind amount
+            base_salary: Base salary amount
+            
+        Returns:
+            Adjusted taxable base after benefits deduction
+        """
+        if benefits_in_kind <= 0 or base_salary <= 0:
+            return taxable_base
+            
+        # Calculate adjusted base salary (excluding benefits)
+        adjusted_base_salary = base_salary - benefits_in_kind
+        
+        if adjusted_base_salary <= 0:
+            return taxable_base
+            
+        # Check if benefits exceed 20% threshold
+        benefit_ratio = benefits_in_kind / adjusted_base_salary
+        
+        if benefit_ratio > Decimal('0.20'):
+            # Benefits exceed 20% threshold, deduct only 60%
+            deductible_benefits = benefits_in_kind * Decimal('0.60')
+        else:
+            # Benefits within 20% threshold, deduct 100%
+            deductible_benefits = benefits_in_kind
+            
+        return taxable_base - deductible_benefits
+
     # ========== UTILITY METHODS FOR PAYROLL CALCULATION ==========
     
     def get_njt_record(self, employee, motif, period):
@@ -1100,3 +1503,204 @@ class InstallmentCalculator:
     def get_salary_increase(self, employee, period):
         """Get salary increase amount - placeholder"""
         return Decimal('0.00')
+
+
+class PayrollValidationError(Exception):
+    """Custom exception for payroll calculation validation errors"""
+    pass
+
+
+class PayrollValidator:
+    """
+    Comprehensive payroll calculation validation utilities
+    Ensures data integrity and catches calculation errors
+    """
+    
+    @staticmethod
+    def validate_employee_data(employee) -> Dict[str, Union[bool, List[str]]]:
+        """
+        Validate employee data required for payroll calculations
+        
+        Args:
+            employee: Employee instance
+            
+        Returns:
+            Dict with validation status and any errors found
+        """
+        errors = []
+        warnings = []
+        
+        # Required fields validation
+        if not hasattr(employee, 'employee_id') or not employee.employee_id:
+            errors.append("Employee ID is required")
+            
+        if not hasattr(employee, 'hire_date') or not employee.hire_date:
+            errors.append("Hire date is required for seniority calculations")
+            
+        # Salary grade validation
+        if hasattr(employee, 'salary_grade') and employee.salary_grade:
+            if employee.salary_grade.base_salary <= 0:
+                errors.append("Base salary must be greater than zero")
+        else:
+            warnings.append("No salary grade assigned - may affect calculations")
+            
+        # Contract hours validation
+        if hasattr(employee, 'contract_hours_per_week'):
+            if employee.contract_hours_per_week and employee.contract_hours_per_week > 80:
+                warnings.append("Contract hours per week exceed 80 - verify correctness")
+            elif employee.contract_hours_per_week and employee.contract_hours_per_week < 1:
+                errors.append("Contract hours per week must be at least 1")
+        
+        return {
+            'is_valid': len(errors) == 0,
+            'errors': errors,
+            'warnings': warnings
+        }
+    
+    @staticmethod
+    def validate_calculation_inputs(taxable_income: Decimal, cnss_amount: Decimal = None,
+                                   cnam_amount: Decimal = None, benefits_in_kind: Decimal = None) -> bool:
+        """
+        Validate inputs for tax calculations
+        
+        Args:
+            taxable_income: Gross taxable income
+            cnss_amount: CNSS contribution amount
+            cnam_amount: CNAM contribution amount
+            benefits_in_kind: Benefits in kind amount
+            
+        Returns:
+            True if inputs are valid, False otherwise
+            
+        Raises:
+            PayrollValidationError: If validation fails
+        """
+        if taxable_income < 0:
+            raise PayrollValidationError("Taxable income cannot be negative")
+            
+        if cnss_amount is not None and cnss_amount < 0:
+            raise PayrollValidationError("CNSS amount cannot be negative")
+            
+        if cnam_amount is not None and cnam_amount < 0:
+            raise PayrollValidationError("CNAM amount cannot be negative")
+            
+        if benefits_in_kind is not None and benefits_in_kind < 0:
+            raise PayrollValidationError("Benefits in kind cannot be negative")
+            
+        return True
+    
+    @staticmethod
+    def validate_calculation_results(calculation_result: Dict) -> Dict[str, Union[bool, List[str]]]:
+        """
+        Validate payroll calculation results for reasonableness
+        
+        Args:
+            calculation_result: Dictionary with calculation results
+            
+        Returns:
+            Dict with validation status and any issues found
+        """
+        issues = []
+        warnings = []
+        
+        gross_taxable = calculation_result.get('gross_taxable', Decimal('0'))
+        net_salary = calculation_result.get('net_salary', Decimal('0'))
+        its_total = calculation_result.get('its_total', Decimal('0'))
+        cnss_employee = calculation_result.get('cnss_employee', Decimal('0'))
+        cnam_employee = calculation_result.get('cnam_employee', Decimal('0'))
+        
+        # Basic validation
+        if gross_taxable < 0:
+            issues.append("Gross taxable income is negative")
+            
+        if net_salary < 0:
+            issues.append("Net salary is negative")
+            
+        # Reasonableness checks
+        if gross_taxable > 0:
+            total_deductions = its_total + cnss_employee + cnam_employee
+            deduction_ratio = total_deductions / gross_taxable
+            
+            if deduction_ratio > Decimal('0.6'):  # 60%
+                warnings.append(f"Total deductions ({deduction_ratio*100:.1f}%) exceed 60% of gross salary")
+                
+            if its_total > gross_taxable * Decimal('0.4'):  # 40%
+                warnings.append("ITS amount exceeds 40% of gross salary - verify calculation")
+                
+            if cnss_employee > gross_taxable * Decimal('0.02'):  # 2%
+                warnings.append("CNSS amount exceeds expected 1% rate - verify ceiling application")
+                
+            if cnam_employee > gross_taxable * Decimal('0.05'):  # 5%
+                warnings.append("CNAM amount exceeds expected 4% rate")
+        
+        return {
+            'is_valid': len(issues) == 0,
+            'issues': issues,
+            'warnings': warnings
+        }
+
+
+class PayrollCalculationSummary:
+    """
+    Generate comprehensive summaries of payroll calculations
+    Useful for debugging and reporting
+    """
+    
+    @staticmethod
+    def generate_calculation_summary(employee, calculation_result: Dict) -> Dict[str, Union[str, Decimal, Dict]]:
+        """
+        Generate a comprehensive summary of payroll calculations
+        
+        Args:
+            employee: Employee instance
+            calculation_result: Calculation results dictionary
+            
+        Returns:
+            Detailed summary dictionary
+        """
+        return {
+            'employee_info': {
+                'employee_id': getattr(employee, 'employee_id', 'N/A'),
+                'name': f"{getattr(employee, 'first_name', '')} {getattr(employee, 'last_name', '')}".strip(),
+                'is_expatriate': getattr(employee, 'is_expatriate', False),
+                'salary_grade': str(getattr(employee, 'salary_grade', 'N/A')),
+                'hire_date': getattr(employee, 'hire_date', None),
+            },
+            'calculation_breakdown': {
+                'gross_taxable': calculation_result.get('gross_taxable', Decimal('0')),
+                'gross_non_taxable': calculation_result.get('gross_non_taxable', Decimal('0')),
+                'benefits_in_kind': calculation_result.get('benefits_in_kind', Decimal('0')),
+                'total_gross': calculation_result.get('gross_taxable', Decimal('0')) + 
+                             calculation_result.get('gross_non_taxable', Decimal('0')),
+            },
+            'deductions': {
+                'cnss_employee': calculation_result.get('cnss_employee', Decimal('0')),
+                'cnam_employee': calculation_result.get('cnam_employee', Decimal('0')),
+                'its_tranche1': calculation_result.get('its_tranche1', Decimal('0')),
+                'its_tranche2': calculation_result.get('its_tranche2', Decimal('0')),
+                'its_tranche3': calculation_result.get('its_tranche3', Decimal('0')),
+                'its_total': calculation_result.get('its_total', Decimal('0')),
+                'total_deductions': (
+                    calculation_result.get('cnss_employee', Decimal('0')) +
+                    calculation_result.get('cnam_employee', Decimal('0')) +
+                    calculation_result.get('its_total', Decimal('0'))
+                ),
+            },
+            'employer_costs': {
+                'employer_cnss': calculation_result.get('employer_cnss', Decimal('0')),
+                'employer_cnam': calculation_result.get('employer_cnam', Decimal('0')),
+                'total_employer_costs': (
+                    calculation_result.get('employer_cnss', Decimal('0')) +
+                    calculation_result.get('employer_cnam', Decimal('0'))
+                ),
+            },
+            'final_amounts': {
+                'net_salary': calculation_result.get('net_salary', Decimal('0')),
+                'total_cost_to_employer': (
+                    calculation_result.get('gross_taxable', Decimal('0')) +
+                    calculation_result.get('gross_non_taxable', Decimal('0')) +
+                    calculation_result.get('employer_cnss', Decimal('0')) +
+                    calculation_result.get('employer_cnam', Decimal('0'))
+                ),
+            }
+        }
