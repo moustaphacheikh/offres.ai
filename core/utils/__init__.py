@@ -78,6 +78,22 @@ from .import_export import (
     create_employee_template
 )
 
+# Advanced mathematical calculator
+from .calculator import (
+    MathematicalCalculator,
+    PayrollCalculatorIntegration,
+    CalculatorError,
+    ExpressionParseError,
+    VariableNotFoundError,
+    FunctionNotFoundError,
+    DivisionByZeroError,
+    safe_divide,
+    percentage,
+    round_currency,
+    compound_interest,
+    create_payroll_calculator
+)
+
 # Main utility classes for convenient access
 __all__ = [
     # Date utilities
@@ -138,6 +154,20 @@ __all__ = [
     'import_employees_from_excel',
     'export_employees_to_excel',
     'create_employee_template',
+    
+    # Calculator utilities
+    'MathematicalCalculator',
+    'PayrollCalculatorIntegration',
+    'CalculatorError',
+    'ExpressionParseError',
+    'VariableNotFoundError',
+    'FunctionNotFoundError',
+    'DivisionByZeroError',
+    'safe_divide',
+    'percentage',
+    'round_currency',
+    'compound_interest',
+    'create_payroll_calculator',
 ]
 
 # Version info
